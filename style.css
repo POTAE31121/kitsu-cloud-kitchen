@@ -29,3 +29,14 @@ footer {
   padding: 10px;
   font-size: 0.9em;
 }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: radial-gradient(circle at top left, #b7e4c7, #fff9f4 50%) no-repeat,
+              radial-gradient(circle at bottom right, #f5cac3, #fff9f4 50%) no-repeat;
+  background-size: 50% 50%;
+  background-color: #fff9f4; /* สีพื้นหลังหลัก */
+  color: #333;
+}
+
