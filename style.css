@@ -1,0 +1,31 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #fff9f4;
+  color: #333;
+  text-align: center;
+}
+header {
+  background: #f3c5b8;
+  padding: 20px;
+}
+h1 {
+  margin: 0;
+}
+main {
+  margin: 20px;
+}
+.order-button {
+  display: inline-block;
+  background: #ff7e6b;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  margin-top: 15px;
+}
+footer {
+  background: #f3c5b8;
+  padding: 10px;
+  font-size: 0.9em;
+}
