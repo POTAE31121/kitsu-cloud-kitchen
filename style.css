@@ -1,35 +1,108 @@
-header {
-  background: #f3c5b8;
-  padding: 20px;
-}
-h1 {
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-main {
-  margin: 20px;
-}
-.order-button {
-  display: inline-block;
-  background: #ff7e6b;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  text-decoration: none;
-  margin-top: 15px;
-}
-footer {
-  background: #f3c5b8;
-  padding: 10px;
-  font-size: 0.9em;
-}
-
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: radial-gradient(circle at top left, #b7e4c7, #fff9f4 50%) no-repeat,
-              radial-gradient(circle at bottom right, #f5cac3, #fff9f4 50%) no-repeat;
-  background-size: 50% 50%;
-  background-color: #fff9f4; /* สีพื้นหลังหลัก */
+  font-family: 'Arial', sans-serif;
+  background-color: #fff9f4;
   color: #333;
+  line-height: 1.6;
 }
-
+.header {
+  background: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 10%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.header .logo img {
+  width: 50px;
+  vertical-align: middle;
+}
+.header h1 {
+  display: inline;
+  margin-left: 10px;
+  font-size: 1.5em;
+  color: #f5a623;
+}
+nav ul {
+  list-style: none;
+  display: flex;
+}
+nav ul li {
+  margin: 0 15px;
+}
+nav ul li a {
+  text-decoration: none;
+  color: #333;
+  transition: color 0.3s ease;
+}
+nav ul li a:hover {
+  color: #f5a623;
+}
+.btn-reserve {
+  background: #f5a623;
+  color: #fff;
+  padding: 8px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+}
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #b7e4c7;
+  padding: 50px 10%;
+}
+.hero-text h2 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+.hero-text p {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+}
+.btn-order {
+  background: #f5a623;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+}
+.special-menus {
+  padding: 50px 10%;
+}
+.special-menus h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2em;
+}
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+.menu-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
+  padding: 15px;
+}
+.menu-card img {
+  width: 100%;
+  border-radius: 10px 10px 0 0;
+}
+.menu-card h3 {
+  margin: 10px 0;
+  font-size: 1.2em;
+}
+.footer {
+  background: #333;
+  color: #fff;
+  text-align: center;
+  padding: 15px 0;
+  margin-top: 50px;
+}
