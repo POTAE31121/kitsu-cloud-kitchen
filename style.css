@@ -12,6 +12,7 @@ body {
 }
 .header {
   background: #333;
+  color: #fff;
   display: flex;
   justify-content: space-between;
   align-items: center;
