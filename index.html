@@ -4,36 +4,79 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kitsu Cloud Kitchen</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-cream text-brown font-sans">
-  <header class="bg-green-100 py-6 text-center">
-    <h1 class="text-4xl font-bold">🍴 Kitsu Cloud Kitchen</h1>
-    <p class="text-lg">อร่อยเหมือนทานที่บ้าน ส่งตรงถึงคุณ</p>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <img src="logo.png" alt="Kitsu Cloud Kitchen Logo" />
+      <h1>Kitsu Cloud Kitchen</h1>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Story</a></li>
+        <li><a href="#">Menu</a></li>
+        <li><a href="#">Locations</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      <a href="#" class="btn-reserve">Reserve</a>
+    </nav>
   </header>
-  <main class="p-6">
-    <h2 class="text-2xl font-semibold mb-4">เมนูยอดนิยม</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="bg-white rounded-lg shadow p-4">
-        <h3 class="font-bold text-lg">ข้าวหน้าไก่เทอริยากิ</h3>
-        <p>รสชาติละมุน หอมซอสญี่ปุ่น</p>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-text">
+      <h2>Delicious Dishes, Freshly Made</h2>
+      <p>อร่อย สดใหม่ ทุกเมนู พร้อมเสิร์ฟถึงบ้านคุณ</p>
+      <a href="#" class="btn-order">Order Now</a>
+    </div>
+    <div class="hero-image">
+      <img src="hero-food.jpg" alt="Hero Dish">
+    </div>
+  </section>
+
+  <!-- Special Menus -->
+  <section class="special-menus">
+    <h2>Special Menus</h2>
+    <div class="menu-grid">
+      <div class="menu-card">
+        <img src="menu1.jpg" alt="Morning Fresh">
+        <h3>Morning Fresh</h3>
+        <p>฿120</p>
       </div>
-      <div class="bg-white rounded-lg shadow p-4">
-        <h3 class="font-bold text-lg">บราวนี่หนึบหนับ</h3>
-        <p>เข้มข้น เนื้อช็อกโกแลตแน่น</p>
+      <div class="menu-card">
+        <img src="menu2.jpg" alt="Tomato Soup">
+        <h3>Tomato Soup</h3>
+        <p>฿90</p>
       </div>
-      <div class="bg-white rounded-lg shadow p-4">
-        <h3 class="font-bold text-lg">ครัวซองต์เนยสด</h3>
-        <p>หอมเนยแท้ อบสดทุกวัน</p>
+      <div class="menu-card">
+        <img src="menu3.jpg" alt="Premium Steak">
+        <h3>Premium Steak</h3>
+        <p>฿450</p>
+      </div>
+      <div class="menu-card">
+        <img src="menu4.jpg" alt="Seafood Set">
+        <h3>Seafood Set</h3>
+        <p>฿350</p>
+      </div>
+      <div class="menu-card">
+        <img src="menu5.jpg" alt="Burger Set">
+        <h3>Burger Set</h3>
+        <p>฿180</p>
+      </div>
+      <div class="menu-card">
+        <img src="menu6.jpg" alt="Healthy Soup">
+        <h3>Healthy Soup</h3>
+        <p>฿110</p>
       </div>
     </div>
-    <div class="mt-6">
-      <a href="#" class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">สั่งผ่าน LINE MAN</a>
-    </div>
-  </main>
-  <footer class="bg-green-100 py-4 text-center text-sm">
-    &copy; 2025 Kitsu Cloud Kitchen
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 Kitsu Cloud Kitchen. All rights reserved.</p>
   </footer>
 </body>
 </html>
