@@ -147,7 +147,7 @@ nav ul li a:hover {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 100%) {
   .header {
     flex-direction: column;
     text-align: center;
