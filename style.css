@@ -11,7 +11,7 @@ body {
   line-height: 1.6;
 }
 .header {
-  background: #333;
+  background: #33;
   display: flex;
   justify-content: space-between;
   align-items: center;
