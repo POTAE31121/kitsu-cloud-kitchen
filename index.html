@@ -15,13 +15,21 @@
       <h1>Kitsu Cloud Kitchen</h1>
     </div>
     <nav>
-      <ul>
+      <div class="menu-toggle" id="menu-toggle">&#9976;</div>
+      <ul id="nav-list">
+        <li><a href="home">Home</a></li>
+        <li><a href="story">Story</a></li>
+        <li><a href="menu">Menu</a></li>
+        <li><a href="locations">Locations</a></li>
+        <li><a href="contact">Contact</a></li>
+      </ul>
+      <!--ul>
         <li><a href="#">Home</a></li>
         <li><a href="#">Story</a></li>
         <li><a href="#">Menu</a></li>
         <li><a href="#">Locations</a></li>
         <li><a href="#">Contact</a></li>
-      </ul>
+    </ul-->
     </nav>
   </header>
 
@@ -78,5 +86,16 @@
   <footer class="footer">
     <p>&copy; 2025 Kitsu Cloud Kitchen. All rights reserved.</p>
   </footer>
+  
+  <!-- Script -->
+  <script>
+  const toggle = document.getElementById('menu-toggle');
+  const navList = document.getElementById('nav-list');
+
+  toggle.addEventListener('click', () => {
+    navList.classList.toggle('active');
+  });
+</script>
+
 </body>
 </html>
