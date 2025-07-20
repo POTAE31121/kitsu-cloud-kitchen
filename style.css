@@ -30,6 +30,12 @@ body {
   font-size: 1.8em;
   color: #f5a623;
 }
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
 nav ul {
   list-style: none;
   display: flex;
@@ -44,6 +50,11 @@ nav ul li a {
   color: #fff;
   font-weight: 500;
   transition: color 0.3s ease;
+}
+.menu-toggle {
+  display: none;
+  font-size: 28px;
+  cursor: pointer;
 }
 nav ul li a:hover {
   color: #f5a623;
@@ -227,8 +238,21 @@ nav ul li a:hover {
 
 @media (max-width: 768px) {
   nav ul {
+    display: none;
     flex-direction: column;
+    background-color: #333;
+    width: 100%;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     align-items: center;
+  }
+  nav ul.active {
+    display: flex;
+  }
+  .menu-toggle {
+    display: block;
   }
 }
 @media (max-width: 768px) {
