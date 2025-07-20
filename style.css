@@ -240,7 +240,7 @@ nav ul li a:hover {
   nav ul {
     display: none;
     flex-direction: column;
-    background-color: #fff;
+    background-color: #333;
     width: 100%;
     position: absolute;
     top: 60px;
