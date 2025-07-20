@@ -11,18 +11,13 @@
   <!-- Header -->
   <header class="header">
     <div class="logo">
-      <img src="logo.png" alt="Kitsu Cloud Kitchen Logo" />
-      <h1>Kitsu Cloud Kitchen</h1>
+      <a href="#home" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
+        <img src="logo.png" alt="Kitsu Cloud Kitchen Logo" />
+        <h1>Kitsu Cloud Kitchen</h1>
+      </a>
     </div>
     <nav>
-      <div class="menu-toggle" id="menu-toggle">&#x2630</div>
-      <!--ul id="nav-list">
-        <li><a href="home">Home</a></li>
-        <li><a href="story">Story</a></li>
-        <li><a href="menu">Menu</a></li>
-        <li><a href="locations">Locations</a></li>
-        <li><a href="contact">Contact</a></li>
-      </ul-->
+      <div class="menu-toggle" id="menu-toggle">☰</div>
       <div class="slide-menu" id="slide-menu">
         <ul>
           <li><a href="#home">Home</a></li>
@@ -36,11 +31,11 @@
   </header>
 
   <!-- Hero Section -->
-  <section class="hero">
+  <section class="hero" id="home">
     <div class="hero-text">
       <h2>Crafted with Passion, Served with Love</h2>
       <p>อาหารทุกจาน สดใหม่จากครัว ปรุงด้วยใจ พร้อมส่งถึงคุณ</p>
-      <a href="#" class="btn-order">Order Now</a>
+      <a href="#menu" class="btn-order">Order Now</a>
     </div>
     <div class="hero-image">
       <img src="hero-food.png" alt="Hero Dish">
@@ -48,16 +43,34 @@
   </section>
 
   <!-- Special Menus -->
-  <section class="special-menus">
+  <section class="special-menus" id="menu">
     <h2>Special Menus</h2>
     <div class="menu-grid">
       <!-- ปล่อยให้ตรงนี้ว่างๆ เลยครับ เดี๋ยว JavaScript จะมาเติมให้เอง -->
     </div>
   </section>
 
+  <!-- ========== เพิ่มส่วนใหม่ทั้งหมดตรงนี้ ========== -->
+  <section id="story" style="padding: 50px 10%; text-align: center; background: #fff;">
+    <h2>Our Story</h2>
+    <p style="max-width: 600px; margin: 0 auto;">ที่ Kitsu Cloud Kitchen เราเชื่อว่าอาหารที่ดีเริ่มต้นจากวัตถุดิบที่สดใหม่และความใส่ใจในทุกขั้นตอนการปรุง เราคือครัวกลางที่พร้อมสร้างสรรค์เมนูอร่อยหลากหลายสไตล์ส่งตรงถึงมือคุณ</p>
+  </section>
+
+  <section id="locations" style="padding: 50px 10%; text-align: center;">
+    <h2>Delivery Locations</h2>
+    <p style="max-width: 600px; margin: 0 auto;">เราพร้อมจัดส่งความอร่อยทั่วกรุงเทพฯ และปริมณฑล! ไม่ว่าคุณจะอยู่ที่ไหน เราก็พร้อมส่งความสุขถึงหน้าประตู</p>
+  </section>
+
+  <section id="contact" style="padding: 50px 10%; text-align: center; background: #fff;">
+    <h2>Contact Us</h2>
+    <p>สำหรับข้อเสนอแนะ หรือสอบถามข้อมูลเพิ่มเติม<br>
+    Email: contact@kitsu.kitchen | โทร: 081-234-5678</p>
+  </section>
+  <!-- ========== จบส่วนที่เพิ่ม ========== -->
+
   <!-- Footer -->
   <footer class="footer">
-    <p>&copy; 2025 Kitsu Cloud Kitchen. All rights reserved.</p>
+    <p>© 2025 Kitsu Cloud Kitchen. All rights reserved.</p>
   </footer>
 
   <!-- Script -->
