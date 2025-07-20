@@ -1,43 +1,70 @@
-// main.js หรือ script.js ของเว็บหน้าร้านคุณ
+// scripts.js
 
-// รอให้หน้าเว็บโหลดเสร็จก่อน แล้วค่อยเริ่มทำงาน
+// รอให้เอกสาร HTML โหลดเสร็จสมบูรณ์ก่อน ค่อยเริ่มทำงานทั้งหมด
 document.addEventListener('DOMContentLoaded', () => {
-    displayMenuItems();
+
+    // --- ส่วนที่ 1: โค้ดสำหรับจัดการเมนูสไลด์ (โค้ดเดิมของคุณ) ---
+    const toggle = document.getElementById('menu-toggle');
+    const slideMenu = document.getElementById('slide-menu');
+
+    if (toggle && slideMenu) {
+        // กดปุ่ม ☰ เพื่อเปิด/ปิดเมนู
+        toggle.addEventListener('click', () => {
+            slideMenu.classList.toggle('active');
+        });
+
+        // กดลิงก์ในเมนูแล้วปิดเมนูด้วย
+        document.querySelectorAll('#slide-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                slideMenu.classList.remove('active');
+            });
+        });
+
+        // กดพื้นที่ว่างรอบ ๆ เมนูเพื่อปิดเมนู
+        slideMenu.addEventListener('click', (e) => {
+            if (e.target === slideMenu) {
+                slideMenu.classList.remove('active');
+            }
+        });
+    }
+
+    // --- ส่วนที่ 2: โค้ดใหม่สำหรับดึงข้อมูลเมนูจาก API ---
+    displayMenuItems(); // เรียกใช้ฟังก์ชันให้เริ่มทำงาน
 });
+
 
 // ฟังก์ชันสำหรับดึงข้อมูลและแสดงผลเมนู
 async function displayMenuItems() {
     // URL ของ API หลังบ้านที่เราสร้างไว้
     const apiUrl = 'http://127.0.0.1:8000/api/items/';
 
-    // หากล่องสำหรับใส่เมนูการ์ดในหน้า HTML ของเรา
-    // **สำคัญ:** ตรวจสอบให้แน่ใจว่าคลาส '.menu-grid' หรือ '.menu-container' ถูกต้องตรงกับใน HTML ของคุณ
-    const menuContainer = document.querySelector('.menu-grid'); 
+    // หากล่องสำหรับใส่เมนูการ์ด (จาก HTML ของคุณคือคลาส .menu-grid)
+    const menuContainer = document.querySelector('.menu-grid');
 
+    // ตรวจสอบก่อนว่าเจอกล่องนี้ในหน้าเว็บหรือไม่
     if (!menuContainer) {
-        console.error('ไม่พบ Element สำหรับแสดงเมนู!');
+        console.error('Error: ไม่พบ Element ที่มีคลาส .menu-grid');
         return;
     }
 
     try {
         // 1. ส่งคำขอไปดึงข้อมูลจาก API
         const response = await fetch(apiUrl);
-
         // 2. แปลงข้อมูลที่ได้กลับมาเป็น JSON (JavaScript Object)
         const menuItems = await response.json();
 
-        // 3. ล้างคอนเทนเนอร์ให้ว่างเปล่า (เผื่อมีของเก่าค้างอยู่)
+        // 3. ล้างคอนเทนเนอร์ให้ว่างเปล่า
         menuContainer.innerHTML = '';
 
-        // 4. วนลูปข้อมูลเมนูแต่ละชิ้นที่ได้มา เพื่อสร้างการ์ด HTML
+        // 4. วนลูปข้อมูลเมนูแต่ละชิ้นที่ได้มา เพื่อสร้างเป็นการ์ด HTML
         menuItems.forEach(item => {
             // สร้าง HTML ของการ์ดเมนู 1 ใบ
+            // สังเกตว่า src ของ img เราใช้ item.image ที่ได้จาก API
             const menuCardHTML = `
                 <div class="menu-card">
                     <img src="${item.image}" alt="${item.name}">
                     <h3>${item.name}</h3>
-                    <p class="price">ราคา ${parseInt(item.price)} บาท</p> 
-                    <p class="description">${item.description}</p>
+                    <p>฿${parseInt(item.price)}</p>
                 </div>
             `;
             // เพิ่มการ์ดที่เพิ่งสร้างเข้าไปในคอนเทนเนอร์
@@ -45,30 +72,8 @@ async function displayMenuItems() {
         });
 
     } catch (error) {
-        // ถ้าเกิดข้อผิดพลาดในการดึงข้อมูล ให้แสดงใน Console
+        // ถ้าเกิดข้อผิดพลาดในการดึงข้อมูล (เช่น ลืมเปิดเซิร์ฟเวอร์หลังบ้าน)
         console.error('เกิดข้อผิดพลาดในการดึงข้อมูลเมนู:', error);
-        menuContainer.innerHTML = '<p>ขออภัย, ไม่สามารถโหลดรายการเมนูได้ในขณะนี้</p>';
+        menuContainer.innerHTML = '<p style="color: red; text-align: center;">ขออภัย, ไม่สามารถโหลดรายการเมนูได้ในขณะนี้</p>';
     }
 }
-
-  const toggle = document.getElementById('menu-toggle'); // ☰ ปุ่ม toggle
-  const slideMenu = document.getElementById('slide-menu'); // เมนู slide
-
-  // กดปุ่ม ☰ เพื่อเปิด/ปิดเมนู
-  toggle.addEventListener('click', () => {
-    slideMenu.classList.toggle('active');
-  });
-
-  // กดลิงก์ในเมนูแล้วปิดเมนูด้วย
-  document.querySelectorAll('#slide-menu a').forEach(link => {
-    link.addEventListener('click', () => {
-      slideMenu.classList.remove('active');
-    });
-  });
-
-  // กดพื้นที่ว่างรอบ ๆ เมนูเพื่อปิดเมนู
-  slideMenu.addEventListener('click', (e) => {
-    if (e.target === slideMenu) {
-      slideMenu.classList.remove('active');
-    }
-  });
