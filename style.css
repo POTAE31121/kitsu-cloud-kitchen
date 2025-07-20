@@ -181,25 +181,6 @@ nav ul li a:hover {
 }
 
 /* Responsive Design */
-@media (max-width: 100%) {
-  .header {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  nav ul {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .hero h2 {
-    font-size: 2em;
-  }
-
-  .hero p {
-    font-size: 1em;
-  }
-}
 @media (max-width: 1024px) {
   .hero {
     padding: 20px 5%; /* ลดขอบบนล่างให้ดูไม่สูงเกิน */
@@ -237,81 +218,67 @@ nav ul li a:hover {
 }
 
 @media (max-width: 768px) {
+  /* 1. แสดงปุ่ม Hamburger Menu */
   .menu-toggle {
     display: block;
+    font-size: 28px; /* ปรับขนาดตามความเหมาะสม */
+    color: #fff;
+    cursor: pointer;
+    z-index: 10001; /* ให้อยู่บนสุดเสมอ */
   }
-}
-@media (max-width: 768px) {
+
+  /* 2. ซ่อนเมนูเดิมของ Desktop */
+  nav ul {
+    display: none;
+  }
+
+  /* 3. จัดการ Layout ของ Header ใหม่ */
+  .header {
+    padding: 15px 5%; /* ลด Padding ด้านข้าง */
+  }
+
+  /* 4. สไตล์ของ Slide Menu ที่จะเลื่อนลงมา */
+  .slide-menu {
+    position: fixed;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95); /* ทำให้ทึบขึ้นเล็กน้อย */
+    display: flex; /* ใช้ flexbox จัดให้อยู่ตรงกลาง */
+    justify-content: center;
+    align-items: center;
+    transition: top 0.4s ease-in-out;
+    z-index: 10000;
+  }
+
+  .slide-menu.active {
+    top: 0; /* สั่งให้เมนูเลื่อนลงมาเมื่อมีคลาส active */
+  }
+
+  /* 5. ⭐ จัดเรียงรายการเมนูในแนวตั้ง (จุดสำคัญที่แก้ไข) ⭐ */
+  .slide-menu ul {
+    list-style: none;
+    padding: 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column; /* 👈 สั่งให้เรียงเป็นแนวตั้ง */
+    gap: 20px; /* 👈 เพิ่มระยะห่างระหว่างปุ่ม */
+  }
+
+  .slide-menu ul li a {
+    color: #fff;
+    font-size: 1.8em; /* ปรับขนาดให้พอดี */
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .slide-menu ul li a:hover {
+    color: #f5a623;
+  }
+
+  /* ปรับแก้ส่วนอื่นๆ */
   .menu-container {
     grid-template-columns: repeat(2, 1fr); /* 2 คอลัมน์บนมือถือ */
   }
-}
-@media (max-width: 768px) {
-  .menu-toggle {
-    display: block;
-    font-size: 20px;
-    position: relative; /* 🟢 บังคับให้ปุ่มอยู่ใน flow */
-    z-index: 10000;       /* 🟢 ดันขึ้นมาให้พ้น hero */
-    color: #fff;         /* ถ้าปุ่มเป็นสีเดียวกับพื้นหลัง */
-  }
-
-  nav {
-    position: relative; /* ป้องกันเมนู toggle หลุดขอบ */
-  }
-}
-@media (max-width: 768px) {
-/* Slide Menu แบบ Slide ลงมาตรงกลางจอ */
-.slide-menu {
-  position: fixed;
-  top: -100%;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.9); /* ดำโปร่งแสง */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: top 0.4s ease;
-  z-index: 9999;
-}
-
-.slide-menu.active {
-  top: 0; /* Slide ลงมา */
-}
-
-.slide-menu ul {
-  list-style: none;
-  text-align: center;
-}
-
-.slide-menu ul li {
-  margin: 20px 0;
-}
-
-.slide-menu ul li a {
-  color: #fff;
-  font-size: 2em;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.slide-menu ul li a:hover {
-  color: #f5a623;
-}
-.slide-menu {
-  position: fixed;
-  top: -100%;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.9);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: top 0.4s ease;
-  z-index: 9999;
-}
-
-.slide-menu.active {
-  top: 0; /* Slide ลงมาเมื่อกด ☰ */
 }
