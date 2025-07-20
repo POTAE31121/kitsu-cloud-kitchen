@@ -115,8 +115,8 @@ nav ul li a:hover {
   box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 .menu-card img {
-  width: 100%;
-  max-height: 200px;
+  max-width: 100%;
+  height: auto;
   object-fit: cover;
   border-radius: 15px 15px 0 0;
 }
@@ -212,3 +212,11 @@ nav ul li a:hover {
     font-size: 0.95em;
   }
 }
+
+@media (max-width: 768px) {
+  nav ul {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
