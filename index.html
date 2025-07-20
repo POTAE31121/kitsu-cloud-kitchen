@@ -16,20 +16,22 @@
     </div>
     <nav>
       <div class="menu-toggle" id="menu-toggle">&#x2630</div>
-      <ul id="nav-list">
+      <!--ul id="nav-list">
         <li><a href="home">Home</a></li>
         <li><a href="story">Story</a></li>
         <li><a href="menu">Menu</a></li>
         <li><a href="locations">Locations</a></li>
         <li><a href="contact">Contact</a></li>
-      </ul>
-      <!--ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Story</a></li>
-        <li><a href="#">Menu</a></li>
-        <li><a href="#">Locations</a></li>
-        <li><a href="#">Contact</a></li>
-    </ul-->
+      </ul-->
+      <div class="slide-menu" id="slide-menu">
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Story</a></li>
+          <li><a href="#">Menu</a></li>
+          <li><a href="#">Locations</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
     </nav>
   </header>
 
@@ -90,7 +92,7 @@
   <!-- Script -->
   <script>
   const toggle = document.getElementById('menu-toggle');
-  const navList = document.getElementById('nav-list');
+  const navList = document.getElementById('slide-menu');
 
   toggle.addEventListener('click', () => {
     navList.classList.toggle('active');
