@@ -237,20 +237,6 @@ nav ul li a:hover {
 }
 
 @media (max-width: 768px) {
-  nav ul {
-    display: none;
-    flex-direction: column;
-    background-color: #333;
-    width: 100%;
-    position: absolute;
-    top: 60px;
-    left: 0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    align-items: center;
-  }
-  nav ul.active {
-    display: flex;
-  }
   .menu-toggle {
     display: block;
   }
@@ -263,8 +249,9 @@ nav ul li a:hover {
 @media (max-width: 768px) {
   .menu-toggle {
     display: block;
+    font-size: 20px;
     position: relative; /* 🟢 บังคับให้ปุ่มอยู่ใน flow */
-    z-index: 1000;       /* 🟢 ดันขึ้นมาให้พ้น hero */
+    z-index: 10000;       /* 🟢 ดันขึ้นมาให้พ้น hero */
     color: #fff;         /* ถ้าปุ่มเป็นสีเดียวกับพื้นหลัง */
   }
 
@@ -273,34 +260,6 @@ nav ul li a:hover {
   }
 }
 @media (max-width: 768px) {
-  nav ul {
-    display: none;
-    flex-direction: column;
-    background-color: #333;
-    width: 100%;       /* 🟢 ให้กว้างเต็มจอ */
-    position: absolute;
-    top: 60px;         /* 🟢 ระยะห่างจาก Navbar ด้านบน */
-    left: 0;
-    padding: 10px 0;   /* 🟢 ระยะห่างด้านบน-ล่าง */
-    text-align: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    border-radius: 0 0 10px 10px; /* 🟢 มุมล่างโค้ง */
-    z-index: 999;      /* 🟢 อยู่บนสุด */
-  }
-
-  nav ul.active {
-    display: flex;
-  }
-
-  nav ul li {
-    margin: 10px 0;    /* 🟢 ระยะห่างระหว่างเมนู */
-  }
-
-  nav ul li a {
-    color: #fff;       /* 🟢 สีลิงก์ */
-    font-size: 18px;   /* 🟢 ขนาดใหญ่ขึ้นเล็กน้อย */
-  }
-}
 /* Slide Menu แบบ Slide ลงมาตรงกลางจอ */
 .slide-menu {
   position: fixed;
