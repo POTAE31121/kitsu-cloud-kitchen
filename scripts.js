@@ -50,3 +50,25 @@ async function displayMenuItems() {
         menuContainer.innerHTML = '<p>ขออภัย, ไม่สามารถโหลดรายการเมนูได้ในขณะนี้</p>';
     }
 }
+
+  const toggle = document.getElementById('menu-toggle'); // ☰ ปุ่ม toggle
+  const slideMenu = document.getElementById('slide-menu'); // เมนู slide
+
+  // กดปุ่ม ☰ เพื่อเปิด/ปิดเมนู
+  toggle.addEventListener('click', () => {
+    slideMenu.classList.toggle('active');
+  });
+
+  // กดลิงก์ในเมนูแล้วปิดเมนูด้วย
+  document.querySelectorAll('#slide-menu a').forEach(link => {
+    link.addEventListener('click', () => {
+      slideMenu.classList.remove('active');
+    });
+  });
+
+  // กดพื้นที่ว่างรอบ ๆ เมนูเพื่อปิดเมนู
+  slideMenu.addEventListener('click', (e) => {
+    if (e.target === slideMenu) {
+      slideMenu.classList.remove('active');
+    }
+  });
