@@ -97,6 +97,12 @@ nav ul li a:hover {
 .btn-order:hover {
   transform: scale(1.05);
 }
+.menu-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 15px;
+  padding: 10px;
+}
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -116,7 +122,7 @@ nav ul li a:hover {
 }
 .menu-card img {
   max-width: 100%;
-  height: auto;
+  height: 140px;
   object-fit: cover;
   border-radius: 15px 15px 0 0;
 }
@@ -219,4 +225,8 @@ nav ul li a:hover {
     align-items: center;
   }
 }
-
+@media (max-width: 768px) {
+  .menu-container {
+    grid-template-columns: repeat(2, 1fr); /* 2 คอลัมน์บนมือถือ */
+  }
+}
