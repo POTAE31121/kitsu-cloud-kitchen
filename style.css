@@ -9,6 +9,7 @@ body {
   background: linear-gradient(to bottom, #fff9f4, #fff);
   color: #333;
   line-height: 1.6;
+  overflow-x: hidden;
 }
 .header {
   background: #333;
@@ -32,6 +33,8 @@ body {
 nav ul {
   list-style: none;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 nav ul li {
   margin: 0 15px;
