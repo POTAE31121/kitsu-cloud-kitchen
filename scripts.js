@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ในอนาคตเมื่อเราพร้อมจะเปิดตัว เราแค่กลับมาลบ // ข้างบนออก มันก็จะกลับมาทำงานเหมือนเดิม
 async function displayMenuItems() {
     // URL ของ API หลังบ้านที่เราสร้างไว้
-    const apiUrl = 'https://kitsu-backend.onrender.com/api/menu';
+    const apiUrl = 'https://kitsu-backend.onrender.com/api/items';
 
     // หากล่องสำหรับใส่เมนูการ์ด (จาก HTML ของคุณคือคลาส .menu-grid)
     const menuContainer = document.querySelector('.menu-grid');
