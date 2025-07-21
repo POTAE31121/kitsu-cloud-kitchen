@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- ส่วนที่ 2: ปิดการใช้งานฟังก์ชันดึงข้อมูลเมนูชั่วคราว ---
-    // displayMenuItems(); // <--- ใส่ // ไว้ข้างหน้าบรรทัดนี้
+     displayMenuItems(); // <--- ใส่ // ไว้ข้างหน้าบรรทัดนี้
 
 });
 
