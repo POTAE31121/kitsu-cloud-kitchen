@@ -65,7 +65,7 @@ async function displayMenuItems() {
             // สังเกตว่า src ของ img เราใช้ item.image ที่ได้จาก API
             const menuCardHTML = `
                 <div class="menu-card">
-                    <img src="${item.image}" alt="${item.name}">
+                    <img src="${item.image_url}" alt="${item.name}">
                     <h3>${item.name}</h3>
                     <p>฿${parseInt(item.price)}</p>
                 </div>
