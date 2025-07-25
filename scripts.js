@@ -61,6 +61,14 @@ function addToCart(productId) {
     } else {
         cart.push({ id: productToAdd.id, name: productToAdd.name, price: productToAdd.price, quantity: 1 });
     }
+
+    // --- เพิ่ม Logic นี้เข้าไป ---
+    // ถ้าตะกร้ามีของแค่ 1 ชิ้น และเป็นของใหม่ (ไม่ใช่การเพิ่มจำนวน)
+    if (cart.length === 1 && !existingItem) {
+        document.getElementById('cart-modal').classList.remove('hidden');
+        document.getElementById('cart-modal-overlay').classList.remove('hidden');
+    }
+    // ------------------------
     localStorage.setItem('kitsuCart', JSON.stringify(cart));
     renderCart();
 }
