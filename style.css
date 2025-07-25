@@ -1,6 +1,8 @@
 /* ==================================
    ไฟล์ style.css ฉบับสมบูรณ์ (UI ใหม่)
    ================================== */
+
+/* --- 1. General & Base Styles --- */
 html {
   scroll-behavior: smooth;
 }
@@ -17,13 +19,13 @@ body {
   overflow-x: hidden;
 }
 
-/* --- HEADER & NAVIGATION --- */
+/* --- 2. Header & Navigation --- */
 .header {
   background: #333;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 10%;
+  padding: 10px 10%;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   position: sticky;
   top: 0;
@@ -34,48 +36,92 @@ body {
   vertical-align: middle;
 }
 .header h1 {
-  display: inline;
+  display: inline-block;
   margin-left: 10px;
   font-family: 'Playfair Display', serif;
-  font-size: 1.8em;
+  font-size: 1.6em;
   color: #f5a623;
+  vertical-align: middle;
 }
 nav {
   display: flex;
-  align-items: center; /* จัดให้อยู่กลางแนวตั้ง */
-  gap: 20px; /* เพิ่มระยะห่างระหว่าง slide-menu กับ nav-cart */
+  align-items: center;
+  gap: 30px;
 }
 .menu-toggle {
-  display: none;
+  display: none; /* ซ่อนไว้ก่อนสำหรับ Desktop */
   font-size: 28px;
   cursor: pointer;
   color: #fff;
 }
-/* ... (โค้ด Slide Menu เดิมยังใช้ได้) ... */
 
-/* --- HERO SECTION --- */
-/* ... (โค้ด Hero Section เดิมยังใช้ได้) ... */
+/* --- 3. Hero Section --- */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  background: #b7e4c7;
+  padding: 40px 10%;
+}
+.hero-text {
+  flex: 1;
+}
+.hero-image {
+  flex: 1;
+  text-align: center;
+}
+.hero img {
+  max-width: 100%;
+  height: auto;
+  max-height: 350px;
+  object-fit: contain;
+  border-radius: 15px;
+}
+.hero-text h2 {
+  font-size: 2.8em;
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 15px;
+  color: #333;
+}
+.hero-text p {
+  font-size: 1.2em;
+  margin-bottom: 25px;
+}
+.btn-order {
+  background: linear-gradient(45deg, #f5a623, #f0932b);
+  color: #fff;
+  padding: 12px 25px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 500;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+.btn-order:hover {
+  transform: scale(1.05);
+}
 
-/* --- MENU SECTION --- */
+/* --- 4. Menu Section --- */
 .special-menus {
-    padding: 50px 10%;
+    padding: 60px 10%;
 }
 .special-menus h2 {
     text-align: center;
-    font-size: 2.2em;
+    font-size: 2.5em;
     font-family: 'Playfair Display', serif;
     margin-bottom: 40px;
 }
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
-  margin: 30px 0;
+  gap: 30px;
 }
 .menu-card {
   background: #fff;
   border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
   text-align: center;
   overflow: hidden;
   display: flex;
@@ -88,16 +134,17 @@ nav {
 }
 .menu-card img {
   width: 100%;
-  height: 200px;
+  height: 220px;
   object-fit: cover;
 }
 .menu-card h3 {
   margin: 15px 10px 5px 10px;
   font-size: 1.4em;
   color: #333;
+  flex-grow: 1;
 }
-.menu-card .price { /* เจาะจง p ที่มีคลาส price */
-    font-size: 1.1em;
+.menu-card .price {
+    font-size: 1.2em;
     font-weight: 500;
     color: #f5a623;
     margin-bottom: 15px;
@@ -111,193 +158,87 @@ nav {
   cursor: pointer;
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
-  margin: 10px 20px 20px 20px;
+  margin: 0px 20px 20px 20px;
   transition: all 0.2s ease;
 }
 .add-to-cart-btn:hover {
   transform: scale(1.05);
 }
 
-/* --- FOOTER & OTHER SECTIONS --- */
-/* ... (โค้ดส่วนอื่นๆ ของคุณยังใช้ได้) ... */
+/* --- 5. New Shopping Cart UI --- */
+/* (โค้ดส่วนนี้เหมือนเดิมทุกประการ) */
+.nav-cart { position: relative; cursor: pointer; }
+.cart-icon-display { font-size: 1.8em; }
+.cart-badge { position: absolute; top: -5px; right: -10px; background-color: #e74c3c; color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; justify-content: center; align-items: center; font-size: 0.8em; font-weight: bold; border: 2px solid #333; }
+.cart-fab { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: linear-gradient(45deg, #f5a623, #f0932b); border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; z-index: 100; transition: transform 0.2s ease; }
+.cart-fab:hover { transform: scale(1.1); }
+.cart-fab .cart-badge { top: 0; right: 0; border-color: #fff; }
+.cart-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 1001; }
+.cart-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 450px; background-color: #fff; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 1002; display: flex; flex-direction: column; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #eee; }
+.modal-header h2 { font-family: 'Playfair Display', serif; }
+.modal-close-btn { background: none; border: none; font-size: 2em; cursor: pointer; color: #888; }
+.modal-body { padding: 10px 20px; max-height: 50vh; overflow-y: auto; }
+.modal-footer { padding: 20px; border-top: 1px solid #eee; text-align: center; }
+.cart-summary { font-size: 1.2em; font-weight: bold; margin-bottom: 20px; text-align: right; }
+.checkout-btn { background: #27ae60; color: white; border: none; padding: 12px 25px; border-radius: 30px; font-size: 1.1em; cursor: pointer; transition: background 0.3s ease; }
+.checkout-btn:hover { background: #2ecc71; }
+.cart-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
+.cart-item-details { display: flex; flex-direction: column; }
+.cart-item-price { font-size: 0.9em; color: #888; }
+.remove-from-cart-btn { background: none; border: none; color: #e74c3c; font-size: 1.5em; font-weight: bold; cursor: pointer; padding: 5px; line-height: 1; transition: transform 0.2s ease; }
+.remove-from-cart-btn:hover { transform: scale(1.2); }
+.hidden { display: none !important; }
 
-/* =================================
-   NEW SHOPPING CART UI STYLES
-   ================================= */
-
-/* --- 1. Desktop Nav Cart --- */
-.nav-cart {
-  position: relative;
-  cursor: pointer;
-  display: none; /* ซ่อนไว้ก่อน แล้วจะเปิดใน Responsive */
-}
-.cart-icon-display {
-  font-size: 1.8em;
-}
-.cart-badge {
-  position: absolute;
-  top: -5px;
-  right: -10px;
-  background-color: #e74c3c;
-  color: white;
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 0.8em;
-  font-weight: bold;
-  border: 2px solid #333;
-}
-
-/* --- 2. Mobile Floating Action Button (FAB) --- */
-.cart-fab {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(45deg, #f5a623, #f0932b);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  cursor: pointer;
-  z-index: 100;
-  transition: transform 0.2s ease;
-}
-.cart-fab:hover {
-  transform: scale(1.1);
-}
-.cart-fab .cart-badge {
-  top: 0;
-  right: 0;
-  border-color: #fff;
+/* --- 6. Responsive Design --- */
+/* --- จอแท็บเล็ตและใหญ่กว่า --- */
+@media (min-width: 769px) {
+  .menu-toggle, .slide-menu, .cart-fab {
+    display: none; /* ซ่อนเมนูสไลด์และปุ่มลอยบนจอใหญ่ */
+  }
+  .nav-cart {
+    display: block; /* แสดงไอคอนตะกร้าบน Nav bar */
+  }
 }
 
-/* --- 3. Cart Modal (Pop-up) --- */
-.cart-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.6);
-  z-index: 1001;
-}
-.cart-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 450px;
-  background-color: #fff;
-  border-radius: 15px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-  z-index: 1002;
-  display: flex;
-  flex-direction: column;
-}
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  border-bottom: 1px solid #eee;
-}
-.modal-header h2 {
-  font-family: 'Playfair Display', serif;
-}
-.modal-close-btn {
-  background: none;
-  border: none;
-  font-size: 2em;
-  cursor: pointer;
-  color: #888;
-}
-.modal-body {
-  padding: 10px 20px;
-  max-height: 50vh;
-  overflow-y: auto;
-}
-.modal-footer {
-  padding: 20px;
-  border-top: 1px solid #eee;
-  text-align: center;
-}
-.cart-summary {
-  font-size: 1.2em;
-  font-weight: bold;
-  margin-bottom: 20px;
-  text-align: right;
-}
-.checkout-btn {
-  background: #27ae60;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 30px;
-  font-size: 1.1em;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-.checkout-btn:hover {
-  background: #2ecc71;
+/* --- จอแท็บเล็ตและเล็กกว่า --- */
+@media (max-width: 1024px) {
+  .header, .hero, .special-menus {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+  .hero {
+    flex-direction: column-reverse;
+    gap: 20px;
+    text-align: center;
+  }
+  .hero img {
+    max-height: 250px;
+  }
+  .hero-text h2 {
+    font-size: 2.2em;
+  }
 }
 
-/* --- 4. Styling inside Modal --- */
-.cart-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-.cart-item-details {
-  display: flex;
-  flex-direction: column;
-}
-.cart-item-price {
-  font-size: 0.9em;
-  color: #888;
-}
-.remove-from-cart-btn {
-  background: none;
-  border: none;
-  color: #e74c3c;
-  font-size: 1.5em;
-  font-weight: bold;
-  cursor: pointer;
-  padding: 5px;
-  line-height: 1;
-  transition: transform 0.2s ease;
-}
-.remove-from-cart-btn:hover {
-  transform: scale(1.2);
-}
-
-/* --- General purpose hidden class --- */
-.hidden {
-  display: none !important;
-}
-
-/* --- Responsive for Cart Icons --- */
+/* --- จอมือถือ --- */
 @media (max-width: 768px) {
   .nav-cart {
-    display: none;
+    display: none; /* ซ่อนไอคอนตะกร้าบน Nav bar */
+  }
+  .menu-toggle {
+    display: block; /* แสดงปุ่ม Hamburger */
+  }
+  .slide-menu {
+    position: fixed; top: -100%; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; transition: top 0.4s ease-in-out; z-index: 10000;
+  }
+  .slide-menu.active { top: 0; }
+  .slide-menu ul { list-style: none; padding: 0; text-align: center; display: flex; flex-direction: column; gap: 25px; }
+  .slide-menu ul li a { color: #fff; font-size: 2em; text-decoration: none; transition: color 0.3s ease; }
+  .slide-menu ul li a:hover { color: #f5a623; }
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+  .special-menus {
+      padding: 40px 5%;
   }
 }
-@media (min-width: 769px) {
-  .nav-cart {
-    display: block;
-  }
-  .cart-fab {
-    display: none;
-  }
-}
-
-/* --- (โค้ด Responsive เดิมของคุณสำหรับส่วนอื่นๆ) --- */
-/* ... */
