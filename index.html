@@ -137,7 +137,33 @@
     </div>
   </div>
 
-  <!-- ========== จบส่วนที่เพิ่ม ========== -->
+ <!-- 3. หน้าต่าง Checkout (Modal) -->
+  <div class="cart-modal-overlay hidden" id="checkout-modal-overlay"></div>
+  <div class="cart-modal hidden" id="checkout-modal">
+    <div class="modal-header">
+      <h2>ข้อมูลการจัดส่ง</h2>
+      <button class="modal-close-btn" id="checkout-close-btn">×</button>
+    </div>
+    <form id="checkout-form">
+      <div class="modal-body">
+          <div class="form-group">
+            <label for="customer_name">ชื่อ-นามสกุล</label>
+            <input type="text" id="customer_name" required>
+          </div>
+          <div class="form-group">
+            <label for="customer_phone">เบอร์โทรศัพท์</label>
+            <input type="tel" id="customer_phone" required>
+          </div>
+          <div class="form-group">
+            <label for="customer_address">ที่อยู่สำหรับจัดส่ง</label>
+            <textarea id="customer_address" rows="3" required></textarea>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="checkout-btn" id="confirm-order-btn">ยืนยันคำสั่งซื้อ</button>
+      </div>
+    </form>
+  </div>
 
   <!-- Script -->
   <script src="scripts.js" defer></script>

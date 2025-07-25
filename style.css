@@ -315,3 +315,26 @@ nav {
     justify-content: center;
   }
 }
+
+/* --- Checkout Form Styles --- */
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1em;
+}
+#confirm-order-btn {
+    width: 100%;
+}
