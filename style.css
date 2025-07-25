@@ -55,6 +55,28 @@ nav {
   color: #fff;
 }
 
+/* --- Desktop Navigation Links (เพิ่มเข้ามาใหม่) --- */
+.nav-links-desktop {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+.nav-links-desktop li a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+.nav-links-desktop li a:hover {
+  color: #f5a623;
+}
+/* --- (โค้ด Slide Menu เดิมยังใช้ได้ แต่จะถูกควบคุมโดย Responsive) --- */
+.slide-menu { position: fixed; top: -100%; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; transition: top 0.4s ease-in-out; z-index: 10000; }
+.slide-menu.active { top: 0; }
+.slide-menu ul { list-style: none; padding: 0; text-align: center; display: flex; flex-direction: column; gap: 25px; }
+.slide-menu ul li a { color: #fff; font-size: 2em; text-decoration: none; transition: color 0.3s ease; }
+.slide-menu ul li a:hover { color: #f5a623; }
+
 /* --- 3. Hero Section --- */
 .hero {
   display: flex;
@@ -190,20 +212,72 @@ nav {
 .remove-from-cart-btn:hover { transform: scale(1.2); }
 .hidden { display: none !important; }
 
-/* --- 6. Responsive Design --- */
+/* --- 6. FOOTER STYLES (เพิ่มเข้ามาใหม่) --- */
+.footer {
+  background: #2c2c2c;
+  color: #ccc;
+  padding: 50px 10% 20px 10%;
+  margin-top: 50px;
+}
+.footer-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+  margin-bottom: 30px;
+}
+.footer-column .logo {
+  margin-bottom: 15px;
+}
+.footer-column .logo h1 { /* เจาะจง h1 ใน footer */
+    color: #fff;
+}
+.footer-column h4 {
+  font-family: 'Playfair Display', serif;
+  color: #fff;
+  font-size: 1.2em;
+  margin-bottom: 15px;
+}
+.footer-column p {
+  font-size: 0.9em;
+  line-height: 1.8;
+}
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+}
+.footer-column ul li {
+  margin-bottom: 10px;
+  font-size: 0.9em;
+}
+.footer-column ul li a {
+  color: #ccc;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.footer-column ul li a:hover {
+  color: #f5a623;
+}
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid #444;
+  padding-top: 20px;
+  font-size: 0.9em;
+}
+
+/* --- 7. Responsive Design --- */
 /* --- จอแท็บเล็ตและใหญ่กว่า --- */
 @media (min-width: 769px) {
   .menu-toggle, .slide-menu, .cart-fab {
-    display: none; /* ซ่อนเมนูสไลด์และปุ่มลอยบนจอใหญ่ */
+    display: none !important; /* ซ่อนเมนูสไลด์และปุ่มลอยบนจอใหญ่ */
   }
-  .nav-cart {
-    display: block; /* แสดงไอคอนตะกร้าบน Nav bar */
+  .nav-links-desktop, .nav-cart {
+    display: flex !important; /* แสดงเมนู Desktop และไอคอนตะกร้า */
   }
 }
 
 /* --- จอแท็บเล็ตและเล็กกว่า --- */
 @media (max-width: 1024px) {
-  .header, .hero, .special-menus {
+  .header, .hero, .special-menus, .footer {
     padding-left: 5%;
     padding-right: 5%;
   }
@@ -212,33 +286,32 @@ nav {
     gap: 20px;
     text-align: center;
   }
-  .hero img {
-    max-height: 250px;
-  }
-  .hero-text h2 {
-    font-size: 2.2em;
-  }
+  .hero img { max-height: 250px; }
+  .hero-text h2 { font-size: 2.2em; }
 }
 
 /* --- จอมือถือ --- */
 @media (max-width: 768px) {
-  .nav-cart {
-    display: none; /* ซ่อนไอคอนตะกร้าบน Nav bar */
+  .nav-links-desktop, .nav-cart {
+    display: none !important; /* ซ่อนเมนู Desktop และไอคอนตะกร้า */
   }
   .menu-toggle {
-    display: block; /* แสดงปุ่ม Hamburger */
+    display: block !important; /* แสดงปุ่ม Hamburger */
   }
-  .slide-menu {
-    position: fixed; top: -100%; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; transition: top 0.4s ease-in-out; z-index: 10000;
+  .cart-fab {
+      display: flex !important; /* แสดงปุ่มลอย */
   }
-  .slide-menu.active { top: 0; }
-  .slide-menu ul { list-style: none; padding: 0; text-align: center; display: flex; flex-direction: column; gap: 25px; }
-  .slide-menu ul li a { color: #fff; font-size: 2em; text-decoration: none; transition: color 0.3s ease; }
-  .slide-menu ul li a:hover { color: #f5a623; }
   .menu-grid {
     grid-template-columns: 1fr;
   }
   .special-menus {
       padding: 40px 5%;
+  }
+  .footer-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .footer-column .logo {
+    justify-content: center;
   }
 }

@@ -19,24 +19,35 @@
     </a>
   </div>
   <nav>
+    <!-- เมนูสำหรับ Desktop (เพิ่มเข้ามาใหม่) -->
+    <ul class="nav-links-desktop">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#story">Story</a></li>
+      <li><a href="#locations">Locations</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+
+    <!-- ปุ่ม Hamburger (สำหรับ Mobile) -->
     <div class="menu-toggle" id="menu-toggle">☰</div>
+
+    <!-- เมนูสไลด์ (สำหรับ Mobile) -->
     <div class="slide-menu" id="slide-menu">
       <ul>
         <li><a href="#home">Home</a></li>
         <li><a href="#menu">Menu</a></li>
+        <li><a href="#cart">Cart</a></li>
         <li><a href="#story">Story</a></li>
         <li><a href="#locations">Locations</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </div>
 
-    <!-- === เพิ่มส่วนไอคอนตะกร้าสินค้าเข้ามาตรงนี้ === -->
+    <!-- ไอคอนตะกร้าสินค้า (สำหรับ Desktop) -->
     <div class="nav-cart" id="cart-icon">
       <span class="cart-icon-display">🛒</span>
-      <!-- Badge จะถูกซ่อน/แสดงโดย JavaScript -->
       <span class="cart-badge hidden" id="cart-badge">0</span>
     </div>
-    <!-- === จบส่วนที่เพิ่ม === -->
   </nav>
 </header>
 
