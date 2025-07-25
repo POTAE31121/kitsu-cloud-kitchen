@@ -374,3 +374,14 @@ nav ul li a:hover {
 .remove-from-cart-btn:hover {
   transform: scale(1.2);
 }
+
+.loading-text {
+  grid-column: 1 / -1; /* ทำให้ข้อความขยายเต็ม Grid */
+  text-align: center;
+  font-size: 1.1em;
+  color: #888;
+}
+
+.cart-section.hidden {
+  display: none;
+}

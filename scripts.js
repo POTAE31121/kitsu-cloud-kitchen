@@ -138,10 +138,12 @@ function renderCart() {
     cartTotalEl.textContent = total.toFixed(2);
 }
 
-// --- แก้ไข Event Listener ทั้งหมด ---
-// Event Delegation ที่ฉลาดขึ้น จัดการทั้งปุ่มเพิ่มและลบ
+// ===============================================
+//           EVENT LISTENER (UPGRADED)
+// ===============================================
+
 document.addEventListener('click', function(event) {
-    // ตรวจสอบว่าปุ่มที่กดคือ "เพิ่มลงตะกร้า" หรือไม่
+    // --- ส่วนที่ 1: จัดการปุ่ม "เพิ่มลงตะกร้า" ---
     const addButton = event.target.closest('.add-to-cart-btn');
     if (addButton) {
         const productId = addButton.getAttribute('data-id');
@@ -153,13 +155,29 @@ document.addEventListener('click', function(event) {
             addButton.textContent = 'เพิ่มลงตะกร้า';
             addButton.style.background = '';
         }, 1000);
-        return;
+        return; // หยุดการทำงานเมื่อเจอ
     }
 
-    // ตรวจสอบว่าปุ่มที่กดคือ "ลบออกจากตะกร้า" หรือไม่
+    // --- ส่วนที่ 2: จัดการปุ่ม "ลบออกจากตะกร้า" ---
     const removeButton = event.target.closest('.remove-from-cart-btn');
     if (removeButton) {
         const productId = removeButton.getAttribute('data-id');
         removeFromCart(productId);
+        return; // หยุดการทำงานเมื่อเจอ
+    }
+
+    // --- ส่วนที่ 3: จัดการปุ่ม "สั่งซื้อและชำระเงิน" (เพิ่มเข้ามาใหม่) ---
+    const checkoutButton = event.target.closest('.checkout-btn');
+    if (checkoutButton) {
+        // ดึงข้อมูลตะกร้าปัจจุบันมาตรวจสอบ
+        let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+
+        if (cart.length > 0) {
+            // ถ้าในตะกร้ามีของ
+            alert('ขอบคุณสำหรับความสนใจ! ระบบชำระเงินกำลังจะเปิดให้บริการเร็วๆ นี้ครับ');
+        } else {
+            // ถ้าตะกร้าว่างเปล่า
+            alert('กรุณาเลือกสินค้าลงตะกร้าก่อนนะครับ');
+        }
     }
 });
