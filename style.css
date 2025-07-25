@@ -300,7 +300,6 @@ nav {
   }
   .cart-fab {
       display: flex !important; /* แสดงปุ่มลอย */
-      margin-bottom: 70px; /* ปรับระยะห่างจากด้านล่าง */
   }
   .menu-grid {
     grid-template-columns: 1fr;
