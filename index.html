@@ -8,27 +8,37 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- Header -->
-  <header class="header">
-    <div class="logo">
-      <a href="#home" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
-        <img src="logo.png" alt="Kitsu Cloud Kitchen Logo" />
-        <h1>Kitsu Cloud Kitchen</h1>
-      </a>
+<!-- ================================== -->
+<!--           HEADER (UPGRADED)          -->
+<!-- ================================== -->
+<header class="header">
+  <div class="logo">
+    <a href="#home" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
+      <img src="logo.png" alt="Kitsu Cloud Kitchen Logo" />
+      <h1>Kitsu Cloud Kitchen</h1>
+    </a>
+  </div>
+  <nav>
+    <div class="menu-toggle" id="menu-toggle">☰</div>
+    <div class="slide-menu" id="slide-menu">
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#story">Story</a></li>
+        <li><a href="#locations">Locations</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
     </div>
-    <nav>
-      <div class="menu-toggle" id="menu-toggle">☰</div>
-      <div class="slide-menu" id="slide-menu">
-        <ul>
-          <li><a href="#home">Home</a></li>
-          <li><a href="#story">Story</a></li>
-          <li><a href="#menu">Menu</a></li>
-          <li><a href="#locations">Locations</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </div>
-    </nav>
-  </header>
+
+    <!-- === เพิ่มส่วนไอคอนตะกร้าสินค้าเข้ามาตรงนี้ === -->
+    <div class="nav-cart" id="cart-icon">
+      <span class="cart-icon-display">🛒</span>
+      <!-- Badge จะถูกซ่อน/แสดงโดย JavaScript -->
+      <span class="cart-badge hidden" id="cart-badge">0</span>
+    </div>
+    <!-- === จบส่วนที่เพิ่ม === -->
+  </nav>
+</header>
 
   <!-- Hero Section -->
   <section class="hero" id="home">
@@ -67,18 +77,6 @@
     </div>
   </section>
 
-  <!-- Shopping Cart Section -->
-  <section class="cart-section" id="cart">
-    <h2>ตะกร้าสินค้าของคุณ</h2>
-    <div id="cart-items-container">
-      <!-- JavaScript will fill this area -->
-    </div>
-    <div class="cart-summary">
-      <strong>ราคารวม:</strong> <span id="cart-total">0.00</span> บาท
-    </div>
-    <button class="checkout-btn">สั่งซื้อและชำระเงิน</button>
-  </section>
-
   <!-- ========== เพิ่มส่วนใหม่ทั้งหมดตรงนี้ ========== -->
   <section id="story" style="padding: 50px 10%; text-align: center; background: #fff;">
     <h2>Our Story</h2>
@@ -101,6 +99,34 @@
   <footer class="footer">
     <p>© 2025 Kitsu Cloud Kitchen. All rights reserved.</p>
   </footer>
+
+  <!-- ========== เพิ่มส่วนใหม่ทั้งหมดตรงนี้ ========== -->
+
+  <!-- 1. ปุ่มลอยสำหรับมือถือ (Floating Action Button) -->
+  <div class="cart-fab hidden" id="cart-fab">
+    <span class="cart-icon-display">🛒</span>
+    <span class="cart-badge" id="cart-badge-fab">0</span>
+  </div>
+
+  <!-- 2. หน้าต่าง Pop-up ของตะกร้า (Modal) -->
+  <div class="cart-modal-overlay hidden" id="cart-modal-overlay"></div>
+  <div class="cart-modal hidden" id="cart-modal">
+    <div class="modal-header">
+      <h2>ตะกร้าสินค้า</h2>
+      <button class="modal-close-btn" id="modal-close-btn">×</button>
+    </div>
+    <div class="modal-body" id="modal-cart-items">
+      <!-- รายการสินค้าจะถูกเติมที่นี่ -->
+    </div>
+    <div class="modal-footer">
+      <div class="cart-summary">
+        <strong>ราคารวม:</strong> <span id="modal-cart-total">0.00</span> บาท
+      </div>
+      <button class="checkout-btn">สั่งซื้อและชำระเงิน</button>
+    </div>
+  </div>
+
+  <!-- ========== จบส่วนที่เพิ่ม ========== -->
 
   <!-- Script -->
   <script src="scripts.js" defer></script>
