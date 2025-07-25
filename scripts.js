@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const slideMenu = document.getElementById('slide-menu');
 
     if (toggle && slideMenu) {
-        // ... (โค้ดส่วนนี้เหมือนเดิมทุกประการ) ...
         toggle.addEventListener('click', () => { slideMenu.classList.toggle('active'); });
         document.querySelectorAll('#slide-menu a').forEach(link => {
             link.addEventListener('click', () => { slideMenu.classList.remove('active'); });
@@ -20,8 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- ส่วนที่ 2: เรียกใช้ฟังก์ชันหลัก ---
-    displayMenuItems(); // แสดงผลเมนู
-    renderCart();       // แสดงผลตะกร้า (จาก localStorage)
+    displayMenuItems();
+    renderCart();
 });
 
 
@@ -37,10 +36,11 @@ async function displayMenuItems() {
 
     try {
         const response = await fetch(apiUrl);
-        if (!response.ok) { // ตรวจสอบว่า API ตอบกลับสำเร็จหรือไม่
+        if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const menuItems = await response.json();
+        allMenuItems = menuItems; // เก็บข้อมูลเมนูไว้ใช้กับตะกร้า
 
         menuContainer.innerHTML = '';
 
@@ -50,8 +50,6 @@ async function displayMenuItems() {
                     <img src="${item.image_url}" alt="${item.name}">
                     <h3>${item.name}</h3>
                     <p class="price">฿${parseInt(item.price)}</p>
-                    
-                    <!-- เพิ่มปุ่ม "Add to Cart" -->
                     <button class="add-to-cart-btn" data-id="${item.id}">
                         เพิ่มลงตะกร้า
                     </button>
@@ -71,21 +69,7 @@ async function displayMenuItems() {
 //           SHOPPING CART LOGIC
 // ===============================================
 
-// ข้อมูลเมนูทั้งหมด (เพื่อไม่ต้อง fetch ซ้ำบ่อยๆ)
-let allMenuItems = [];
-
-// ดึงข้อมูลเมนูทั้งหมดมาเก็บไว้ครั้งเดียวเมื่อเว็บโหลด
-async function fetchAllMenuItems() {
-    try {
-        const response = await fetch('https://kitsu-backend.onrender.com/api/items/');
-        allMenuItems = await response.json();
-    } catch (error) {
-        console.error("ไม่สามารถโหลดข้อมูลเมนูหลักได้:", error);
-    }
-}
-// เรียกใช้ฟังก์ชันนี้ทันทีที่ไฟล์ถูกอ่าน
-fetchAllMenuItems();
-
+let allMenuItems = []; // ตัวแปรสำหรับเก็บข้อมูลเมนูทั้งหมด
 
 // ฟังก์ชันสำหรับเพิ่มสินค้าลงในตะกร้า
 function addToCart(productId) {
@@ -113,6 +97,15 @@ function addToCart(productId) {
     renderCart();
 }
 
+// --- เพิ่มฟังก์ชันนี้เข้าไปใหม่ ---
+// ฟังก์ชันสำหรับลบสินค้าออกจากตะกร้า
+function removeFromCart(productId) {
+    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+    const updatedCart = cart.filter(item => item.id != productId);
+    localStorage.setItem('kitsuCart', JSON.stringify(updatedCart));
+    renderCart();
+}
+
 // ฟังก์ชันสำหรับแสดงผลตะกร้า
 function renderCart() {
     let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
@@ -130,9 +123,13 @@ function renderCart() {
         cart.forEach(item => {
             const itemElement = document.createElement('div');
             itemElement.className = 'cart-item';
+            // --- แก้ไข innerHTML ตรงนี้ ---
             itemElement.innerHTML = `
-                <span>${item.name} (x${item.quantity})</span>
-                <span>฿${(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
+                <div class="cart-item-details">
+                    <span>${item.name} (x${item.quantity})</span>
+                    <span class="cart-item-price">฿${(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
+                </div>
+                <button class="remove-from-cart-btn" data-id="${item.id}">×</button>
             `;
             cartContainer.appendChild(itemElement);
             total += parseFloat(item.price) * item.quantity;
@@ -141,17 +138,28 @@ function renderCart() {
     cartTotalEl.textContent = total.toFixed(2);
 }
 
-// Event Delegation สำหรับปุ่ม "เพิ่มลงตะกร้า"
+// --- แก้ไข Event Listener ทั้งหมด ---
+// Event Delegation ที่ฉลาดขึ้น จัดการทั้งปุ่มเพิ่มและลบ
 document.addEventListener('click', function(event) {
-    // เราจะใช้ document ในการดักฟัง event เพื่อให้แน่ใจว่ามันทำงานหลัง menu-grid ถูกสร้าง
-    if (event.target && event.target.closest('.add-to-cart-btn')) {
-        const button = event.target.closest('.add-to-cart-btn');
-        const productId = button.getAttribute('data-id');
+    // ตรวจสอบว่าปุ่มที่กดคือ "เพิ่มลงตะกร้า" หรือไม่
+    const addButton = event.target.closest('.add-to-cart-btn');
+    if (addButton) {
+        const productId = addButton.getAttribute('data-id');
         addToCart(productId);
-        // อาจจะเปลี่ยนเป็น feedback ที่ดีกว่า alert
-        button.textContent = 'เพิ่มแล้ว!';
+        
+        addButton.textContent = 'เพิ่มแล้ว!';
+        addButton.style.background = '#27ae60';
         setTimeout(() => {
-            button.textContent = 'เพิ่มลงตะกร้า';
+            addButton.textContent = 'เพิ่มลงตะกร้า';
+            addButton.style.background = '';
         }, 1000);
+        return;
+    }
+
+    // ตรวจสอบว่าปุ่มที่กดคือ "ลบออกจากตะกร้า" หรือไม่
+    const removeButton = event.target.closest('.remove-from-cart-btn');
+    if (removeButton) {
+        const productId = removeButton.getAttribute('data-id');
+        removeFromCart(productId);
     }
 });

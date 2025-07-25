@@ -341,3 +341,36 @@ nav ul li a:hover {
 .checkout-btn:hover {
   background: #2ecc71;
 }
+
+/* --- Cart Item Layout & Remove Button --- */
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-item-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-item-price {
+  font-size: 0.9em;
+  color: #888;
+}
+
+.remove-from-cart-btn {
+  background: none;
+  border: none;
+  color: #e74c3c; /* สีแดง */
+  font-size: 1.5em; /* ทำให้ตัว X ใหญ่ขึ้น */
+  font-weight: bold;
+  cursor: pointer;
+  padding: 5px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.remove-from-cart-btn:hover {
+  transform: scale(1.2);
+}
