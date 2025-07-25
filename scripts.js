@@ -1,82 +1,157 @@
-// scripts.js
+// ===============================================
+//           CORE & MENU DISPLAY LOGIC
+// ===============================================
 
-// รอให้เอกสาร HTML โหลดเสร็จสมบูรณ์ก่อน ค่อยเริ่มทำงานทั้งหมด
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- ส่วนที่ 1: โค้ดสำหรับจัดการเมนูสไลด์ (โค้ดเดิมของคุณ) ---
+    // --- ส่วนที่ 1: โค้ดสำหรับจัดการเมนูสไลด์ ---
     const toggle = document.getElementById('menu-toggle');
     const slideMenu = document.getElementById('slide-menu');
 
     if (toggle && slideMenu) {
-        // กดปุ่ม ☰ เพื่อเปิด/ปิดเมนู
-        toggle.addEventListener('click', () => {
-            slideMenu.classList.toggle('active');
-        });
-
-        // กดลิงก์ในเมนูแล้วปิดเมนูด้วย
+        // ... (โค้ดส่วนนี้เหมือนเดิมทุกประการ) ...
+        toggle.addEventListener('click', () => { slideMenu.classList.toggle('active'); });
         document.querySelectorAll('#slide-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                slideMenu.classList.remove('active');
-            });
+            link.addEventListener('click', () => { slideMenu.classList.remove('active'); });
         });
-
-        // กดพื้นที่ว่างรอบ ๆ เมนูเพื่อปิดเมนู
         slideMenu.addEventListener('click', (e) => {
-            if (e.target === slideMenu) {
-                slideMenu.classList.remove('active');
-            }
+            if (e.target === slideMenu) { slideMenu.classList.remove('active'); }
         });
     }
 
-    // --- ส่วนที่ 2: ปิดการใช้งานฟังก์ชันดึงข้อมูลเมนูชั่วคราว ---
-     displayMenuItems(); // <--- ใส่ // ไว้ข้างหน้าบรรทัดนี้
-
+    // --- ส่วนที่ 2: เรียกใช้ฟังก์ชันหลัก ---
+    displayMenuItems(); // แสดงผลเมนู
+    renderCart();       // แสดงผลตะกร้า (จาก localStorage)
 });
 
 
 // ฟังก์ชันสำหรับดึงข้อมูลและแสดงผลเมนู
-// เราไม่ต้องลบฟังก์ชันนี้ทิ้ง ปล่อยมันไว้อย่างนี้ได้เลย
-// ในอนาคตเมื่อเราพร้อมจะเปิดตัว เราแค่กลับมาลบ // ข้างบนออก มันก็จะกลับมาทำงานเหมือนเดิม
 async function displayMenuItems() {
-    // URL ของ API หลังบ้านที่เราสร้างไว้
-    const apiUrl = 'https://kitsu-backend.onrender.com/api/items';
-
-    // หากล่องสำหรับใส่เมนูการ์ด (จาก HTML ของคุณคือคลาส .menu-grid)
+    const apiUrl = 'https://kitsu-backend.onrender.com/api/items/';
     const menuContainer = document.querySelector('.menu-grid');
 
-    // ตรวจสอบก่อนว่าเจอกล่องนี้ในหน้าเว็บหรือไม่
     if (!menuContainer) {
         console.error('Error: ไม่พบ Element ที่มีคลาส .menu-grid');
         return;
     }
 
     try {
-        // 1. ส่งคำขอไปดึงข้อมูลจาก API
         const response = await fetch(apiUrl);
-        // 2. แปลงข้อมูลที่ได้กลับมาเป็น JSON (JavaScript Object)
+        if (!response.ok) { // ตรวจสอบว่า API ตอบกลับสำเร็จหรือไม่
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const menuItems = await response.json();
 
-        // 3. ล้างคอนเทนเนอร์ให้ว่างเปล่า
         menuContainer.innerHTML = '';
 
-        // 4. วนลูปข้อมูลเมนูแต่ละชิ้นที่ได้มา เพื่อสร้างเป็นการ์ด HTML
         menuItems.forEach(item => {
-            // สร้าง HTML ของการ์ดเมนู 1 ใบ
-            // สังเกตว่า src ของ img เราใช้ item.image ที่ได้จาก API
             const menuCardHTML = `
                 <div class="menu-card">
                     <img src="${item.image_url}" alt="${item.name}">
                     <h3>${item.name}</h3>
-                    <p>฿${parseInt(item.price)}</p>
+                    <p class="price">฿${parseInt(item.price)}</p>
+                    
+                    <!-- เพิ่มปุ่ม "Add to Cart" -->
+                    <button class="add-to-cart-btn" data-id="${item.id}">
+                        เพิ่มลงตะกร้า
+                    </button>
                 </div>
             `;
-            // เพิ่มการ์ดที่เพิ่งสร้างเข้าไปในคอนเทนเนอร์
             menuContainer.insertAdjacentHTML('beforeend', menuCardHTML);
         });
 
     } catch (error) {
-        // ถ้าเกิดข้อผิดพลาดในการดึงข้อมูล (เช่น ลืมเปิดเซิร์ฟเวอร์หลังบ้าน)
         console.error('เกิดข้อผิดพลาดในการดึงข้อมูลเมนู:', error);
         menuContainer.innerHTML = '<p style="color: red; text-align: center;">ขออภัย, ไม่สามารถโหลดรายการเมนูได้ในขณะนี้</p>';
     }
 }
+
+
+// ===============================================
+//           SHOPPING CART LOGIC
+// ===============================================
+
+// ข้อมูลเมนูทั้งหมด (เพื่อไม่ต้อง fetch ซ้ำบ่อยๆ)
+let allMenuItems = [];
+
+// ดึงข้อมูลเมนูทั้งหมดมาเก็บไว้ครั้งเดียวเมื่อเว็บโหลด
+async function fetchAllMenuItems() {
+    try {
+        const response = await fetch('https://kitsu-backend.onrender.com/api/items/');
+        allMenuItems = await response.json();
+    } catch (error) {
+        console.error("ไม่สามารถโหลดข้อมูลเมนูหลักได้:", error);
+    }
+}
+// เรียกใช้ฟังก์ชันนี้ทันทีที่ไฟล์ถูกอ่าน
+fetchAllMenuItems();
+
+
+// ฟังก์ชันสำหรับเพิ่มสินค้าลงในตะกร้า
+function addToCart(productId) {
+    const productToAdd = allMenuItems.find(item => item.id == productId);
+    if (!productToAdd) {
+        console.error("ไม่พบสินค้า ID:", productId);
+        return;
+    }
+
+    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+    const existingItem = cart.find(item => item.id == productId);
+
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({
+            id: productToAdd.id,
+            name: productToAdd.name,
+            price: productToAdd.price,
+            quantity: 1
+        });
+    }
+
+    localStorage.setItem('kitsuCart', JSON.stringify(cart));
+    renderCart();
+}
+
+// ฟังก์ชันสำหรับแสดงผลตะกร้า
+function renderCart() {
+    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+    const cartContainer = document.getElementById('cart-items-container');
+    const cartTotalEl = document.getElementById('cart-total');
+
+    if (!cartContainer || !cartTotalEl) return;
+
+    cartContainer.innerHTML = '';
+    let total = 0;
+
+    if (cart.length === 0) {
+        cartContainer.innerHTML = '<p style="text-align: center;">ตะกร้าของคุณว่างเปล่า</p>';
+    } else {
+        cart.forEach(item => {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'cart-item';
+            itemElement.innerHTML = `
+                <span>${item.name} (x${item.quantity})</span>
+                <span>฿${(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
+            `;
+            cartContainer.appendChild(itemElement);
+            total += parseFloat(item.price) * item.quantity;
+        });
+    }
+    cartTotalEl.textContent = total.toFixed(2);
+}
+
+// Event Delegation สำหรับปุ่ม "เพิ่มลงตะกร้า"
+document.addEventListener('click', function(event) {
+    // เราจะใช้ document ในการดักฟัง event เพื่อให้แน่ใจว่ามันทำงานหลัง menu-grid ถูกสร้าง
+    if (event.target && event.target.closest('.add-to-cart-btn')) {
+        const button = event.target.closest('.add-to-cart-btn');
+        const productId = button.getAttribute('data-id');
+        addToCart(productId);
+        // อาจจะเปลี่ยนเป็น feedback ที่ดีกว่า alert
+        button.textContent = 'เพิ่มแล้ว!';
+        setTimeout(() => {
+            button.textContent = 'เพิ่มลงตะกร้า';
+        }, 1000);
+    }
+});
