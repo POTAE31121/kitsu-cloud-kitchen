@@ -130,32 +130,6 @@
   </div>
 
   <!--Script-->
-  <script>
-    document.getElementById('track-order-btn').addEventListener('click', async () => {
-      const orderId = document.getElementById('order-id-input').value;
-      if (!orderId) {
-        alert('กรุณากรอก Order ID');
-        return;
-      }
-      const apiUrl = `https://kitsu-django-backend.onrender.com/api/orders/${orderId}/`;
-      
-      try {
-        const response = await fetch(apiUrl);
-        if (!response.ok) {
-          throw new Error('ไม่พบออเดอร์นี้');
-        }
-        const data = await response.json();
-        
-        document.getElementById('order-status').textContent = data.status;
-        document.getElementById('display-order-id').textContent = data.id;
-        document.getElementById('display-total-price').textContent = parseFloat(data.total_price).toFixed(2);
-        document.getElementById('status-display-container').style.display = 'block';
-
-      } catch (error) {
-        alert(error.message);
-        document.getElementById('status-display-container').style.display = 'none';
-      }
-    });
-  </script>
+    <script src="scripts.js" defer></script>
 </body>
 </html>
