@@ -172,7 +172,7 @@ async function handleOrderSubmit(event) {
         items: cartItems.map(item => ({ id: item.id, quantity: item.quantity }))
     };
     try {
-        const response = await fetch('https://kitsu-backend.onrender.com/api/orders/create/', {
+        const response = await fetch('https://kitsu-django-backend.onrender.com/api/orders/create/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(orderData),
