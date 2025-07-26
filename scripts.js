@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 let allMenuItems = []; // ตัวแปรสำหรับเก็บข้อมูลเมนูทั้งหมด
 
 async function displayMenuItems() {
-    const apiUrl = 'https://kitsu-backend.onrender.com/api/items/';
+    const apiUrl = 'https://kitsu-django-backend.onrender.com/api/items/';
     const menuContainer = document.querySelector('.menu-grid');
     if (!menuContainer) { return; }
 
