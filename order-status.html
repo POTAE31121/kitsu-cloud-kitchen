@@ -127,6 +127,25 @@
   </form>
 </div>
 
+  <!-- 4. หน้าต่าง Payment (Modal) -->
+  <div class="cart-modal-overlay hidden" id="payment-modal-overlay"></div>
+  <div class="cart-modal hidden" id="payment-modal">
+    <div class="modal-header">
+      <h2>ชำระเงิน</h2>
+    </div>
+    <div class="modal-body" style="text-align: center;">
+        <p>กรุณาสแกน QR Code เพื่อชำระเงิน</p>
+        <img src="your-qr-code.jpg" alt="QR Code" style="max-width: 250px; margin: 15px 0;">
+        <p><strong>ยอดชำระ: ฿<span id="payment-total">0.00</span></strong></p>
+        <hr>
+        <p>หลังจากชำระเงินแล้ว กรุณาแนบสลิป</p>
+        <form id="slip-upload-form">
+            <input type="file" id="slip-file-input" required>
+            <button type="submit" class="checkout-btn" id="confirm-payment-btn">ยืนยันการชำระเงิน</button>
+        </form>
+    </div>
+  </div>
+
   <!--Script-->
     <script src="scripts.js" defer></script>
 </body>

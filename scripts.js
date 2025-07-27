@@ -227,32 +227,44 @@ function renderCart() {
     }
 }
 
+// --- ⭐️ ฟังก์ชัน handleOrderSubmit ฉบับอัปเกรด ⭐️ ---
 async function handleOrderSubmit(event) {
     event.preventDefault();
     const submitBtn = document.getElementById('confirm-order-btn');
     submitBtn.textContent = 'กำลังส่ง...';
     submitBtn.disabled = true;
+
     const customer_name = document.getElementById('customer_name').value;
     const customer_phone = document.getElementById('customer_phone').value;
     const customer_address = document.getElementById('customer_address').value;
     const cartItems = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+
+    // คำนวณราคารวมฝั่ง Frontend เพื่อส่งไปแสดงผล
+    const total_price_calculated = cartItems.reduce((total, item) => {
+        return total + (parseFloat(item.price) * item.quantity);
+    }, 0);
+
     const orderData = {
         customer_name, customer_phone, customer_address,
         items: cartItems.map(item => ({ id: item.id, quantity: item.quantity }))
     };
+
     try {
         const response = await fetch('https://kitsu-django-backend.onrender.com/api/orders/create/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(orderData),
         });
+
         if (response.ok) {
             const result = await response.json();
             localStorage.removeItem('kitsuCart');
             renderCart();
             document.getElementById('checkout-modal').classList.add('hidden');
             document.getElementById('checkout-modal-overlay').classList.add('hidden');
-            alert(`ขอบคุณสำหรับคำสั่งซื้อ! ออเดอร์ของคุณคือ #${result.order_id} สามารถใช้เลขนี้ติดตามสถานะได้เลยครับ`);
+            
+            // --- เปิด Payment Modal แทน alert ---
+            openPaymentModal(result.order_id, total_price_calculated); 
         } else {
             const errorData = await response.json();
             alert('เกิดข้อผิดพลาด: ' + JSON.stringify(errorData));
@@ -264,6 +276,48 @@ async function handleOrderSubmit(event) {
         submitBtn.disabled = false;
     }
 }
+
+// --- ⭐️ ฟังก์ชันใหม่สำหรับอัปโหลดสลิป ⭐️ ---
+async function handleSlipSubmit(event) {
+    event.preventDefault();
+    const form = event.target;
+    const orderId = form.dataset.orderId;
+    const fileInput = document.getElementById('slip-file-input');
+    const submitBtn = document.getElementById('confirm-payment-btn');
+
+    if (fileInput.files.length === 0) {
+        alert('กรุณาแนบสลิป');
+        return;
+    }
+
+    submitBtn.textContent = 'กำลังอัปโหลด...';
+    submitBtn.disabled = true;
+
+    const formData = new FormData();
+    formData.append('payment_slip', fileInput.files[0]);
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}/upload-slip/`, {
+            method: 'PATCH',
+            // สำหรับ FormData ไม่ต้องตั้งค่า 'Content-Type' header
+            body: formData,
+        });
+
+        if(response.ok) {
+            alert('อัปโหลดสลิปสำเร็จ! ขอบคุณสำหรับคำสั่งซื้อครับ คุณสามารถใช้ Order ID เพื่อติดตามสถานะได้เลย');
+            window.location.href = 'index.html'; // กลับไปหน้าแรก
+        } else {
+            const errorData = await response.json();
+            throw new Error(JSON.stringify(errorData));
+        }
+    } catch (error) {
+        alert('เกิดข้อผิดพลาด: ' + error.message);
+    } finally {
+        submitBtn.textContent = 'ยืนยันการชำระเงิน';
+        submitBtn.disabled = false;
+    }
+}
+
 
 function initializeGlobalEventListeners() {
     document.addEventListener('click', function(event) {
