@@ -32,9 +32,46 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===============================================
 
 function initializeLoginPage() {
-    // ... (โค้ด initializeLoginPage เดิมของคุณสมบูรณ์แบบแล้ว ไม่ต้องแก้ไข) ...
-}
+     const loginForm = document.getElementById('login-form');
+    // ⭐️ FIX: ตรวจสอบก่อนว่าฟอร์มมีอยู่จริงหรือไม่ ⭐️
+    if (!loginForm) return;
 
+    loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault(); // ⭐️ ตรวจสอบว่าบรรทัดนี้ยังอยู่ ⭐️
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const errorEl = document.getElementById('login-error');
+        const loginBtn = document.querySelector('.login-btn');
+
+        loginBtn.textContent = 'Logging in...';
+        loginBtn.disabled = true;
+        errorEl.textContent = ''; // Clear previous errors
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/token-auth/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Invalid credentials');
+            }
+            
+            const data = await response.json();
+            localStorage.setItem('kitsuAdminToken', data.token);
+            window.location.href = 'dashboard.html';
+
+        } catch (error) {
+            errorEl.textContent = 'Login failed. Please check username/password.';
+            console.error('Login Error:', error);
+        } finally {
+            loginBtn.textContent = 'Log In';
+            loginBtn.disabled = false;
+        }
+    });
+}
 
 // ===============================================
 //           DASHBOARD PAGE LOGIC
