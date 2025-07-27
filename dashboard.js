@@ -103,7 +103,7 @@ async function fetchAndRenderAllData() {
 // เปิด "หน้าจอเรดาร์"
 function startRealtimeUpdates() {
     // รีเฟรชข้อมูลทุก 15 วินาที
-    realtimeInterval = setInterval(fetchAndRenderAllData, 15000); 
+    realtimeInterval = setInterval(fetchAndRenderAllData, 5000); 
 }
 
 // ดึง "ข้อมูลสรุป"
