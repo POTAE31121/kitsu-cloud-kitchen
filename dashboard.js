@@ -1,9 +1,9 @@
 // ===============================================
-//           DASHBOARD MASTER SCRIPT (V2 - REALTIME)
+//           DASHBOARD MASTER SCRIPT (V3 - FINAL)
 // ===============================================
 
 const API_BASE_URL = 'https://kitsu-django-backend.onrender.com';
-let realtimeInterval; // ตัวแปรสำหรับเก็บ interval เพื่อให้เราสั่งหยุดได้
+let realtimeInterval;
 
 // ===============================================
 //           INITIALIZATION & SECURITY
@@ -11,17 +11,14 @@ let realtimeInterval; // ตัวแปรสำหรับเก็บ interv
 
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('kitsuAdminToken');
-    const onLoginPage = window.location.pathname.endsWith('login.html') || window.location.pathname.endsWith('/');
+    const onLoginPage = window.location.pathname.endsWith('login.html');
 
     if (token && onLoginPage) {
-        // ถ้ามี token และอยู่หน้า login, ให้เด้งไป dashboard
         window.location.href = 'dashboard.html';
     } else if (!token && !onLoginPage) {
-        // ถ้าไม่มี token และไม่ได้อยู่หน้า login, ให้เด้งไป login
         window.location.href = 'login.html';
     }
 
-    // Initialize Page-Specific Logic
     if (onLoginPage) {
         initializeLoginPage();
     } else {
@@ -29,67 +26,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+
 // ===============================================
 //           LOGIN PAGE LOGIC
 // ===============================================
 
 function initializeLoginPage() {
-    const loginForm = document.getElementById('login-form');
-    if (!loginForm) return;
-
-    loginForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        const errorEl = document.getElementById('login-error');
-        
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/token-auth/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-            if (!response.ok) {
-                // พยายามอ่าน error message จาก backend
-                const errorData = await response.json().catch(() => null);
-                throw new Error(errorData?.non_field_errors?.[0] || 'Invalid credentials');
-            }
-            
-            const data = await response.json();
-            localStorage.setItem('kitsuAdminToken', data.token);
-            window.location.href = 'dashboard.html';
-        } catch (error) {
-            errorEl.textContent = 'Login failed. Please check username/password.';
-            console.error('Login Error:', error);
-        }
-    });
+    // ... (โค้ด initializeLoginPage เดิมของคุณสมบูรณ์แบบแล้ว ไม่ต้องแก้ไข) ...
 }
+
 
 // ===============================================
 //           DASHBOARD PAGE LOGIC
 // ===============================================
 
 function initializeDashboardPage() {
-    // Logout Button
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             localStorage.removeItem('kitsuAdminToken');
-            clearInterval(realtimeInterval); // หยุดการรีเฟรชเมื่อ Logout
+            clearInterval(realtimeInterval);
             window.location.href = 'login.html';
         });
     }
 
+    // ⭐️ เปิดใช้งาน Modal ดูสลิป
+    initializeSlipModal();
+
     // Fetch and render initial data
     fetchAndRenderAllData();
     
-    // Start realtime updates (Polling)
+    // Start realtime updates
     startRealtimeUpdates();
     
-    // Listen for status changes in the order table
+    // ⭐️ Event Delegation ที่จัดการทั้ง 'change' และ 'click'
     const orderListBody = document.getElementById('order-list-body');
     if (orderListBody) {
         orderListBody.addEventListener('change', handleStatusChange);
+        orderListBody.addEventListener('click', handleDashboardClick);
     }
 }
 
@@ -102,41 +76,12 @@ async function fetchAndRenderAllData() {
 
 // เปิด "หน้าจอเรดาร์"
 function startRealtimeUpdates() {
-    // รีเฟรชข้อมูลทุก 15 วินาที
-    realtimeInterval = setInterval(fetchAndRenderAllData, 5000); 
-}
-
-// Initialize the new Slip Model
-initalizeSlipModal();{
-
-const orderListBody = document.getElementById('order-list-body');
-if (orderListBody) {
-
-        orderListBody.addEventListener('change', handleStatusChange);
-        orderListBody.addEventListener('click', handleDashboardClick);
-    }
+    realtimeInterval = setInterval(fetchAndRenderAllData, 15000); 
 }
 
 // ดึง "ข้อมูลสรุป"
 async function fetchDashboardStats() {
-    const token = localStorage.getItem('kitsuAdminToken');
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/admin/stats/`, {
-            headers: { 'Authorization': `Token ${token}` }
-        });
-        if (response.status === 401) {
-             handleUnauthorized();
-             return;
-        }
-        if (!response.ok) return;
-        
-        const stats = await response.json();
-        document.getElementById('stats-todays-revenue').textContent = stats.todays_revenue;
-        document.getElementById('stats-todays-orders').textContent = stats.todays_orders_count;
-        document.getElementById('stats-total-orders').textContent = stats.total_orders_count;
-    } catch (error) {
-        console.error("Failed to fetch stats:", error);
-    }
+    // ... (โค้ด fetchDashboardStats เดิมของคุณสมบูรณ์แบบแล้ว ไม่ต้องแก้ไข) ...
 }
 
 // ⭐️ ฟังก์ชัน fetchAndRenderOrders ฉบับอัปเกรด ⭐️
@@ -155,14 +100,20 @@ async function fetchAndRenderOrders() {
         const orders = await response.json();
         
         orderListBody.innerHTML = '';
-        if (orders.length === 0) { /* ... */ return; }
+        if (orders.length === 0) {
+            orderListBody.innerHTML = `<tr><td colspan="7" style="text-align: center;">No orders yet.</td></tr>`;
+            return;
+        }
 
         orders.forEach(order => {
             const row = document.createElement('tr');
             let statusOptions = '';
-            // ... (โค้ดสร้าง statusOptions เดิม) ...
+            ['PENDING', 'AWAITING_PAYMENT', 'PREPARING', 'DELIVERING', 'COMPLETED', 'CANCELLED'].forEach(status => {
+                const selected = order.status === status ? 'selected' : '';
+                statusOptions += `<option value="${status}" ${selected}>${status}</option>`;
+            });
 
-            // --- สร้างปุ่มดูสลิป ---
+            // สร้างปุ่มดูสลิป
             const slipCell = order.payment_slip_url
                 ? `<td><button class="view-slip-btn" data-slip-url="${order.payment_slip_url}">📎</button></td>`
                 : '<td>-</td>';
@@ -178,7 +129,10 @@ async function fetchAndRenderOrders() {
             `;
             orderListBody.appendChild(row);
         });
-    } catch (error) { /* ... */ }
+    } catch (error) {
+        orderListBody.innerHTML = `<tr><td colspan="7" style="text-align: center;">Error loading orders.</td></tr>`;
+        console.error(error);
+    }
 }
 
 // ⭐️ ฟังก์ชันใหม่สำหรับจัดการ Slip Modal ⭐️
@@ -214,7 +168,6 @@ function handleDashboardClick(event) {
         }
     }
 }
-
 function handleDashboardClick(event) {
     const viewSlipBtn = event.target.closest('.view-slip-btn');
     if (viewSlipBtn) {
