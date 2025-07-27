@@ -6,29 +6,26 @@
 let allMenuItems = [];
 
 // ===============================================
-//           EVENT LISTENERS & INITIALIZERS
+//           CORE INITIALIZER
 // ===============================================
 
+// ฟังก์ชันนี้จะทำงานเป็นอันดับแรกสุดเมื่อหน้าเว็บโหลดเสร็จ
 document.addEventListener('DOMContentLoaded', () => {
-    // --- 1. เปิดใช้งานเมนูสไลด์ (ทำงานทุกหน้า) ---
-    initializeSlideMenu();
+    console.log("Kitsu Kitchen master script loaded!");
 
-    // --- 2. เปิดใช้งาน Modal ตะกร้า (ทำงานทุกหน้า) ---
-    initializeCartModal();
-    
-    // --- 3. แสดงผลตะกร้าครั้งแรก (ทำงานทุกหน้า) ---
-    renderCart();
+    // --- 1. เปิดใช้งานส่วนประกอบที่ 'มีอยู่ทุกหน้า' ---
+    initializeSharedComponents();
 
-    // --- 4. ตรวจสอบว่าหน้านี้คือ "หน้าหลัก" หรือไม่ ---
-    const menuContainer = document.querySelector('.menu-grid');
-    if (menuContainer) {
-        displayMenuItems(); // ถ้าใช่, ให้โหลดเมนู
+    // --- 2. ตรวจสอบว่าเราอยู่หน้าไหน แล้วค่อยเรียกใช้ฟังก์ชันเฉพาะทาง ---
+    // นี่คือหัวใจของการแก้ไขบั๊กทั้งหมด
+    if (document.querySelector('.menu-grid')) {
+        console.log("Main page detected. Loading menu items...");
+        displayMenuItems();
     }
 
-    // --- 5. ตรวจสอบว่าหน้านี้คือ "หน้าติดตามออเดอร์" หรือไม่ ---
-    const trackOrderBtn = document.getElementById('track-order-btn');
-    if (trackOrderBtn) {
-        initializeOrderStatusPage(); // ถ้าใช่, ให้เปิดใช้งานฟังก์ชันติดตาม
+    if (document.getElementById('track-order-btn')) {
+        console.log("Order status page detected. Initializing tracker...");
+        initializeOrderStatusPage();
     }
 });
 
@@ -37,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
 //           PAGE-SPECIFIC LOGIC
 // ===============================================
 
-// --- Logic สำหรับหน้าหลัก (index.html) ---
+// --- Logic สำหรับหน้าหลัก (index.html) เท่านั้น ---
 async function displayMenuItems() {
     const apiUrl = 'https://kitsu-django-backend.onrender.com/api/items/';
     const menuContainer = document.querySelector('.menu-grid');
@@ -47,7 +44,7 @@ async function displayMenuItems() {
         const response = await fetch(apiUrl);
         if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); }
         const menuItems = await response.json();
-        allMenuItems = menuItems; 
+        allMenuItems = menuItems; // เก็บข้อมูลเมนูไว้ใช้กับตะกร้า
 
         menuContainer.innerHTML = '';
         menuItems.forEach(item => {
@@ -67,7 +64,7 @@ async function displayMenuItems() {
     }
 }
 
-// --- Logic สำหรับหน้าติดตามออเดอร์ (order-status.html) ---
+// --- Logic สำหรับหน้าติดตามออเดอร์ (order-status.html) เท่านั้น ---
 function initializeOrderStatusPage() {
     const trackOrderBtn = document.getElementById('track-order-btn');
     const orderIdInput = document.getElementById('order-id-input');
@@ -100,11 +97,19 @@ function initializeOrderStatusPage() {
     });
 }
 
+
 // ===============================================
 //           SHARED LOGIC (ใช้ได้ทุกหน้า)
 // ===============================================
 
-// --- ฟังก์ชันจัดการเมนูสไลด์ ---
+function initializeSharedComponents() {
+    initializeSlideMenu();
+    initializeCartModal();
+    initializeCheckoutModal();
+    renderCart();
+    initializeGlobalEventListeners();
+}
+
 function initializeSlideMenu() {
     const toggle = document.getElementById('menu-toggle');
     const slideMenu = document.getElementById('slide-menu');
@@ -115,7 +120,6 @@ function initializeSlideMenu() {
     }
 }
 
-// --- ฟังก์ชันจัดการ Modal ตะกร้า ---
 function initializeCartModal() {
     const cartIcon = document.getElementById('cart-icon');
     const cartFab = document.getElementById('cart-fab');
@@ -132,7 +136,32 @@ function initializeCartModal() {
     }
 }
 
-// --- ฟังก์ชันจัดการตะกร้าสินค้า (Add, Remove, Render) ---
+function initializeCheckoutModal() {
+    const checkoutModal = document.getElementById('checkout-modal');
+    const checkoutOverlay = document.getElementById('checkout-modal-overlay');
+    const checkoutCloseBtn = document.getElementById('checkout-close-btn');
+    const checkoutForm = document.getElementById('checkout-form');
+    function openCheckoutModal() {
+        document.getElementById('cart-modal').classList.add('hidden');
+        document.getElementById('cart-modal-overlay').classList.add('hidden');
+        checkoutModal.classList.remove('hidden');
+        checkoutOverlay.classList.remove('hidden');
+    }
+    function closeCheckoutModal() { checkoutModal.classList.add('hidden'); checkoutOverlay.classList.add('hidden'); }
+    if(checkoutModal && checkoutOverlay && checkoutCloseBtn && checkoutForm) {
+        checkoutCloseBtn.addEventListener('click', closeCheckoutModal);
+        checkoutOverlay.addEventListener('click', closeCheckoutModal);
+        checkoutForm.addEventListener('submit', handleOrderSubmit);
+    }
+    const openCheckoutBtn = document.querySelector('#cart-modal .checkout-btn');
+    if (openCheckoutBtn) {
+        openCheckoutBtn.addEventListener('click', function() {
+            let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+            if (cart.length > 0) { openCheckoutModal(); } else { alert('กรุณาเลือกสินค้าลงตะกร้าก่อนนะครับ'); }
+        });
+    }
+}
+
 function addToCart(productId) {
     const productToAdd = allMenuItems.find(item => item.id == productId);
     if (!productToAdd) { return; }
@@ -146,41 +175,112 @@ function addToCart(productId) {
     localStorage.setItem('kitsuCart', JSON.stringify(cart));
     renderCart();
 }
+
 function removeFromCart(productId) {
     let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
     const updatedCart = cart.filter(item => item.id != productId);
     localStorage.setItem('kitsuCart', JSON.stringify(updatedCart));
     renderCart();
 }
-function renderCart() {
-    // ... (โค้ด renderCart เดิมของคุณสมบูรณ์แบบแล้ว ไม่ต้องแก้ไข) ...
-}
 
-// --- ฟังก์ชันจัดการ Checkout Modal ---
-function initializeCheckoutModal() {
-    // ... (โค้ด initializeCheckoutModal เดิมของคุณสมบูรณ์แบบแล้ว ไม่ต้องแก้ไข) ...
+function renderCart() {
+    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+    const modalCartContainer = document.getElementById('modal-cart-items');
+    const modalCartTotalEl = document.getElementById('modal-cart-total');
+    const cartBadge = document.getElementById('cart-badge');
+    const cartBadgeFab = document.getElementById('cart-badge-fab');
+    const cartFab = document.getElementById('cart-fab');
+    if (!modalCartContainer) return;
+    modalCartContainer.innerHTML = '';
+    let total = 0;
+    let totalItems = 0;
+    if (cart.length === 0) {
+        modalCartContainer.innerHTML = '<p style="text-align: center;">ตะกร้าของคุณว่างเปล่า</p>';
+    } else {
+        cart.forEach(item => {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'cart-item';
+            itemElement.innerHTML = `
+                <div class="cart-item-details">
+                    <span>${item.name} (x${item.quantity})</span>
+                    <span class="cart-item-price">฿${(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
+                </div>
+                <button class="remove-from-cart-btn" data-id="${item.id}">×</button>
+            `;
+            modalCartContainer.appendChild(itemElement);
+            total += parseFloat(item.price) * item.quantity;
+            totalItems += item.quantity;
+        });
+    }
+    if(modalCartTotalEl) modalCartTotalEl.textContent = total.toFixed(2);
+    if(cartBadge) cartBadge.textContent = totalItems;
+    if(cartBadgeFab) cartBadgeFab.textContent = totalItems;
+    
+    if (totalItems > 0) {
+        if(cartBadge) cartBadge.classList.remove('hidden');
+        if(cartBadgeFab) cartBadgeFab.classList.remove('hidden');
+        if (cartFab) cartFab.classList.remove('hidden');
+    } else {
+        if(cartBadge) cartBadge.classList.add('hidden');
+        if(cartBadgeFab) cartBadgeFab.classList.add('hidden');
+        if (cartFab) cartFab.classList.add('hidden');
+    }
 }
 
 async function handleOrderSubmit(event) {
-    // ... (โค้ด handleOrderSubmit เดิมของคุณสมบูรณ์แบบแล้ว ไม่ต้องแก้ไข) ...
+    event.preventDefault();
+    const submitBtn = document.getElementById('confirm-order-btn');
+    submitBtn.textContent = 'กำลังส่ง...';
+    submitBtn.disabled = true;
+    const customer_name = document.getElementById('customer_name').value;
+    const customer_phone = document.getElementById('customer_phone').value;
+    const customer_address = document.getElementById('customer_address').value;
+    const cartItems = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+    const orderData = {
+        customer_name, customer_phone, customer_address,
+        items: cartItems.map(item => ({ id: item.id, quantity: item.quantity }))
+    };
+    try {
+        const response = await fetch('https://kitsu-django-backend.onrender.com/api/orders/create/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData),
+        });
+        if (response.ok) {
+            const result = await response.json();
+            localStorage.removeItem('kitsuCart');
+            renderCart();
+            document.getElementById('checkout-modal').classList.add('hidden');
+            document.getElementById('checkout-modal-overlay').classList.add('hidden');
+            alert(`ขอบคุณสำหรับคำสั่งซื้อ! ออเดอร์ของคุณคือ #${result.order_id} สามารถใช้เลขนี้ติดตามสถานะได้เลยครับ`);
+        } else {
+            const errorData = await response.json();
+            alert('เกิดข้อผิดพลาด: ' + JSON.stringify(errorData));
+        }
+    } catch (error) {
+        alert('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง');
+    } finally {
+        submitBtn.textContent = 'ยืนยันคำสั่งซื้อ';
+        submitBtn.disabled = false;
+    }
 }
 
-
-// --- Event Listener กลาง (จัดการปุ่ม Add, Remove, Checkout) ---
-document.addEventListener('click', function(event) {
-    const addButton = event.target.closest('.add-to-cart-btn');
-    if (addButton) {
-        const productId = addButton.getAttribute('data-id');
-        addToCart(productId);
-        addButton.textContent = 'เพิ่มแล้ว!';
-        addButton.style.background = '#27ae60';
-        setTimeout(() => { addButton.textContent = 'เพิ่มลงตะกร้า'; addButton.style.background = ''; }, 1000);
-        return;
-    }
-    const removeButton = event.target.closest('.remove-from-cart-btn');
-    if (removeButton) {
-        const productId = removeButton.getAttribute('data-id');
-        removeFromCart(productId);
-        return;
-    }
-});
+function initializeGlobalEventListeners() {
+    document.addEventListener('click', function(event) {
+        const addButton = event.target.closest('.add-to-cart-btn');
+        if (addButton) {
+            const productId = addButton.getAttribute('data-id');
+            addToCart(productId);
+            addButton.textContent = 'เพิ่มแล้ว!';
+            addButton.style.background = '#27ae60';
+            setTimeout(() => { addButton.textContent = 'เพิ่มลงตะกร้า'; addButton.style.background = ''; }, 1000);
+            return;
+        }
+        const removeButton = event.target.closest('.remove-from-cart-btn');
+        if (removeButton) {
+            const productId = removeButton.getAttribute('data-id');
+            removeFromCart(productId);
+            return;
+        }
+    });
+}
