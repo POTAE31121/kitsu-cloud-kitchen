@@ -40,3 +40,17 @@ body { font-family: sans-serif; background-color: #f4f7f6; margin: 0; }
   font-weight: bold;
   color: #f5a623;
 }
+
+/* Slip Viewer Styles */
+#slip-modal-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+.view-slip-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5em;
+  padding: 0;
+}

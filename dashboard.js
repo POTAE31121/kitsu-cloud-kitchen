@@ -106,6 +106,17 @@ function startRealtimeUpdates() {
     realtimeInterval = setInterval(fetchAndRenderAllData, 5000); 
 }
 
+// Initialize the new Slip Model
+initalizeSlipModal();{
+
+const orderListBody = document.getElementById('order-list-body');
+if (orderListBody) {
+
+        orderListBody.addEventListener('change', handleStatusChange);
+        orderListBody.addEventListener('click', handleDashboardClick);
+    }
+}
+
 // ดึง "ข้อมูลสรุป"
 async function fetchDashboardStats() {
     const token = localStorage.getItem('kitsuAdminToken');
@@ -128,7 +139,7 @@ async function fetchDashboardStats() {
     }
 }
 
-// ดึง "รายการออเดอร์"
+// ⭐️ ฟังก์ชัน fetchAndRenderOrders ฉบับอัปเกรด ⭐️
 async function fetchAndRenderOrders() {
     const token = localStorage.getItem('kitsuAdminToken');
     const orderListBody = document.getElementById('order-list-body');
@@ -138,45 +149,85 @@ async function fetchAndRenderOrders() {
         const response = await fetch(`${API_BASE_URL}/api/admin/orders/`, {
             headers: { 'Authorization': `Token ${token}` }
         });
-        if (response.status === 401) {
-            handleUnauthorized();
-            return;
-        }
+        if (response.status === 401) { handleUnauthorized(); return; }
         if (!response.ok) throw new Error('Failed to fetch orders');
 
         const orders = await response.json();
         
         orderListBody.innerHTML = '';
-        if (orders.length === 0) {
-            orderListBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No orders yet.</td></tr>`;
-            return;
-        }
+        if (orders.length === 0) { /* ... */ return; }
 
         orders.forEach(order => {
             const row = document.createElement('tr');
             let statusOptions = '';
-            ['PENDING', 'PREPARING', 'DELIVERING', 'COMPLETED', 'CANCELLED'].forEach(status => {
-                const selected = order.status === status ? 'selected' : '';
-                statusOptions += `<option value="${status}" ${selected}>${status}</option>`;
-            });
+            // ... (โค้ดสร้าง statusOptions เดิม) ...
+
+            // --- สร้างปุ่มดูสลิป ---
+            const slipCell = order.payment_slip_url
+                ? `<td><button class="view-slip-btn" data-slip-url="${order.payment_slip_url}">📎</button></td>`
+                : '<td>-</td>';
 
             row.innerHTML = `
                 <td>#${order.id}</td>
                 <td>${order.customer_name}</td>
                 <td>${order.customer_phone}</td>
                 <td>฿${parseFloat(order.total_price).toFixed(2)}</td>
-                <td>
-                    <select class="status-select" data-order-id="${order.id}">
-                        ${statusOptions}
-                    </select>
-                </td>
+                <td><select class="status-select" data-order-id="${order.id}">${statusOptions}</select></td>
                 <td>${new Date(order.created_at).toLocaleString('en-GB')}</td>
+                ${slipCell}
             `;
             orderListBody.appendChild(row);
         });
-    } catch (error) {
-        orderListBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Error loading orders.</td></tr>`;
-        console.error(error);
+    } catch (error) { /* ... */ }
+}
+
+// ⭐️ ฟังก์ชันใหม่สำหรับจัดการ Slip Modal ⭐️
+function initializeSlipModal() {
+    const modal = document.getElementById('slip-modal');
+    const overlay = document.getElementById('slip-modal-overlay');
+    const closeBtn = document.getElementById('slip-modal-close-btn');
+
+    function closeModal() {
+        modal.classList.add('hidden');
+        overlay.classList.add('hidden');
+    }
+
+    if(modal && overlay && closeBtn) {
+        closeBtn.addEventListener('click', closeModal);
+        overlay.addEventListener('click', closeModal);
+    }
+}
+
+// ⭐️ ฟังก์ชันใหม่สำหรับจัดการการคลิกในตาราง ⭐️
+function handleDashboardClick(event) {
+    const viewSlipBtn = event.target.closest('.view-slip-btn');
+    if (viewSlipBtn) {
+        const slipUrl = viewSlipBtn.dataset.slipUrl;
+        const modal = document.getElementById('slip-modal');
+        const overlay = document.getElementById('slip-modal-overlay');
+        const imageEl = document.getElementById('slip-modal-image');
+
+        if(modal && overlay && imageEl && slipUrl) {
+            imageEl.src = slipUrl;
+            modal.classList.remove('hidden');
+            overlay.classList.remove('hidden');
+        }
+    }
+}
+
+function handleDashboardClick(event) {
+    const viewSlipBtn = event.target.closest('.view-slip-btn');
+    if (viewSlipBtn) {
+        const slipUrl = viewSlipBtn.dataset.slipUrl;
+        const modal = document.getElementById('slip-modal');
+        const overlay = document.getElementById('slip-modal-overlay');
+        const imageEl = document.getElementById('slip-modal-image');
+
+        if(modal && overlay && imageEl && slipUrl) {
+            imageEl.src = slipUrl;
+            modal.classList.remove('hidden');
+            overlay.classList.remove('hidden');
+        }
     }
 }
 

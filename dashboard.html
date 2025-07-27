@@ -40,6 +40,7 @@
                         <th>Total</th>
                         <th>Status</th>
                         <th>Date</th>
+                        <th>Slip</th>
                     </tr>
                 </thead>
                 <tbody id="order-list-body">
@@ -48,6 +49,20 @@
             </table>
         </div>
     </main>
+
+    <!-- ========== เพิ่มส่วน Slip Modal ตรงนี้ ========== -->
+    <div class="cart-modal-overlay hidden" id="slip-modal-overlay"></div>
+    <div class="cart-modal hidden" id="slip-modal">
+        <div class="modal-header">
+            <h2>Payment Slip</h2>
+            <button class="modal-close-btn" id="slip-modal-close-btn">×</button>
+        </div>
+        <div class="modal-body" style="text-align: center;">
+            <img src="" alt="Payment Slip" id="slip-modal-image">
+        </div>
+    </div>
+    <!-- ========== จบส่วน Slip Modal ========== -->
+
     <script src="dashboard.js"></script>
 </body>
 </html>
