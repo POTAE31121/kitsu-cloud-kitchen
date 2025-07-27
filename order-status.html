@@ -75,59 +75,57 @@
     <p>© 2025 Kitsu Cloud Kitchen. All rights reserved.</p>
   </footer>
 
-  <!-- ========== เพิ่มส่วนใหม่ทั้งหมดตรงนี้ ========== -->
-
   <!-- 1. ปุ่มลอยสำหรับมือถือ (Floating Action Button) -->
-  <div class="cart-fab hidden" id="cart-fab">
-    <span class="cart-icon-display">🛒</span>
-    <span class="cart-badge" id="cart-badge-fab">0</span>
-  </div>
+<div class="cart-fab hidden" id="cart-fab">
+  <span class="cart-icon-display">🛒</span>
+  <span class="cart-badge hidden" id="cart-badge-fab">0</span>
+</div>
 
-  <!-- 2. หน้าต่าง Pop-up ของตะกร้า (Modal) -->
-  <div class="cart-modal-overlay hidden" id="cart-modal-overlay"></div>
-  <div class="cart-modal hidden" id="cart-modal">
-    <div class="modal-header">
-      <h2>ตะกร้าสินค้า</h2>
-      <button class="modal-close-btn" id="modal-close-btn">×</button>
+<!-- 2. หน้าต่าง Pop-up ของตะกร้า (Modal) -->
+<div class="cart-modal-overlay hidden" id="cart-modal-overlay"></div>
+<div class="cart-modal hidden" id="cart-modal">
+  <div class="modal-header">
+    <h2>ตะกร้าสินค้า</h2>
+    <button class="modal-close-btn" id="modal-close-btn">×</button>
+  </div>
+  <div class="modal-body" id="modal-cart-items">
+    <!-- รายการสินค้าจะถูกเติมที่นี่ -->
+  </div>
+  <div class="modal-footer">
+    <div class="cart-summary">
+      <strong>ราคารวม:</strong> <span id="modal-cart-total">0.00</span> บาท
     </div>
-    <div class="modal-body" id="modal-cart-items">
-      <!-- รายการสินค้าจะถูกเติมที่นี่ -->
+    <button class="checkout-btn">สั่งซื้อและชำระเงิน</button>
+  </div>
+</div>
+
+<!-- 3. หน้าต่าง Checkout (Modal) -->
+<div class="cart-modal-overlay hidden" id="checkout-modal-overlay"></div>
+<div class="cart-modal hidden" id="checkout-modal">
+  <div class="modal-header">
+    <h2>ข้อมูลการจัดส่ง</h2>
+    <button class="modal-close-btn" id="checkout-close-btn">×</button>
+  </div>
+  <form id="checkout-form">
+    <div class="modal-body">
+        <div class="form-group">
+          <label for="customer_name">ชื่อ-นามสกุล</label>
+          <input type="text" id="customer_name" required>
+        </div>
+        <div class="form-group">
+          <label for="customer_phone">เบอร์โทรศัพท์</label>
+          <input type="tel" id="customer_phone" required>
+        </div>
+        <div class="form-group">
+          <label for="customer_address">ที่อยู่สำหรับจัดส่ง</label>
+          <textarea id="customer_address" rows="3" required></textarea>
+        </div>
     </div>
     <div class="modal-footer">
-      <div class="cart-summary">
-        <strong>ราคารวม:</strong> <span id="modal-cart-total">0.00</span> บาท
-      </div>
-      <button class="checkout-btn">สั่งซื้อและชำระเงิน</button>
+      <button type="submit" class="checkout-btn" id="confirm-order-btn">ยืนยันคำสั่งซื้อ</button>
     </div>
-  </div>
-
- <!-- 3. หน้าต่าง Checkout (Modal) -->
-  <div class="cart-modal-overlay hidden" id="checkout-modal-overlay"></div>
-  <div class="cart-modal hidden" id="checkout-modal">
-    <div class="modal-header">
-      <h2>ข้อมูลการจัดส่ง</h2>
-      <button class="modal-close-btn" id="checkout-close-btn">×</button>
-    </div>
-    <form id="checkout-form">
-      <div class="modal-body">
-          <div class="form-group">
-            <label for="customer_name">ชื่อ-นามสกุล</label>
-            <input type="text" id="customer_name" required>
-          </div>
-          <div class="form-group">
-            <label for="customer_phone">เบอร์โทรศัพท์</label>
-            <input type="tel" id="customer_phone" required>
-          </div>
-          <div class="form-group">
-            <label for="customer_address">ที่อยู่สำหรับจัดส่ง</label>
-            <textarea id="customer_address" rows="3" required></textarea>
-          </div>
-      </div>
-      <div class="modal-footer">
-        <button type="submit" class="checkout-btn" id="confirm-order-btn">ยืนยันคำสั่งซื้อ</button>
-      </div>
-    </form>
-  </div>
+  </form>
+</div>
 
   <!--Script-->
     <script src="scripts.js" defer></script>
