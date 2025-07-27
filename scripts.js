@@ -4,6 +4,7 @@
 
 // ตัวแปรที่ใช้ร่วมกันในทุกหน้า
 let allMenuItems = [];
+const API_BASE_URL = 'https://kitsu-django-backend.onrender.com';
 
 // ===============================================
 //           CORE INITIALIZER
@@ -36,28 +37,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- Logic สำหรับหน้าหลัก (index.html) เท่านั้น ---
 async function displayMenuItems() {
-    const apiUrl = 'https://kitsu-django-backend.onrender.com/api/items/';
+    const apiUrl = `${API_BASE_URL}/api/items/`;
     const menuContainer = document.querySelector('.menu-grid');
     if (!menuContainer) { return; }
 
+    menuContainer.innerHTML = '<p class="loading-text">กำลังโหลดเมนูสักครู่นะครับ...</p>';
+    
     try {
         const response = await fetch(apiUrl);
         if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); }
         const menuItems = await response.json();
-        allMenuItems = menuItems; // เก็บข้อมูลเมนูไว้ใช้กับตะกร้า
+        allMenuItems = menuItems;
 
-        menuContainer.innerHTML = '';
-        menuItems.forEach(item => {
-            const menuCardHTML = `
-                <div class="menu-card">
-                    <img src="${item.image_url}" alt="${item.name}">
-                    <h3>${item.name}</h3>
-                    <p class="price">฿${parseInt(item.price)}</p>
-                    <button class="add-to-cart-btn" data-id="${item.id}">เพิ่มลงตะกร้า</button>
-                </div>
+        if (menuItems.length > 0) {
+            menuContainer.innerHTML = '';
+            menuItems.forEach(item => {
+                const menuCardHTML = `
+                    <div class="menu-card">
+                        <img src="${item.image_url}" alt="${item.name}">
+                        <h3>${item.name}</h3>
+                        <p class="price">฿${parseInt(item.price)}</p>
+                        <button class="add-to-cart-btn" data-id="${item.id}">เพิ่มลงตะกร้า</button>
+                    </div>
             `;
             menuContainer.insertAdjacentHTML('beforeend', menuCardHTML);
-        });
+            });
+        } else {
+            menuContainer.innerHTML = '<p class="loading-text">ไม่มีเมนูในขณะนี้</p>';
+        }
     } catch (error) {
         console.error('เกิดข้อผิดพลาดในการดึงข้อมูลเมนู:', error);
         menuContainer.innerHTML = '<p style="color: red; text-align: center;">ขออภัย, ไม่สามารถโหลดรายการเมนูได้ในขณะนี้</p>';
@@ -106,6 +113,7 @@ function initializeSharedComponents() {
     initializeSlideMenu();
     initializeCartModal();
     initializeCheckoutModal();
+    initializePaymentModal();
     renderCart();
     initializeGlobalEventListeners();
 }
@@ -160,6 +168,26 @@ function initializeCheckoutModal() {
             if (cart.length > 0) { openCheckoutModal(); } else { alert('กรุณาเลือกสินค้าลงตะกร้าก่อนนะครับ'); }
         });
     }
+}
+
+// --- ⭐️ ฟังก์ชันใหม่สำหรับจัดการ Payment Modal ⭐️ ---
+function initializePaymentModal() {
+    const slipForm = document.getElementById('slip-upload-form');
+    if (slipForm) {
+        slipForm.addEventListener('submit', handleSlipSubmit);
+    }
+}
+
+function openPaymentModal(orderId, total) {
+    const paymentModal = document.getElementById('payment-modal');
+    const paymentOverlay = document.getElementById('payment-modal-overlay');
+    if (!paymentModal || !paymentOverlay) return;
+
+    document.getElementById('payment-total').textContent = parseFloat(total).toFixed(2);
+    document.getElementById('slip-upload-form').dataset.orderId = orderId;
+
+    paymentModal.classList.remove('hidden');
+    paymentOverlay.classList.remove('hidden');
 }
 
 function addToCart(productId) {
