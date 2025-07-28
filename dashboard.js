@@ -11,7 +11,7 @@ let realtimeInterval;
 
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('kitsuAdminToken');
-    const onLoginPage = window.location.pathname.endsWith('login.html');
+    const onLoginPage = window.location.pathname.endsWith('login.html') || !window.location.pathname.includes('dashboard.html');
 
     if (token && onLoginPage) {
         window.location.href = 'dashboard.html';
@@ -33,11 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initializeLoginPage() {
      const loginForm = document.getElementById('login-form');
-    // ⭐️ FIX: ตรวจสอบก่อนว่าฟอร์มมีอยู่จริงหรือไม่ ⭐️
     if (!loginForm) return;
 
     loginForm.addEventListener('submit', async (event) => {
-        event.preventDefault(); // ⭐️ ตรวจสอบว่าบรรทัดนี้ยังอยู่ ⭐️
+        event.preventDefault();
         
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
@@ -46,7 +45,7 @@ function initializeLoginPage() {
 
         loginBtn.textContent = 'Logging in...';
         loginBtn.disabled = true;
-        errorEl.textContent = ''; // Clear previous errors
+        errorEl.textContent = '';
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/token-auth/`, {
@@ -116,9 +115,26 @@ function startRealtimeUpdates() {
     realtimeInterval = setInterval(fetchAndRenderAllData, 5000); 
 }
 
-// ดึง "ข้อมูลสรุป"
+// ดึง "ข้อมูลสรุป" สำคัญมาก!!!
 async function fetchDashboardStats() {
-    // ... (โค้ด fetchDashboardStats เดิมของคุณสมบูรณ์แบบแล้ว ไม่ต้องแก้ไข) ...
+    const token = localStorage.getItem('kitsuAdminToken');
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/admin/stats/`, {
+            headers: { 'Authorization': `Token ${token}` }
+        });
+        if (response.status === 401 || response.status === 403) {
+             handleUnauthorized();
+             return;
+        }
+        if (!response.ok) return;
+        
+        const stats = await response.json();
+        document.getElementById('stats-todays-revenue').textContent = stats.todays_revenue;
+        document.getElementById('stats-todays-orders').textContent = stats.todays_orders_count;
+        document.getElementById('stats-total-orders').textContent = stats.total_orders_count;
+    } catch (error) {
+        console.error("Failed to fetch stats:", error);
+    }
 }
 
 // --- ⭐️ ผู้คุม ฉบับแก้ไข ⭐️ ---
