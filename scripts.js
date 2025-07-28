@@ -170,13 +170,31 @@ function initializeCheckoutModal() {
     }
 }
 
-// --- ⭐️ ฟังก์ชันใหม่สำหรับจัดการ Payment Modal ⭐️ ---
+// --- ⭐️ ฟังก์ชัน initializePaymentModal ฉบับอัปเกรด ⭐️ ---
 function initializePaymentModal() {
+    const paymentModal = document.getElementById('payment-modal');
+    const paymentOverlay = document.getElementById('payment-modal-overlay');
+    const closeBtn = document.getElementById('payment-modal-close-btn');
     const slipForm = document.getElementById('slip-upload-form');
+
+    function closePaymentModal() {
+        if(paymentModal && paymentOverlay) {
+            paymentModal.classList.add('hidden');
+            paymentOverlay.classList.add('hidden');
+        }
+    }
+
     if (slipForm) {
         slipForm.addEventListener('submit', handleSlipSubmit);
     }
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closePaymentModal);
+    }
+    if (paymentOverlay) {
+        paymentOverlay.addEventListener('click', closePaymentModal);
+    }
 }
+
 
 function openPaymentModal(orderId, total) {
     const paymentModal = document.getElementById('payment-modal');
@@ -305,7 +323,7 @@ async function handleOrderSubmit(event) {
     }
 }
 
-// --- ⭐️ ฟังก์ชันใหม่สำหรับอัปโหลดสลิป ⭐️ ---
+// --- ⭐️ ฟังก์ชัน handleSlipSubmit ฉบับอัปเกรด ⭐️ ---
 async function handleSlipSubmit(event) {
     event.preventDefault();
     const form = event.target;
@@ -322,18 +340,18 @@ async function handleSlipSubmit(event) {
     submitBtn.disabled = true;
 
     const formData = new FormData();
-    formData.append('payment_slip', fileInput.files[0]);
+    formData.append('payment_slip', fileInput.files);
 
     try {
         const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}/upload-slip/`, {
             method: 'PATCH',
-            // สำหรับ FormData ไม่ต้องตั้งค่า 'Content-Type' header
             body: formData,
         });
 
-        if(response.ok) {
-            alert('อัปโหลดสลิปสำเร็จ! ขอบคุณสำหรับคำสั่งซื้อครับ คุณสามารถใช้ Order ID เพื่อติดตามสถานะได้เลย');
-            window.location.href = 'index.html'; // กลับไปหน้าแรก
+        if (response.ok) {
+            // --- ⭐️ แก้ไข alert ตรงนี้ ⭐️ ---
+            alert(`อัปโหลดสลิปสำเร็จ! ขอบคุณสำหรับคำสั่งซื้อครับ คุณสามารถใช้ Order ID #${orderId} เพื่อติดตามสถานะได้เลย`);
+            window.location.href = 'index.html';
         } else {
             const errorData = await response.json();
             throw new Error(JSON.stringify(errorData));
