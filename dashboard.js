@@ -113,7 +113,7 @@ async function fetchAndRenderAllData() {
 
 // เปิด "หน้าจอเรดาร์"
 function startRealtimeUpdates() {
-    realtimeInterval = setInterval(fetchAndRenderAllData, 15000); 
+    realtimeInterval = setInterval(fetchAndRenderAllData, 5000); 
 }
 
 // ดึง "ข้อมูลสรุป"
