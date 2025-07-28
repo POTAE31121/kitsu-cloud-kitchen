@@ -11,6 +11,7 @@ let realtimeInterval;
 
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('kitsuAdminToken');
+    // ปรับปรุงให้รองรับการเข้าหน้าแรกสุดด้วย
     const onLoginPage = window.location.pathname.endsWith('login.html') || !window.location.pathname.includes('dashboard.html');
 
     if (token && onLoginPage) {
@@ -32,12 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===============================================
 
 function initializeLoginPage() {
-     const loginForm = document.getElementById('login-form');
+    const loginForm = document.getElementById('login-form');
     if (!loginForm) return;
 
     loginForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const errorEl = document.getElementById('login-error');
@@ -53,15 +53,12 @@ function initializeLoginPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
             });
-            
             if (!response.ok) {
                 throw new Error('Invalid credentials');
             }
-            
             const data = await response.json();
             localStorage.setItem('kitsuAdminToken', data.token);
             window.location.href = 'dashboard.html';
-
         } catch (error) {
             errorEl.textContent = 'Login failed. Please check username/password.';
             console.error('Login Error:', error);
@@ -71,6 +68,7 @@ function initializeLoginPage() {
         }
     });
 }
+
 
 // ===============================================
 //           DASHBOARD PAGE LOGIC
@@ -112,10 +110,11 @@ async function fetchAndRenderAllData() {
 
 // เปิด "หน้าจอเรดาร์"
 function startRealtimeUpdates() {
-    realtimeInterval = setInterval(fetchAndRenderAllData, 5000); 
+    // รีเฟรชข้อมูลทุก 15 วินาที
+    realtimeInterval = setInterval(fetchAndRenderAllData, 15000); 
 }
 
-// ดึง "ข้อมูลสรุป" สำคัญมาก!!!
+// ดึง "ข้อมูลสรุป"
 async function fetchDashboardStats() {
     const token = localStorage.getItem('kitsuAdminToken');
     try {
@@ -129,15 +128,20 @@ async function fetchDashboardStats() {
         if (!response.ok) return;
         
         const stats = await response.json();
-        document.getElementById('stats-todays-revenue').textContent = stats.todays_revenue;
-        document.getElementById('stats-todays-orders').textContent = stats.todays_orders_count;
-        document.getElementById('stats-total-orders').textContent = stats.total_orders_count;
+        const todaysRevenueEl = document.getElementById('stats-todays-revenue');
+        const todaysOrdersEl = document.getElementById('stats-todays-orders');
+        const totalOrdersEl = document.getElementById('stats-total-orders');
+
+        if (todaysRevenueEl) todaysRevenueEl.textContent = stats.todays_revenue;
+        if (todaysOrdersEl) todaysOrdersEl.textContent = stats.todays_orders_count;
+        if (totalOrdersEl) totalOrdersEl.textContent = stats.total_orders_count;
+
     } catch (error) {
         console.error("Failed to fetch stats:", error);
     }
 }
 
-// --- ⭐️ ผู้คุม ฉบับแก้ไข ⭐️ ---
+// ⭐️ ฟังก์ชัน fetchAndRenderOrders ฉบับอัปเกรด ⭐️
 async function fetchAndRenderOrders() {
     const token = localStorage.getItem('kitsuAdminToken');
     const orderListBody = document.getElementById('order-list-body');
@@ -147,7 +151,10 @@ async function fetchAndRenderOrders() {
         const response = await fetch(`${API_BASE_URL}/api/admin/orders/`, {
             headers: { 'Authorization': `Token ${token}` }
         });
-        if (response.status === 401 || response.status === 403) { handleUnauthorized(); return; }
+        if (response.status === 401 || response.status === 403) {
+            handleUnauthorized();
+            return;
+        }
         if (!response.ok) throw new Error('Failed to fetch orders');
 
         const orders = await response.json();
@@ -195,8 +202,10 @@ function initializeSlipModal() {
     const closeBtn = document.getElementById('slip-modal-close-btn');
 
     function closeModal() {
-        modal.classList.add('hidden');
-        overlay.classList.add('hidden');
+        if(modal && overlay) {
+            modal.classList.add('hidden');
+            overlay.classList.add('hidden');
+        }
     }
 
     if(modal && overlay && closeBtn) {
@@ -206,21 +215,6 @@ function initializeSlipModal() {
 }
 
 // ⭐️ ฟังก์ชันใหม่สำหรับจัดการการคลิกในตาราง ⭐️
-function handleDashboardClick(event) {
-    const viewSlipBtn = event.target.closest('.view-slip-btn');
-    if (viewSlipBtn) {
-        const slipUrl = viewSlipBtn.dataset.slipUrl;
-        const modal = document.getElementById('slip-modal');
-        const overlay = document.getElementById('slip-modal-overlay');
-        const imageEl = document.getElementById('slip-modal-image');
-
-        if(modal && overlay && imageEl && slipUrl) {
-            imageEl.src = slipUrl;
-            modal.classList.remove('hidden');
-            overlay.classList.remove('hidden');
-        }
-    }
-}
 function handleDashboardClick(event) {
     const viewSlipBtn = event.target.closest('.view-slip-btn');
     if (viewSlipBtn) {
@@ -261,7 +255,10 @@ async function handleStatusChange(event) {
         selectElement.style.backgroundColor = '#2ecc71';
         setTimeout(() => { selectElement.style.backgroundColor = ''; }, 1000);
 
-        await fetchAndRenderOrders(); // Refresh orders after update
+        // --- หัวใจของการอัปเดต ---
+        console.log("Status changed, forcing data refresh...");
+        await fetchAndRenderAllData(); 
+        // ------------------------
 
     } catch (error) {
         console.error('Update failed:', error);
@@ -270,7 +267,7 @@ async function handleStatusChange(event) {
     }
 }
 
-// --- 5. Helper Functions ---
+// --- Helper Functions ---
 function handleUnauthorized() {
     localStorage.removeItem('kitsuAdminToken');
     clearInterval(realtimeInterval);
