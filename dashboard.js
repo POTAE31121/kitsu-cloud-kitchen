@@ -242,9 +242,10 @@ async function handleStatusChange(event) {
         if (!response.ok) throw new Error('Failed to update status');
         
         console.log(`Order #${orderId} status updated to ${newStatus}`);
-        // Optionally add a visual confirmation
         selectElement.style.backgroundColor = '#2ecc71';
         setTimeout(() => { selectElement.style.backgroundColor = ''; }, 1000);
+
+        await fetchAndRenderOrders(); // Refresh orders after update
 
     } catch (error) {
         console.error('Update failed:', error);
