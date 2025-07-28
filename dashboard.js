@@ -121,7 +121,7 @@ async function fetchDashboardStats() {
     // ... (โค้ด fetchDashboardStats เดิมของคุณสมบูรณ์แบบแล้ว ไม่ต้องแก้ไข) ...
 }
 
-// ⭐️ ฟังก์ชัน fetchAndRenderOrders ฉบับอัปเกรด ⭐️
+// --- ⭐️ ผู้คุม ฉบับแก้ไข ⭐️ ---
 async function fetchAndRenderOrders() {
     const token = localStorage.getItem('kitsuAdminToken');
     const orderListBody = document.getElementById('order-list-body');
@@ -131,7 +131,7 @@ async function fetchAndRenderOrders() {
         const response = await fetch(`${API_BASE_URL}/api/admin/orders/`, {
             headers: { 'Authorization': `Token ${token}` }
         });
-        if (response.status === 401) { handleUnauthorized(); return; }
+        if (response.status === 401 || response.status === 403) { handleUnauthorized(); return; }
         if (!response.ok) throw new Error('Failed to fetch orders');
 
         const orders = await response.json();
