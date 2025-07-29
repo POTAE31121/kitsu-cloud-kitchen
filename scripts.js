@@ -14,10 +14,19 @@ const API_BASE_URL = 'https://kitsu-django-backend.onrender.com';
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Kitsu Kitchen master script loaded!");
 
-    // --- 1. เปิดใช้งานส่วนประกอบที่ 'มีอยู่ทุกหน้า' ---
+     // --- ⭐️ 1. ตรวจสอบ "สถานะรอชำระเงิน" ก่อนเป็นอันดับแรก! ⭐️ ---
+    const pendingOrderJSON = localStorage.getItem('pendingPaymentOrder');
+    if (pendingOrderJSON) {
+        const pendingOrder = JSON.parse(pendingOrderJSON);
+        console.log("Pending payment found for order:", pendingOrder.id);
+        // ถ้ามีออเดอร์รอจ่ายเงิน ให้เปิดหน้าต่างชำระเงินขึ้นมาทันที
+        openPaymentModal(pendingOrder.id, pendingOrder.total);
+    }
+
+    // --- 2. เปิดใช้งานส่วนประกอบที่ 'มีอยู่ทุกหน้า' ---
     initializeSharedComponents();
 
-    // --- 2. ตรวจสอบว่าเราอยู่หน้าไหน แล้วค่อยเรียกใช้ฟังก์ชันเฉพาะทาง ---
+    // --- 3. ตรวจสอบว่าเราอยู่หน้าไหน แล้วค่อยเรียกใช้ฟังก์ชันเฉพาะทาง ---
     // นี่คือหัวใจของการแก้ไขบั๊กทั้งหมด
     if (document.querySelector('.menu-grid')) {
         console.log("Main page detected. Loading menu items...");
