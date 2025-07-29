@@ -205,17 +205,26 @@ function initializePaymentModal() {
 }
 
 
-function openPaymentModal(orderId, total) {
+// --- ⭐️ ฟังก์ชัน openPaymentModal ฉบับ "อัปเกรด" ⭐️ ---
+function openPaymentModal(orderInfo) {
     const paymentModal = document.getElementById('payment-modal');
     const paymentOverlay = document.getElementById('payment-modal-overlay');
     if (!paymentModal || !paymentOverlay) return;
 
-    document.getElementById('payment-total').textContent = parseFloat(total).toFixed(2);
-    document.getElementById('slip-upload-form').dataset.orderId = orderId;
-
+    // แสดงยอดชำระ
+    document.getElementById('payment-total').textContent = orderInfo.total.toFixed(2);
+    
+    // ⭐️ "ฝัง" ข้อมูลทั้งหมดไว้ใน Form เพื่อใช้ตอน Submit ⭐️
+    const slipForm = document.getElementById('slip-upload-form');
+    slipForm.dataset.customerName = orderInfo.customer_name;
+    slipForm.dataset.customerPhone = orderInfo.customer_phone;
+    slipForm.dataset.customerAddress = orderInfo.customer_address;
+    slipForm.dataset.cartItems = JSON.stringify(orderInfo.cartItems);
+    
     paymentModal.classList.remove('hidden');
     paymentOverlay.classList.remove('hidden');
 }
+
 
 function addToCart(productId) {
     const productToAdd = allMenuItems.find(item => item.id == productId);
@@ -282,84 +291,62 @@ function renderCart() {
     }
 }
 
-// --- ⭐️ ฟังก์ชัน handleOrderSubmit ฉบับอัปเกรด ⭐️ ---
+// --- ⭐️ ฟังก์ชัน handleOrderSubmit ฉบับ "เปลี่ยนแปลง" ⭐️ ---
+// ฟังก์ชันนี้จะ "ไม่" ส่งออเดอร์อีกต่อไป แต่จะทำหน้าที่แค่ "เปิดหน้าต่างชำระเงิน"
 async function handleOrderSubmit(event) {
     event.preventDefault();
-    const submitBtn = document.getElementById('confirm-order-btn');
-    submitBtn.textContent = 'กำลังส่ง...';
-    submitBtn.disabled = true;
-
+    
+    // 1. รวบรวมข้อมูลจากฟอร์ม
     const customer_name = document.getElementById('customer_name').value;
     const customer_phone = document.getElementById('customer_phone').value;
     const customer_address = document.getElementById('customer_address').value;
     const cartItems = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+    
+    // คำนวณราคารวม
+    const total = cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
 
-    // คำนวณราคารวมฝั่ง Frontend เพื่อส่งไปแสดงผล
-    const total_price_calculated = cartItems.reduce((total, item) => {
-        return total + (parseFloat(item.price) * item.quantity);
-    }, 0);
+    // 2. ซ่อนหน้าต่าง Checkout
+    document.getElementById('checkout-modal').classList.add('hidden');
+    document.getElementById('checkout-modal-overlay').classList.add('hidden');
+    
+    // 3. เปิดหน้าต่าง Payment และ "ส่งข้อมูล" ไปให้
+    openPaymentModal({ customer_name, customer_phone, customer_address, cartItems, total });
+}
 
-    const orderData = {
-        customer_name, customer_phone, customer_address,
-        items: cartItems.map(item => ({ id: item.id, quantity: item.quantity }))
-    };
+// --- ⭐️ ฟังก์ชัน handleSlipSubmit ฉบับ "อัปเกรดใหญ่" ⭐️ ---
+// ตอนนี้ฟังก์ชันนี้จะทำหน้าที่ส่ง "ทุกอย่าง"
+async function handleSlipSubmit(event) {
+    event.preventDefault();
+    const form = event.target;
+    const fileInput = document.getElementById('slip-file-input');
+    const submitBtn = document.getElementById('confirm-payment-btn');
+
+    if (fileInput.files.length === 0) { /* ... */ return; }
+
+    submitBtn.textContent = 'กำลังส่งออเดอร์...';
+    submitBtn.disabled = true;
+
+    // 1. สร้าง FormData สำหรับส่งไฟล์
+    const formData = new FormData();
+    formData.append('payment_slip', fileInput.files[0]);
+    
+    // 2. "ดึง" ข้อมูลที่ฝังไว้ออกมา
+    formData.append('customer_name', form.dataset.customerName);
+    formData.append('customer_phone', form.dataset.customerPhone);
+    formData.append('customer_address', form.dataset.customerAddress);
+    formData.append('items', form.dataset.cartItems);
 
     try {
-        const response = await fetch('https://kitsu-django-backend.onrender.com/api/orders/create/', {
+        const response = await fetch(`${API_BASE_URL}/api/orders/submit-final/`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData),
+            body: formData, // ส่ง FormData ที่มีทุกอย่าง
         });
 
         if (response.ok) {
             const result = await response.json();
-            localStorage.removeItem('kitsuCart');
+            localStorage.removeItem('kitsuCart'); // ล้างตะกร้า
             renderCart();
-            document.getElementById('checkout-modal').classList.add('hidden');
-            document.getElementById('checkout-modal-overlay').classList.add('hidden');
-            
-            // --- เปิด Payment Modal แทน alert ---
-            openPaymentModal(result.order_id, total_price_calculated); 
-        } else {
-            const errorData = await response.json();
-            alert('เกิดข้อผิดพลาด: ' + JSON.stringify(errorData));
-        }
-    } catch (error) {
-        alert('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง');
-    } finally {
-        submitBtn.textContent = 'ยืนยันคำสั่งซื้อ';
-        submitBtn.disabled = false;
-    }
-}
-
-// --- ⭐️ ฟังก์ชัน handleSlipSubmit ฉบับอัปเกรด ⭐️ ---
-async function handleSlipSubmit(event) {
-    event.preventDefault();
-    const form = event.target;
-    const orderId = form.dataset.orderId;
-    const fileInput = document.getElementById('slip-file-input');
-    const submitBtn = document.getElementById('confirm-payment-btn');
-
-    if (fileInput.files.length === 0) {
-        alert('กรุณาแนบสลิป');
-        return;
-    }
-
-    submitBtn.textContent = 'กำลังอัปโหลด...';
-    submitBtn.disabled = true;
-
-    const formData = new FormData();
-    formData.append('payment_slip', fileInput.files);
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}/upload-slip/`, {
-            method: 'PATCH',
-            body: formData,
-        });
-
-        if (response.ok) {
-            // --- ⭐️ แก้ไข alert ตรงนี้ ⭐️ ---
-            alert(`อัปโหลดสลิปสำเร็จ! ขอบคุณสำหรับคำสั่งซื้อครับ คุณสามารถใช้ Order ID #${orderId} เพื่อติดตามสถานะได้เลย`);
+            alert(`ออเดอร์ #${result.order_id} สำเร็จ! ขอบคุณครับ`);
             window.location.href = 'index.html';
         } else {
             const errorData = await response.json();
