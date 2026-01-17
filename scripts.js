@@ -293,25 +293,25 @@ function renderCart() {
 
 // --- ⭐️ ฟังก์ชัน handleOrderSubmit ฉบับ "เปลี่ยนแปลง" ⭐️ ---
 // ฟังก์ชันนี้จะ "ไม่" ส่งออเดอร์อีกต่อไป แต่จะทำหน้าที่แค่ "เปิดหน้าต่างชำระเงิน"
-async function handleOrderSubmit(event) {
-    event.preventDefault();
+//async function handleOrderSubmit(event) {
+    //event.preventDefault();
     
     // 1. รวบรวมข้อมูลจากฟอร์ม
-    const customer_name = document.getElementById('customer_name').value;
-    const customer_phone = document.getElementById('customer_phone').value;
-    const customer_address = document.getElementById('customer_address').value;
-    const cartItems = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+    //const customer_name = document.getElementById('customer_name').value;
+    //const customer_phone = document.getElementById('customer_phone').value;
+    //const customer_address = document.getElementById('customer_address').value;
+    //const cartItems = JSON.parse(localStorage.getItem('kitsuCart')) || [];
     
     // คำนวณราคารวม
-    const total = cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+    //const total = cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
 
     // 2. ซ่อนหน้าต่าง Checkout
-    document.getElementById('checkout-modal').classList.add('hidden');
-    document.getElementById('checkout-modal-overlay').classList.add('hidden');
+    //document.getElementById('checkout-modal').classList.add('hidden');
+    //document.getElementById('checkout-modal-overlay').classList.add('hidden');
     
     // 3. เปิดหน้าต่าง Payment และ "ส่งข้อมูล" ไปให้
-    openPaymentModal({ customer_name, customer_phone, customer_address, cartItems, total });
-}
+    //openPaymentModal({ customer_name, customer_phone, customer_address, cartItems, total });
+//}
 
 // --- ⭐️ ฟังก์ชัน handleSlipSubmit ฉบับ "อัปเกรดใหญ่" ⭐️ ---
 // ตอนนี้ฟังก์ชันนี้จะทำหน้าที่ส่ง "ทุกอย่าง"
@@ -379,4 +379,47 @@ function initializeGlobalEventListeners() {
             return;
         }
     });
+}
+
+// --- ⭐️ ฟังก์ชัน handleOrderSubmit ฉบับ "เปลี่ยนแปลง" ⭐️ ---
+// ฟังก์ชันนี้จะ "ไม่" สร้างออเดอร์โดยตรงอีกต่อไป
+async function handleOrderSubmit(event) {
+    event.preventDefault();
+    const submitBtn = document.getElementById('confirm-order-btn');
+    submitBtn.textContent = 'กำลังสร้างคำสั่งซื้อ...';
+    submitBtn.disabled = true;
+
+    // รวบรวมข้อมูลเหมือนเดิม
+    const customer_name = document.getElementById('customer_name').value;
+    const customer_phone = document.getElementById('customer_phone').value;
+    const customer_address = document.getElementById('customer_address').value;
+    const cartItems = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+    
+    const orderData = {
+        customer_name, customer_phone, customer_address,
+        items: cartItems.map(item => ({ id: item.id, quantity: item.quantity }))
+    };
+
+    try {
+        // ⭐️ เรียกใช้ API ใหม่เพื่อสร้าง Payment Intent ⭐️
+        const response = await fetch(`${API_BASE_URL}/api/payments/create-intent/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData),
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            // ⭐️ "วาร์ป" ไปที่หน้า Simulator ⭐️
+            window.location.href = result.simulator_url;
+        } else {
+            const errorData = await response.json();
+            throw new Error(JSON.stringify(errorData));
+        }
+    } catch (error) {
+        alert('เกิดข้อผิดพลาดในการสร้างคำสั่งซื้อ: ' + error.message);
+    } finally {
+        submitBtn.textContent = 'ยืนยันข้อมูล';
+        submitBtn.disabled = false;
+    }
 }

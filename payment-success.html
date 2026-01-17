@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><title>Payment Successful</title><link rel="stylesheet" href="dashboard.css"></head>
+<body>
+    <div class="login-container" style="text-align: center;">
+        <h2>✅ Payment Successful!</h2>
+        <p>Thank you for your order. Your order has been received.</p>
+        <p id="success-message"></p>
+        <a href="index.html" class="login-btn">Back to Homepage</a>
+    </div>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const orderId = params.get('order_id');
+        if (orderId) {
+            document.getElementById('success-message').textContent = `Your Order ID is #${orderId}. You can now upload your payment slip on the main page.`;
+        }
+    </script>
+</body>
+</html>
