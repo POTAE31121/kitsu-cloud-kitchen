@@ -186,35 +186,51 @@ async function handleOrderSubmit(e) {
     btn.disabled = true;
     btn.textContent = 'กำลังดำเนินการ...';
 
-    const orderData = {
-        customer_name: customer_name.value,
-        customer_phone: customer_phone.value,
-        customer_address: customer_address.value,
-        items: JSON.parse(localStorage.getItem('kitsuCart')).map(i => ({
-            id: i.id,
-            quantity: i.quantity
-        }))
-    };
-
-    const res = await fetch(`${API_BASE_URL}/api/payment/create-intent/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: total})
-    });
-
-    if (!res.ok) {
-        throw new Error('Payment failed');
-    }
-
-    const data = await res.json();
-
-    if (!data.simulator_url) {
-        console.error('Missing simulator URL', data);
-        alert('Payment failed');
+    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+    if (cart.length === 0) {
+        alert('ตะกร้าว่าง');
+        btn.disabled = false;
+        btn.textContent = 'ยืนยันการสั่งซื้อ';
         return;
     }
-    
-    window.location.href = data.simulator_url;
+
+    // ✅ คำนวณยอดรวมตรงนี้
+    const total = cart.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+    );
+
+    try {
+        const res = await fetch(
+            `${API_BASE_URL}/api/payment/create-intent/`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: total })
+            }
+        );
+
+        if (!res.ok) {
+            throw new Error('Payment failed');
+        }
+
+        const data = await res.json();
+
+        if (!data.simulator_url) {
+            console.error('Missing simulator_url', data);
+            alert('Payment gateway error');
+            return;
+        }
+
+        // ✅ redirect ถูกต้อง
+        window.location.href = data.simulator_url;
+
+    } catch (err) {
+        console.error(err);
+        alert('เกิดข้อผิดพลาดในการชำระเงิน');
+        btn.disabled = false;
+        btn.textContent = 'ยืนยันการสั่งซื้อ';
+    }
 }
 
 // ===============================================
