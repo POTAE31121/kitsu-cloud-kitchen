@@ -196,7 +196,7 @@ async function handleOrderSubmit(e) {
         }))
     };
 
-    const res = await fetch(`${API_BASE_URL}/api/payments/create-intent/`, {
+    const res = await fetch(`${API_BASE_URL}/api/payment/create-intent/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
