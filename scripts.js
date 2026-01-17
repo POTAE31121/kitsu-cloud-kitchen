@@ -153,27 +153,39 @@ function renderCart() {
 async function handleOrderSubmit(event) {
     event.preventDefault();
 
-    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
-    if (!cart.length) return alert('ตะกร้าว่าง');
+    const cartItems = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+    if (cartItems.length === 0) {
+        alert('ตะกร้าว่าง');
+        return;
+    }
 
-    const total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+    const total = cartItems.reduce(
+        (sum, item) => sum + parseFloat(item.price) * item.quantity,
+        0
+    );
 
     try {
-        const res = await fetch(`${API_BASE_URL}/api/payment/create-intent/`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount: total })
-        });
+        const response = await fetch(
+            `${API_BASE_URL}/api/payment/create-intent/`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: total })
+            }
+        );
 
-        if (!res.ok) throw new Error();
-        const data = await res.json();
+        if (!response.ok) {
+            throw new Error('Create payment intent failed');
+        }
 
-        window.location.href = data.simulator_url;
-    } catch {
-        alert('สร้าง payment ไม่สำเร็จ');
+        const result = await response.json();
+        window.location.href = result.simulator_url;
+
+    } catch (error) {
+        alert('ไปหน้า payment ไม่สำเร็จ');
+        console.error(error);
     }
 }
-
 // ===============================================
 //           GLOBAL EVENTS
 // ===============================================
