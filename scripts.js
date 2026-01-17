@@ -1,15 +1,15 @@
 // ===============================================
-//           MASTER SCRIPT FILE (FINAL FIXED)
+//           MASTER SCRIPT FILE (STABLE VERSION)
 // ===============================================
 
-let allMenuItems = [];
 const API_BASE_URL = 'https://kitsu-django-backend.onrender.com';
+let allMenuItems = [];
 
 // ===============================================
 //           CORE INITIALIZER
 // ===============================================
+
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("Kitsu Kitchen master script loaded!");
     initializeSharedComponents();
 
     if (document.querySelector('.menu-grid')) {
@@ -22,62 +22,36 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ===============================================
-//           PAGE-SPECIFIC LOGIC
+//           MENU PAGE
 // ===============================================
+
 async function displayMenuItems() {
-    const apiUrl = `${API_BASE_URL}/api/items/`;
-    const menuContainer = document.querySelector('.menu-grid');
-    if (!menuContainer) return;
+    const container = document.querySelector('.menu-grid');
+    container.innerHTML = 'กำลังโหลด...';
 
-    menuContainer.innerHTML = 'Loading...';
+    const res = await fetch(`${API_BASE_URL}/api/items/`);
+    const data = await res.json();
+    allMenuItems = data;
 
-    try {
-        const response = await fetch(apiUrl);
-        const menuItems = await response.json();
-        allMenuItems = menuItems;
-        menuContainer.innerHTML = '';
-
-        menuItems.forEach(item => {
-            menuContainer.insertAdjacentHTML('beforeend', `
-                <div class="menu-card">
-                    <img src="${item.image_url}">
-                    <h3>${item.name}</h3>
-                    <p>฿${item.price}</p>
-                    <button class="add-to-cart-btn" data-id="${item.id}">
-                        เพิ่มลงตะกร้า
-                    </button>
-                </div>
-            `);
-        });
-    } catch {
-        menuContainer.innerHTML = 'โหลดเมนูไม่สำเร็จ';
-    }
-}
-
-function initializeOrderStatusPage() {
-    const btn = document.getElementById('track-order-btn');
-    btn.addEventListener('click', async () => {
-        const id = document.getElementById('order-id-input').value.trim();
-        if (!id) return alert('กรุณากรอก Order ID');
-
-        try {
-            const res = await fetch(`${API_BASE_URL}/api/orders/${id}/`);
-            if (!res.ok) throw new Error();
-            const data = await res.json();
-
-            document.getElementById('order-status').textContent = data.status;
-            document.getElementById('display-order-id').textContent = data.id;
-            document.getElementById('display-total-price').textContent = data.total_price;
-            document.getElementById('status-display-container').style.display = 'block';
-        } catch {
-            alert('ไม่พบออเดอร์');
-        }
+    container.innerHTML = '';
+    data.forEach(item => {
+        container.insertAdjacentHTML('beforeend', `
+            <div class="menu-card">
+                <img src="${item.image_url}">
+                <h3>${item.name}</h3>
+                <p>฿${item.price}</p>
+                <button class="add-to-cart-btn" data-id="${item.id}">
+                    เพิ่มลงตะกร้า
+                </button>
+            </div>
+        `);
     });
 }
 
 // ===============================================
-//           SHARED LOGIC
+//           SHARED
 // ===============================================
+
 function initializeSharedComponents() {
     initializeCartModal();
     initializeCheckoutModal();
@@ -85,43 +59,29 @@ function initializeSharedComponents() {
     initializeGlobalEventListeners();
 }
 
-function initializeCartModal() {
-    const openBtns = [document.getElementById('cart-icon'), document.getElementById('cart-fab')];
-    const modal = document.getElementById('cart-modal');
-    const overlay = document.getElementById('cart-modal-overlay');
-    const closeBtn = document.getElementById('modal-close-btn');
-
-    const open = () => { modal.classList.remove('hidden'); overlay.classList.remove('hidden'); };
-    const close = () => { modal.classList.add('hidden'); overlay.classList.add('hidden'); };
-
-    openBtns.forEach(b => b && b.addEventListener('click', open));
-    closeBtn && closeBtn.addEventListener('click', close);
-    overlay && overlay.addEventListener('click', close);
-}
-
-function initializeCheckoutModal() {
-    const form = document.getElementById('checkout-form');
-    if (form) form.addEventListener('submit', handleOrderSubmit);
-}
-
 // ===============================================
 //           CART
 // ===============================================
+
 function addToCart(id) {
-    const product = allMenuItems.find(i => i.id == id);
-    if (!product) return;
+    const product = allMenuItems.find(p => p.id == id);
+    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
 
-    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
-    const exist = cart.find(i => i.id == id);
+    const existing = cart.find(i => i.id == id);
+    if (existing) {
+        existing.quantity++;
+    } else {
+        cart.push({ id, name: product.name, price: product.price, quantity: 1 });
+    }
 
-    exist ? exist.quantity++ : cart.push({ ...product, quantity: 1 });
     localStorage.setItem('kitsuCart', JSON.stringify(cart));
     renderCart();
 }
 
 function removeFromCart(id) {
-    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
-    localStorage.setItem('kitsuCart', JSON.stringify(cart.filter(i => i.id != id)));
+    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+    cart = cart.filter(i => i.id != id);
+    localStorage.setItem('kitsuCart', JSON.stringify(cart));
     renderCart();
 }
 
@@ -129,72 +89,147 @@ function renderCart() {
     const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
     const container = document.getElementById('modal-cart-items');
     const totalEl = document.getElementById('modal-cart-total');
+    const badge = document.getElementById('cart-badge');
+    const fab = document.getElementById('cart-fab');
+
     if (!container) return;
 
-    let total = 0;
     container.innerHTML = '';
+    let total = 0;
+    let qty = 0;
 
-    cart.forEach(i => {
-        total += i.price * i.quantity;
+    cart.forEach(item => {
+        total += item.price * item.quantity;
+        qty += item.quantity;
+
         container.insertAdjacentHTML('beforeend', `
-            <div>
-                ${i.name} x${i.quantity}
-                <button class="remove-from-cart-btn" data-id="${i.id}">×</button>
+            <div class="cart-item">
+                <span>${item.name} x${item.quantity}</span>
+                <button class="remove-from-cart-btn" data-id="${item.id}">×</button>
             </div>
         `);
     });
 
     totalEl.textContent = total.toFixed(2);
+    badge.textContent = qty;
+
+    badge.classList.toggle('hidden', qty === 0);
+    fab.classList.toggle('hidden', qty === 0);
 }
 
 // ===============================================
-//           CHECKOUT → PAYMENT INTENT
+//           MODALS
 // ===============================================
-async function handleOrderSubmit(event) {
-    event.preventDefault();
 
-    const cartItems = JSON.parse(localStorage.getItem('kitsuCart')) || [];
-    if (cartItems.length === 0) {
-        alert('ตะกร้าว่าง');
-        return;
-    }
+function initializeCartModal() {
+    const icon = document.getElementById('cart-icon');
+    const fab = document.getElementById('cart-fab');
+    const modal = document.getElementById('cart-modal');
+    const overlay = document.getElementById('cart-modal-overlay');
+    const close = document.getElementById('modal-close-btn');
 
-    const total = cartItems.reduce(
-        (sum, item) => sum + parseFloat(item.price) * item.quantity,
-        0
-    );
+    const open = () => {
+        modal.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+    };
 
-    try {
-        const response = await fetch(
-            `${API_BASE_URL}/api/payment/create-intent/`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: total })
-            }
-        );
+    const closeFn = () => {
+        modal.classList.add('hidden');
+        overlay.classList.add('hidden');
+    };
 
-        if (!response.ok) {
-            throw new Error('Create payment intent failed');
+    icon?.addEventListener('click', open);
+    fab?.addEventListener('click', open);
+    close?.addEventListener('click', closeFn);
+    overlay?.addEventListener('click', closeFn);
+}
+
+function initializeCheckoutModal() {
+    const checkoutBtn = document.querySelector('#cart-modal .checkout-btn');
+    const modal = document.getElementById('checkout-modal');
+    const overlay = document.getElementById('checkout-modal-overlay');
+    const close = document.getElementById('checkout-close-btn');
+    const form = document.getElementById('checkout-form');
+
+    const open = () => {
+        modal.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+    };
+
+    const closeFn = () => {
+        modal.classList.add('hidden');
+        overlay.classList.add('hidden');
+    };
+
+    checkoutBtn?.addEventListener('click', () => {
+        const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+        if (cart.length === 0) {
+            alert('ตะกร้าว่าง');
+            return;
         }
+        open();
+    });
 
-        const result = await response.json();
-        window.location.href = result.simulator_url;
-
-    } catch (error) {
-        alert('ไปหน้า payment ไม่สำเร็จ');
-        console.error(error);
-    }
+    close?.addEventListener('click', closeFn);
+    overlay?.addEventListener('click', closeFn);
+    form?.addEventListener('submit', handleOrderSubmit);
 }
+
+// ===============================================
+//           CHECKOUT → PAYMENT SIMULATOR
+// ===============================================
+
+async function handleOrderSubmit(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById('confirm-order-btn');
+    btn.disabled = true;
+    btn.textContent = 'กำลังดำเนินการ...';
+
+    const orderData = {
+        customer_name: customer_name.value,
+        customer_phone: customer_phone.value,
+        customer_address: customer_address.value,
+        items: JSON.parse(localStorage.getItem('kitsuCart')).map(i => ({
+            id: i.id,
+            quantity: i.quantity
+        }))
+    };
+
+    const res = await fetch(`${API_BASE_URL}/api/payments/create-intent/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+    });
+
+    const data = await res.json();
+    window.location.href = data.simulator_url;
+}
+
 // ===============================================
 //           GLOBAL EVENTS
 // ===============================================
+
 function initializeGlobalEventListeners() {
     document.addEventListener('click', e => {
+
         const add = e.target.closest('.add-to-cart-btn');
-        if (add) addToCart(add.dataset.id);
+        if (add) {
+            addToCart(add.dataset.id);
+
+            const t = add.textContent;
+            add.textContent = 'เพิ่มแล้ว ✓';
+            add.disabled = true;
+
+            setTimeout(() => {
+                add.textContent = t;
+                add.disabled = false;
+            }, 800);
+        }
 
         const remove = e.target.closest('.remove-from-cart-btn');
-        if (remove) removeFromCart(remove.dataset.id);
+        if (remove) {
+            removeFromCart(remove.dataset.id);
+        }
     });
 }
