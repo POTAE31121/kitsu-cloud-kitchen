@@ -199,10 +199,21 @@ async function handleOrderSubmit(e) {
     const res = await fetch(`${API_BASE_URL}/api/payment/create-intent/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData)
+        body: JSON.stringify({ amount: total})
     });
 
+    if (!res.ok) {
+        throw new Error('Payment failed');
+    }
+
     const data = await res.json();
+
+    if (!data.simulator_url) {
+        console.error('Missing simulator URL', data);
+        alert('Payment failed');
+        return;
+    }
+    
     window.location.href = data.simulator_url;
 }
 
