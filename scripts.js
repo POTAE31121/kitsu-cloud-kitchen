@@ -11,6 +11,7 @@ let allMenuItems = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeSharedComponents();
+    initializeMobileMenu();
 
     if (document.querySelector('.menu-grid')) {
         displayMenuItems();
@@ -274,3 +275,16 @@ function initializeGlobalEventListeners() {
         }
     });
 }
+
+// ===============================================
+//           Initialize Mobile Menu
+// ===============================================
+function initializeMobileMenu() {
+    const hamburger = document.getElementById('hamburger-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    hamburger?.addEventListener('click', () => {
+        mobileMenu.classList.toggle('active');
+    });
+}
+
