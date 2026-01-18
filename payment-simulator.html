@@ -22,44 +22,36 @@
         <p id="sim-status" style="margin-top: 15px; font-weight: bold;"></p>
     </div>
     <script>
-        const API_BASE_URL = 'https://kitsu-django-backend.onrender.com';
-        const statusEl = document.getElementById('sim-status');
-        
-        // 1. ดึงข้อมูลจาก URL
         const params = new URLSearchParams(window.location.search);
         const intentId = params.get('intent_id');
-        const orderId = params.get('order_id');
         const amount = params.get('amount');
 
-        document.getElementById('sim-order-id').textContent = orderId;
-        document.getElementById('sim-amount').textContent = parseFloat(amount).toFixed(2);
-
-        // 2. ฟังก์ชันส่ง Webhook
-        async function sendWebhook(eventType) {
-            statusEl.textContent = 'Processing...';
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/webhook/payment/`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ intent_id: intentId, event_type: eventType })
-                });
-                if (!response.ok) throw new Error('Webhook failed');
-                
-                if (eventType === 'payment.success') {
-                    statusEl.textContent = 'Payment Successful! Redirecting...';
-                    window.location.href = `payment-success.html?order_id=${orderId}`;
-                } else {
-                    statusEl.textContent = 'Payment Failed! Redirecting...';
-                    window.location.href = 'payment-fail.html';
-                }
-            } catch (error) {
-                statusEl.textContent = 'Error: ' + error.message;
-            }
-        }
-
-        // 3. ติดตั้ง Event Listener
-        document.getElementById('pay-success-btn').addEventListener('click', () => sendWebhook('payment.success'));
-        document.getElementById('pay-fail-btn').addEventListener('click', () => sendWebhook('payment.fail'));
+        function simulatePayment(success) {
+            fetch('https://kitsu-django-backend.onrender.com/api/webhook/payment/', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+            intent_id: intentId,
+            status: success ? 'success' : 'failed',
+            amount: amount
+            })
+        })
+        .then(async res => {
+            const data = await res.json();
+            if (!res.ok) throw data;
+            return data;
+        })
+        .then(data => {
+            alert(data.message);
+            console.log('Webhook OK:', data);
+        })
+        .catch(err => {
+        console.error('Webhook error:', err);
+        alert('Error: Webhook failed');
+        });
+    }
     </script>
 </body>
 </html>
