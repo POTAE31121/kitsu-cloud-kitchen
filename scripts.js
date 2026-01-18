@@ -180,75 +180,45 @@ function initializeCheckoutModal() {
 // ===============================================
 
 async function handleOrderSubmit(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    const btn = document.getElementById('confirm-order-btn');
-    btn.disabled = true;
-    btn.textContent = 'กำลังดำเนินการ...';
+  const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+  if (cart.length === 0) {
+    alert('ตะกร้าว่าง');
+    return;
+  }
 
-    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
-    if (cart.length === 0) {
-        alert('ตะกร้าว่าง');
-        btn.disabled = false;
-        btn.textContent = 'ยืนยันการสั่งซื้อ';
-        return;
-    }
+  try {
+    // ✅ STEP 1: สร้าง Order ก่อน
+    const orderRes = await fetch(`${API_BASE_URL}/api/orders/submit-final/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: cart })
+    });
 
-    // ✅ คำนวณยอดรวม
-    const total = cart.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
-    );
+    if (!orderRes.ok) throw new Error('Create order failed');
 
-    // ✅ แปลงเป็นหน่วยเล็กสุด (บาท → สตางค์)
-    const amount = Math.round(total * 100);
+    const orderData = await orderRes.json();
+    const orderId = orderData.order_id; // ← ตัวแปรนี้มีจริงแล้ว
 
-    // ✅ ดึงข้อมูลจากฟอร์ม
-    const formData = new FormData(e.target);
+    // ✅ STEP 2: สร้าง Payment Intent
+    const payRes = await fetch(`${API_BASE_URL}/api/payment/create-intent/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order_id: orderId })
+    });
 
-    const payload = {
-        amount: amount,
-        customer_name: formData.get('customer_name'),
-        customer_phone: formData.get('customer_phone'),
-        customer_address: formData.get('customer_address'),
-        items: cart
-    };
+    if (!payRes.ok) throw new Error('Payment failed');
 
-    try {
-        const res = await fetch(
-            `${API_BASE_URL}/api/payment/create-intent/`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    order_id: orderID
-                })
-            }
-        );
+    const payData = await payRes.json();
 
-        if (!res.ok) {
-            const err = await res.json();
-            console.error('Payment error:', err);
-            throw new Error('Payment failed');
-        }
+    // ✅ STEP 3: Redirect
+    window.location.href = payData.simulator_url;
 
-        const data = await res.json();
-
-        if (!data.simulator_url) {
-            console.error('Missing simulator_url', data);
-            alert('Payment gateway error');
-            return;
-        }
-
-        // ✅ redirect ไป simulator
-        window.location.href = data.simulator_url;
-
-    } catch (err) {
-        console.error(err);
-        alert('เกิดข้อผิดพลาดในการชำระเงิน');
-        btn.disabled = false;
-        btn.textContent = 'ยืนยันการสั่งซื้อ';
-    }
+  } catch (err) {
+    console.error(err);
+    alert('เกิดข้อผิดพลาด');
+  }
 }
 
 // ===============================================
