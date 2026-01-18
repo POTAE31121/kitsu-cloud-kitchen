@@ -285,14 +285,14 @@ function initializeMobileMenu() {
     const overlay = document.getElementById('slide-menu-overlay');
     
     burger.addEventListener('click', () => {
-        menu.classList.add('open');
+        slideMenu.classList.add('open');
         overlay.classList.remove('hidden');
     });
 
     overlay.addEventListener('click', closeMenu);
 
     function closeMenu() {
-        menu.classList.remove('open');
+        slideMenu.classList.remove('open');
         overlay.classList.add('hidden');
     }
 }
