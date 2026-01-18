@@ -297,7 +297,7 @@ nav {
   .nav-links-desktop, .nav-cart {
     display: none !important; /* ซ่อนเมนู Desktop และไอคอนตะกร้า */
   }
-  .menu-toggle {
+  .hamburger-btn {
     display: block !important; /* แสดงปุ่ม Hamburger */
   }
   .cart-fab {
@@ -347,4 +347,11 @@ nav {
 
 .mobile-menu.active {
     display: block;
+}
+
+#cart-fab,
+#cart-fab i,
+#cart-fab svg {
+    color: #000000 !important;
+    fill: #000 !important;
 }
