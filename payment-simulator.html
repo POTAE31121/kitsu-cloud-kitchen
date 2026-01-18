@@ -17,41 +17,40 @@
             <label>Card Number</label>
             <input type="text" value="4242 4242 4242 4242" disabled>
         </div>
-        <button id="pay-success-btn" class="login-btn">Simulate SUCCESSFUL Payment</button>
-        <button id="pay-fail-btn" style="background-color: #e74c3c; margin-top: 10px;" class="login-btn">Simulate FAILED Payment</button>
-        <p id="sim-status" style="margin-top: 15px; font-weight: bold;"></p>
+        <button onclick="simulatePayment('success')">
+        Simulate SUCCESSFUL Payment
+        </button>
+
+        <button onclick="simulatePayment('failed')">
+        Simulate FAILED Payment
+        </button>
     </div>
     <script>
+        async function simulatePayment(status) {
         const params = new URLSearchParams(window.location.search);
-        const intentId = params.get('intent_id');
-        const amount = params.get('amount');
 
-        function simulatePayment(success) {
-            fetch('https://kitsu-django-backend.onrender.com/api/webhook/payment/', {
-            method: 'POST',
+        const payload = {
+            intent_id: params.get("intent_id"),
+            amount: Number(params.get("amount")),
+            status: status
+        };
+
+        const res = await fetch(
+            "https://kitsu-django-backend.onrender.com/api/webhook/payment/",
+            {
+            method: "POST",
             headers: {
-            'Content-Type': 'application/json'
+                "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-            intent_id: intentId,
-            status: success ? 'success' : 'failed',
-            amount: amount
-            })
-        })
-        .then(async res => {
-            const data = await res.json();
-            if (!res.ok) throw data;
-            return data;
-        })
-        .then(data => {
-            alert(data.message);
-            console.log('Webhook OK:', data);
-        })
-        .catch(err => {
-        console.error('Webhook error:', err);
-        alert('Error: Webhook failed');
-        });
+            body: JSON.stringify(payload)
+            }
+        );
+
+        const data = await res.json();
+        console.log("Webhook response:", data);
+        alert("Webhook sent: " + status);
     }
     </script>
+
 </body>
 </html>
