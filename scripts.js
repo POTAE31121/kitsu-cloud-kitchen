@@ -178,7 +178,6 @@ function initializeCheckoutModal() {
 // ===============================================
 //           CHECKOUT → PAYMENT SIMULATOR
 // ===============================================
-
 async function handleOrderSubmit(e) {
   e.preventDefault();
 
@@ -188,20 +187,40 @@ async function handleOrderSubmit(e) {
     return;
   }
 
+  // ✅ แปลง cart ให้ตรง backend
+  const itemsPayload = cart.map(item => ({
+    id: item.id,
+    quantity: item.quantity
+  }));
+
+  // ✅ ดึงค่าจาก input (id ตรงกับ HTML แล้ว)
+  const customerName = document.getElementById('customer_name')?.value.trim();
+  const customerPhone = document.getElementById('customer_phone')?.value.trim();
+  const customerAddress = document.getElementById('customer_address')?.value.trim();
+
+  if (!customerName || !customerPhone || !customerAddress) {
+    alert('กรุณากรอกข้อมูลให้ครบ');
+    return;
+  }
+
   try {
     // STEP 1: Create Order
     const orderRes = await fetch(`${API_BASE_URL}/api/orders/submit-final/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        customer_name: document.getElementById('customer_name').value,
-        customer_phone: document.getElementById('customer_phone').value,
-        customer_address: document.getElementById('customer_address').value,
-        items: cart
+        customer_name: customerName,
+        customer_phone: customerPhone,
+        customer_address: customerAddress,
+        items: JSON.stringify(itemsPayload) // ⭐ สำคัญที่สุด
       })
     });
 
-    if (!orderRes.ok) throw new Error('Create order failed');
+    if (!orderRes.ok) {
+      const errText = await orderRes.text();
+      console.error(errText);
+      throw new Error('Create order failed');
+    }
 
     const { order_id } = await orderRes.json();
 
@@ -224,6 +243,7 @@ async function handleOrderSubmit(e) {
     alert('เกิดข้อผิดพลาด');
   }
 }
+
 
 // ===============================================
 //           GLOBAL EVENTS
