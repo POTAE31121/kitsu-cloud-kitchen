@@ -283,8 +283,8 @@ function initializeMobileMenu() {
     const hamburger = document.getElementById('hamburger-btn');
     const slideMenu = document.getElementById('slide-menu');
     const overlay = document.getElementById('slide-menu-overlay');
-    
-    burger.addEventListener('click', () => {
+
+    hamburger.addEventListener('click', () => {
         slideMenu.classList.add('open');
         overlay.classList.remove('hidden');
     });
