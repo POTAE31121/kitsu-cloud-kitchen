@@ -283,14 +283,11 @@ function initializeGlobalEventListeners() {
 function initializeMobileMenu() {
     const hamburger = document.getElementById('hamburger-btn');
     const slideMenu = document.getElementById('slide-menu');
-    const overlay = document.getElementById('slide-menu-overlay');
-
+    
     hamburger.addEventListener('click', () => {
         slideMenu.classList.add('open');
         overlay.classList.remove('hidden');
     });
-
-    overlay.addEventListener('click', closeMenu);
 
     function closeMenu() {
         slideMenu.classList.remove('open');
