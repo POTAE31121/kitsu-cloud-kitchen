@@ -89,7 +89,7 @@ function renderCart() {
     const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
     const container = document.getElementById('modal-cart-items');
     const totalEl = document.getElementById('modal-cart-total');
-    const badge = document.getElementById('cart-badge');
+    const badge = document.getElementById('.cart-badge');
     const fab = document.getElementById('cart-fab');
 
     if (!container) return;
