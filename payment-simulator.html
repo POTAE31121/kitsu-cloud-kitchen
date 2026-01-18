@@ -120,7 +120,8 @@
   <script>
     const params = new URLSearchParams(window.location.search);
     const intentId = params.get("intent_id");
-    const amount = params.get("amount");
+    const rawAmount = params.get("amount");
+    const amount = rawAmount ? Number(rawAmount).toFixed(2) : "-";
 
     document.getElementById("orderId").innerText = intentId || "-";
     document.getElementById("amount").innerText = amount || "-";
