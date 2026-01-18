@@ -216,7 +216,8 @@ async function handleOrderSubmit(e) {
     const payRes = await fetch(`${API_BASE_URL}/api/payment/create-intent/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ order_id })
+      body: JSON.stringify({
+        amount: orderData.total_price})
     });
 
     if (!payRes.ok) throw new Error('Payment failed');
