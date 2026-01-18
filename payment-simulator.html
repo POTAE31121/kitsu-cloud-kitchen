@@ -38,7 +38,7 @@
         async function sendWebhook(eventType) {
             statusEl.textContent = 'Processing...';
             try {
-                const response = await fetch(`${API_BASE_URL}/api/payment/webhook/`, {
+                const response = await fetch(`${API_BASE_URL}/api/webhook/payment/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ intent_id: intentId, event_type: eventType })
