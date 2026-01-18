@@ -221,7 +221,7 @@ async function handleOrderSubmit(e) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        order_id: order_id,
+        order_id,
         amount: total_price
       })
     });
