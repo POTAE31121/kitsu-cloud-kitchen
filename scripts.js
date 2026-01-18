@@ -286,11 +286,9 @@ function initializeMobileMenu() {
     
     hamburger.addEventListener('click', () => {
         slideMenu.classList.add('open');
-        overlay.classList.remove('hidden');
     });
 
     function closeMenu() {
         slideMenu.classList.remove('open');
-        overlay.classList.add('hidden');
     }
 }
