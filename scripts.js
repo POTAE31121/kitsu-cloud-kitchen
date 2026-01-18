@@ -281,10 +281,10 @@ function initializeGlobalEventListeners() {
 // ===============================================
 function initializeMobileMenu() {
     const hamburger = document.getElementById('hamburger-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
+    const slideMenu = document.getElementById('slide-menu');
 
     hamburger?.addEventListener('click', () => {
-        mobileMenu.classList.toggle('active');
+        slideMenu.classList.toggle('active');
     });
 }
 
