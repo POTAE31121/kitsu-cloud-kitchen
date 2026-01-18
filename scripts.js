@@ -282,9 +282,17 @@ function initializeGlobalEventListeners() {
 function initializeMobileMenu() {
     const hamburger = document.getElementById('hamburger-btn');
     const slideMenu = document.getElementById('slide-menu');
-
-    hamburger?.addEventListener('click', () => {
-        slideMenu.classList.toggle('active');
+    const overlay = document.getElementById('slide-menu-overlay');
+    
+    burger.addEventListener('click', () => {
+        menu.classList.add('open');
+        overlay.classList.remove('hidden');
     });
-}
 
+    overlay.addEventListener('click', closeMenu);
+
+    function closeMenu() {
+        menu.classList.remove('open');
+        overlay.classList.add('hidden');
+    }
+}
