@@ -14,7 +14,7 @@ html {
 body {
   font-family: 'Poppins', sans-serif;
   background: linear-gradient(to bottom, #fff9f4, #fff);
-  color: #ffffff;
+  color: #333;
   line-height: 1.6;
   overflow-x: hidden;
 }
@@ -299,6 +299,7 @@ nav {
   }
   .hamburger-btn {
     display: block !important; /* แสดงปุ่ม Hamburger */
+    color:white
   }
   .cart-fab {
       display: flex !important; /* แสดงปุ่มลอย */
