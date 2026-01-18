@@ -71,7 +71,7 @@ nav {
   color: #f5a623;
 }
 /* --- (โค้ด Slide Menu เดิมยังใช้ได้ แต่จะถูกควบคุมโดย Responsive) --- */
-.slide-menu { position: fixed; top: -100%; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; transition: top 0.4s ease-in-out; z-index: 10000; }
+.slide-menu { position: fixed; top: -100%; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; transition: top 0.4s ease-in-out; z-index: 999; }
 .slide-menu.active { top: 0; }
 .slide-menu ul { list-style: none; padding: 0; text-align: center; display: flex; flex-direction: column; gap: 25px; }
 .slide-menu ul li a { color: #fff; font-size: 2em; text-decoration: none; transition: color 0.3s ease; }

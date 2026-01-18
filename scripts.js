@@ -11,6 +11,7 @@ let allMenuItems = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeSharedComponents();
+    
     initializeMobileMenu();
 
     if (document.querySelector('.menu-grid')) {
