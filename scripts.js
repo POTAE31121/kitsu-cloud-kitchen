@@ -178,7 +178,6 @@ function initializeCheckoutModal() {
 // ===============================================
 //           CHECKOUT → PAYMENT SIMULATOR
 // ===============================================
-
 async function handleOrderSubmit(e) {
   e.preventDefault();
 
@@ -189,23 +188,34 @@ async function handleOrderSubmit(e) {
   }
 
   try {
-    // ✅ STEP 1: สร้าง Order ก่อน
+    // ✅ STEP 1: สร้าง Order (payload ต้องตรง backend)
     const orderRes = await fetch(`${API_BASE_URL}/api/orders/submit-final/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: cart })
+      body: JSON.stringify({
+        customer_name: document.querySelector('[name="customer_name"]').value,
+        customer_phone: document.querySelector('[name="customer_phone"]').value,
+        customer_address: document.querySelector('[name="customer_address"]').value,
+
+        // ❗ backend ต้องการ string
+        items: JSON.stringify(
+          cart.map(item => ({
+            id: item.id,
+            quantity: item.quantity
+          }))
+        )
+      })
     });
 
     if (!orderRes.ok) throw new Error('Create order failed');
 
-    const orderData = await orderRes.json();
-    const orderId = orderData.order_id; // ← ตัวแปรนี้มีจริงแล้ว
+    const { order_id } = await orderRes.json();
 
     // ✅ STEP 2: สร้าง Payment Intent
     const payRes = await fetch(`${API_BASE_URL}/api/payment/create-intent/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ order_id: orderId })
+      body: JSON.stringify({ order_id })
     });
 
     if (!payRes.ok) throw new Error('Payment failed');
