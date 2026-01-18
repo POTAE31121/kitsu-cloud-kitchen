@@ -194,11 +194,25 @@ async function handleOrderSubmit(e) {
         return;
     }
 
-    // ✅ คำนวณยอดรวมตรงนี้
+    // ✅ คำนวณยอดรวม
     const total = cart.reduce(
         (sum, item) => sum + item.price * item.quantity,
         0
     );
+
+    // ✅ แปลงเป็นหน่วยเล็กสุด (บาท → สตางค์)
+    const amount = Math.round(total * 100);
+
+    // ✅ ดึงข้อมูลจากฟอร์ม
+    const formData = new FormData(e.target);
+
+    const payload = {
+        amount: amount,
+        customer_name: formData.get('customer_name'),
+        customer_phone: formData.get('customer_phone'),
+        customer_address: formData.get('customer_address'),
+        items: cart
+    };
 
     try {
         const res = await fetch(
@@ -206,11 +220,13 @@ async function handleOrderSubmit(e) {
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: total })
+                body: JSON.stringify(payload)
             }
         );
 
         if (!res.ok) {
+            const err = await res.json();
+            console.error('Payment error:', err);
             throw new Error('Payment failed');
         }
 
@@ -222,7 +238,7 @@ async function handleOrderSubmit(e) {
             return;
         }
 
-        // ✅ redirect ถูกต้อง
+        // ✅ redirect ไป simulator
         window.location.href = data.simulator_url;
 
     } catch (err) {
