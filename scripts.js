@@ -87,14 +87,16 @@ function removeFromCart(id) {
 
 function renderCart() {
     const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+
     const container = document.getElementById('modal-cart-items');
     const totalEl = document.getElementById('modal-cart-total');
-    const badge = document.getElementById('cart-badge');
     const fab = document.getElementById('cart-fab');
+    const badges = document.querySelectorAll('.cart-badge'); // ⭐ สำคัญ
 
-    if (!container) return;
+    if (!container || !totalEl) return;
 
     container.innerHTML = '';
+
     let total = 0;
     let qty = 0;
 
@@ -111,10 +113,15 @@ function renderCart() {
     });
 
     totalEl.textContent = total.toFixed(2);
-    badge.textContent = qty;
 
-    badge.classList.toggle('hidden', qty === 0);
-    fab.classList.toggle('hidden', qty === 0);
+    // ✅ อัปเดต badge ทุกตัว (desktop + mobile)
+    badges.forEach(badge => {
+        badge.textContent = qty;
+        badge.classList.toggle('hidden', qty === 0);
+    });
+
+    // ✅ FAB
+    fab?.classList.toggle('hidden', qty === 0);
 }
 
 // ===============================================
