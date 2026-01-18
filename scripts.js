@@ -193,9 +193,9 @@ async function handleOrderSubmit(e) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        customer_name: document.querySelector('customer_name').value,
-        customer_phone: document.querySelector('customer_phone').value,
-        customer_address: document.querySelector('customer_address').value,
+        customer_name: document.querySelector("customer_name").value,
+        customer_phone: document.querySelector("customer_phone").value,
+        customer_address: document.querySelector("customer_address").value,
 
         // ❗ backend ต้องการ string
         items: JSON.stringify(
