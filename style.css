@@ -340,3 +340,11 @@ nav {
 #confirm-order-btn {
     width: 100%;
 }
+
+.mobile-menu {
+    display: none;
+}
+
+.mobile-menu.active {
+    display: block;
+}
