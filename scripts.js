@@ -181,40 +181,38 @@ function initializeCheckoutModal() {
 async function handleOrderSubmit(e) {
   e.preventDefault();
 
-  const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
-  if (cart.length === 0) {
+  const rawCart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+  if (rawCart.length === 0) {
     alert('ตะกร้าว่าง');
     return;
   }
 
-  // ✅ แปลง cart ให้ตรง backend
-  const itemsPayload = cart.map(item => ({
-    id: item.id,
-    quantity: item.quantity
+  // 🔥 แปลงให้ backend รับได้เท่านั้น
+  const items = rawCart.map(i => ({
+    id: Number(i.id),          // ต้องเป็น int
+    quantity: Number(i.quantity)
   }));
 
   try {
-    // STEP 1: Create Order
     const orderRes = await fetch(`${API_BASE_URL}/api/orders/submit-final/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        customer_name: document.getElementById('customer_name').value,
-        customer_phone: document.getElementById('customer_phone').value,
-        customer_address: document.getElementById('customer_address').value,
-        items: JSON.stringify(itemsPayload) // ⭐ สำคัญที่สุด
+        customer_name: document.getElementById('customer_name')?.value ?? '',
+        customer_phone: document.getElementById('customer_phone')?.value ?? '',
+        customer_address: document.getElementById('customer_address')?.value ?? '',
+        items: JSON.stringify(items) // ❗ backend บังคับ string
       })
     });
 
+    const raw = await orderRes.text();
     if (!orderRes.ok) {
-      const err = await orderRes.text();
-      console.error(err);
+      console.error('BACKEND RESPONSE:', raw);
       throw new Error('Create order failed');
     }
 
-    const { order_id } = await orderRes.json();
+    const { order_id } = JSON.parse(raw);
 
-    // STEP 2: Create Payment Intent
     const payRes = await fetch(`${API_BASE_URL}/api/payment/create-intent/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -224,8 +222,6 @@ async function handleOrderSubmit(e) {
     if (!payRes.ok) throw new Error('Payment failed');
 
     const payData = await payRes.json();
-
-    // STEP 3: Redirect
     window.location.href = payData.simulator_url;
 
   } catch (err) {
