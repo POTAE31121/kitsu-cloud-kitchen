@@ -178,6 +178,7 @@ function initializeCheckoutModal() {
 // ===============================================
 //           CHECKOUT → PAYMENT SIMULATOR
 // ===============================================
+
 async function handleOrderSubmit(e) {
   e.preventDefault();
 
@@ -188,22 +189,15 @@ async function handleOrderSubmit(e) {
   }
 
   try {
-    // ✅ STEP 1: สร้าง Order (payload ต้องตรง backend)
+    // STEP 1: Create Order
     const orderRes = await fetch(`${API_BASE_URL}/api/orders/submit-final/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        customer_name: document.querySelector("customer_name").value,
-        customer_phone: document.querySelector("customer_phone").value,
-        customer_address: document.querySelector("customer_address").value,
-
-        // ❗ backend ต้องการ string
-        items: JSON.stringify(
-          cart.map(item => ({
-            id: item.id,
-            quantity: item.quantity
-          }))
-        )
+        customer_name: document.getElementById('customer_name').value,
+        customer_phone: document.getElementById('customer_phone').value,
+        customer_address: document.getElementById('customer_address').value,
+        items: cart
       })
     });
 
@@ -211,7 +205,7 @@ async function handleOrderSubmit(e) {
 
     const { order_id } = await orderRes.json();
 
-    // ✅ STEP 2: สร้าง Payment Intent
+    // STEP 2: Create Payment Intent
     const payRes = await fetch(`${API_BASE_URL}/api/payment/create-intent/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -222,7 +216,7 @@ async function handleOrderSubmit(e) {
 
     const payData = await payRes.json();
 
-    // ✅ STEP 3: Redirect
+    // STEP 3: Redirect
     window.location.href = payData.simulator_url;
 
   } catch (err) {
