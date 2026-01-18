@@ -1,56 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Simulator</title>
-    <link rel="stylesheet" href="dashboard.css">
+  <meta charset="UTF-8" />
+  <title>Kitsu Payment Simulator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 40px;
+    }
+
+    .card {
+      max-width: 420px;
+      background: #fff;
+      margin: auto;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,.1);
+    }
+
+    h2 {
+      margin-top: 0;
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+    }
+
+    .success {
+      background: #f5a623;
+      color: #fff;
+    }
+
+    .fail {
+      background: #e74c3c;
+      color: #fff;
+    }
+
+    /* ===== MODAL ===== */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 9999;
+    }
+
+    .modal-box {
+      background: #fff;
+      max-width: 400px;
+      padding: 20px;
+      margin: 15% auto;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .modal-box h3 {
+      margin-top: 0;
+    }
+
+    .modal-box button {
+      background: #333;
+      color: #fff;
+      width: auto;
+      padding: 8px 20px;
+      margin-top: 15px;
+    }
+  </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Kitsu Payment Simulator</h2>
-        <p>Order ID: <b id="sim-order-id">...</b></p>
-        <p>Amount: <b id="sim-amount">...</b> THB</p>
-        <hr style="margin: 20px 0;">
-        <p>This is a FAKE credit card form for simulation purposes.</p>
-        <div class="form-group">
-            <label>Card Number</label>
-            <input type="text" value="4242 4242 4242 4242" disabled>
-        </div>
-        <button onclick="simulatePayment('success')">
-        Simulate SUCCESSFUL Payment
-        </button>
 
-        <button onclick="simulatePayment('failed')">
-        Simulate FAILED Payment
-        </button>
+  <div class="card">
+    <h2>Kitsu Payment Simulator</h2>
+
+    <p><strong>Order ID:</strong> <span id="orderId">...</span></p>
+    <p><strong>Amount:</strong> <span id="amount">...</span> THB</p>
+
+    <hr />
+
+    <p>This is a <b>FAKE</b> credit card form for simulation purposes.</p>
+
+    <input type="text" value="4242 4242 4242 4242" disabled />
+
+    <button class="success" onclick="sendWebhook('success')">
+      Simulate SUCCESSFUL Payment
+    </button>
+
+    <button class="fail" onclick="sendWebhook('failed')">
+      Simulate FAILED Payment
+    </button>
+  </div>
+
+  <!-- ===== MODAL ===== -->
+  <div id="resultModal" class="modal">
+    <div class="modal-box">
+      <h3 id="modalTitle"></h3>
+      <p id="modalMessage"></p>
+      <button onclick="closeModal()">OK</button>
     </div>
-    <script>
-        async function simulatePayment(status) {
-        const params = new URLSearchParams(window.location.search);
+  </div>
 
-        const payload = {
-            intent_id: params.get("intent_id"),
-            amount: Number(params.get("amount")),
-            status: status
-        };
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const intentId = params.get("intent_id");
+    const amount = params.get("amount");
 
+    document.getElementById("orderId").innerText = intentId || "-";
+    document.getElementById("amount").innerText = amount || "-";
+
+    function showModal(title, message) {
+      document.getElementById("modalTitle").innerText = title;
+      document.getElementById("modalMessage").innerText = message;
+      document.getElementById("resultModal").style.display = "block";
+    }
+
+    function closeModal() {
+      document.getElementById("resultModal").style.display = "none";
+    }
+
+    async function sendWebhook(status) {
+      try {
         const res = await fetch(
-            "https://kitsu-django-backend.onrender.com/api/webhook/payment/",
-            {
+          "https://kitsu-django-backend.onrender.com/api/webhook/payment/",
+          {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-            }
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              intent_id: intentId,
+              amount: amount,
+              status: status
+            })
+          }
         );
 
-        const data = await res.json();
-        console.log("Webhook response:", data);
-        alert("Webhook sent: " + status);
+        if (!res.ok) {
+          throw new Error("Webhook failed");
+        }
+
+        showModal(
+          status === "success" ? "Payment Success" : "Payment Failed",
+          "Webhook sent successfully"
+        );
+
+      } catch (err) {
+        showModal("Error", err.message);
+      }
     }
-    </script>
+  </script>
 
 </body>
 </html>
