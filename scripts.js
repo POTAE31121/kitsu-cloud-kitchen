@@ -282,13 +282,16 @@ function initializeGlobalEventListeners() {
 // ===============================================
 function initializeMobileMenu() {
     const hamburger = document.getElementById('hamburger-btn');
-    const slideMenu = document.getElementById('slide-menu');
-    
+    const menu = document.getElementById('slide-menu');
+    const overlay = document.getElementById('slide-menu-overlay');
+
     hamburger.addEventListener('click', () => {
-        slideMenu.classList.add('open');
+    menu.classList.toggle('open');
+    overlay.classList.toggle('hidden');
     });
 
-    function closeMenu() {
-        slideMenu.classList.remove('open');
-    }
+    overlay.addEventListener('click', () => {
+    menu.classList.remove('open');
+    overlay.classList.add('hidden');
+    });
 }
