@@ -4,24 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kitsu Cloud Kitchen</title>
-
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
 </head>
-
 <body>
-
-<!-- ================= HEADER ================= -->
+<!-- ================================== -->
+<!--           HEADER (UPGRADED)          -->
+<!-- ================================== -->
 <header class="header">
   <div class="logo">
-    <a href="#home">
-      <img src="logo.png" alt="Kitsu Cloud Kitchen Logo">
+    <a href="#home" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
+      <img src="logo.png" alt="Kitsu Cloud Kitchen Logo" />
       <h1>Kitsu Cloud Kitchen</h1>
     </a>
   </div>
-
   <nav>
-    <!-- Desktop Menu -->
+    <!-- เมนูสำหรับ Desktop (เพิ่มเข้ามาใหม่) -->
     <ul class="nav-links-desktop">
       <li><a href="#home">Home</a></li>
       <li><a href="#menu">Menu</a></li>
@@ -31,135 +29,168 @@
       <li><a href="order-status.html">Track Order</a></li>
     </ul>
 
-    <!-- Desktop Cart -->
-    <div class="nav-cart" id="cart-icon">
-      <span class="cart-icon-display">🛒</span>
-      <span class="cart-badge hidden" id="cart-badge-desktop">0</span>
+    <!-- ปุ่ม Hamburger (สำหรับ Mobile) -->
+    <div class="hamburger-btn" id="hamburger-btn">☰</div>
+
+    <!-- เมนูสไลด์ (สำหรับ Mobile) -->
+    <div class="slide-menu" id="slide-menu">
+    <div id="slide-menu-overlay" class="hidden"></div>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#cart">Cart</a></li>
+        <li><a href="#story">Story</a></li>
+        <li><a href="#locations">Locations</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="order-status.html">Track Order</a></li>
+      </ul>
     </div>
 
-    <!-- Hamburger (Mobile) -->
-    <button class="hamburger-btn" id="hamburger-btn" aria-label="Open menu">☰</button>
+    <!-- ไอคอนตะกร้าสินค้า (สำหรับ Desktop) -->
+    <div class="nav-cart" id="cart-icon">
+      <span class="cart-icon-display">🛒</span>
+      <span class="cart-badge hidden" id="cart-badge">0</span>
+    </div>
   </nav>
 </header>
 
-<!-- ================= MOBILE SLIDE MENU ================= -->
-<div class="slide-menu" id="slide-menu">
-  <ul>
-    <li><a href="#home" class="mobile-link">Home</a></li>
-    <li><a href="#menu" class="mobile-link">Menu</a></li>
-    <li><a href="#story" class="mobile-link">Story</a></li>
-    <li><a href="#locations" class="mobile-link">Locations</a></li>
-    <li><a href="#contact" class="mobile-link">Contact</a></li>
-    <li><a href="order-status.html">Track Order</a></li>
-  </ul>
-</div>
-
-<!-- ================= MAIN ================= -->
-<main>
-
-  <!-- Hero -->
+  <!-- Hero Section -->
   <section class="hero" id="home">
     <div class="hero-text">
+      <!-- เปลี่ยน Headline -->
       <h2>A New Culinary Experience is Coming Soon</h2>
+      <!-- เปลี่ยน Sub-headline -->
       <p>ความอร่อยที่ปรุงด้วยใจ กำลังจะมาถึงมือของคุณ เร็วๆนี้</p>
+      <!--h2>Crafted with Passion, Served with Love</h2>
+      <p>อาหารทุกจาน สดใหม่จากครัว ปรุงด้วยใจ พร้อมส่งถึงคุณ</p>
+      <!-- เปลี่ยนปุ่ม และลิงก์ให้เลื่อนไปที่ส่วน Contact -->
       <a href="#contact" class="btn-order">ติดตามข่าวสาร</a>
+      <!--a href="#menu" class="btn-order">Order Now</a -->
     </div>
     <div class="hero-image">
       <img src="hero-food.png" alt="Hero Dish">
     </div>
   </section>
 
-  <!-- Menu -->
+  <!-- Special Menus -->
   <section class="special-menus" id="menu">
+    <!-- เปลี่ยนหัวข้อ -->
+    <!--h2>What's Cooking?</h2>
+    <div class="menu-grid">
+      <!-- เพิ่มข้อความอธิบายลงไปตรงนี้ -->
+      <!--p style="text-align: center; font-size: 1.1em; grid-column: 1 / -1;">
+      ทีมเชฟของเรากำลังคัดสรรวัตถุดิบและพัฒนาสูตรอาหารที่ดีที่สุด
+      เพื่อให้ทุกเมนูจาก Kitsu เป็นประสบการณ์ที่น่าจดจำสำหรับคุณ
+      <br><strong>อดใจรอชมเมนูฉบับเต็มเร็วๆ นี้!</strong>
+      </p>
+    </div-->
     <h2>Menus</h2>
     <div class="menu-grid">
       <p class="loading-message">กำลังโหลดเมนูสักครู่นะครับ...</p>
+      <!-- ปล่อยให้ตรงนี้ว่างๆ เลยครับ เดี๋ยว JavaScript จะมาเติมให้เอง -->
     </div>
   </section>
 
-  <!-- Story -->
-  <section id="story" class="content-section">
+  <!-- ========== เพิ่มส่วนใหม่ทั้งหมดตรงนี้ ========== -->
+  <section id="story" style="padding: 50px 10%; text-align: center; background: #fff;">
     <h2>Our Story</h2>
-    <p>
-      ที่ Kitsu Cloud Kitchen เราเชื่อว่าอาหารที่ดีเริ่มต้นจากวัตถุดิบที่สดใหม่
-      และความใส่ใจในทุกขั้นตอนการปรุง
-    </p>
+    <p style="max-width: 600px; margin: 0 auto;">ที่ Kitsu Cloud Kitchen เราเชื่อว่าอาหารที่ดีเริ่มต้นจากวัตถุดิบที่สดใหม่และความใส่ใจในทุกขั้นตอนการปรุง เราคือครัวกลางที่พร้อมสร้างสรรค์เมนูอร่อยหลากหลายสไตล์ส่งตรงถึงมือคุณ</p>
   </section>
 
-  <!-- Locations -->
-  <section id="locations" class="content-section alt">
+  <section id="locations" style="padding: 50px 10%; text-align: center;">
     <h2>Delivery Locations</h2>
-    <p>จัดส่งในเขตจังหวัดสมุทรปราการ</p>
+    <p style="max-width: 600px; margin: 0 auto;">เราพร้อมจัดส่งความอร่อย ไม่ว่าคุณจะอยู่ที่ไหน เราก็พร้อมส่งความสุขถึงหน้าประตู ***สำหรับพื้นที่ในเขตจังหวัดสมุทรปราการ***</p>
   </section>
 
-  <!-- Contact -->
-  <section id="contact" class="content-section">
+  <section id="contact" style="padding: 50px 10%; text-align: center; background: #fff;">
     <h2>Contact Us</h2>
-    <p>Email: kitsucloudkitchen@gmail.com</p>
+    <p>สำหรับข้อเสนอแนะ หรือสอบถามข้อมูลเพิ่มเติม<br>
+    Email: kitsucloudkitchen@gmail.com </p>
   </section>
+  <!-- ========== จบส่วนที่เพิ่ม ========== -->
 
-</main>
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© 2025 Kitsu Cloud Kitchen. All rights reserved.</p>| <a href="login.html" style="color: #ccc;">Admin</a></p>
+  </footer>
 
-<!-- ================= FOOTER ================= -->
-<footer class="footer">
-  <p>© 2025 Kitsu Cloud Kitchen. All rights reserved.</p>
-  <p><a href="login.html">Admin</a></p>
-</footer>
+  <!-- ========== เพิ่มส่วนใหม่ทั้งหมดตรงนี้ ========== -->
 
-<!-- ================= CART (MOBILE FAB) ================= -->
-<div class="cart-fab hidden" id="cart-fab">
-  🛒 <span class="cart-badge" id="cart-badge-mobile">0</span>
-</div>
-
-<!-- ================= CART MODAL ================= -->
-<div class="cart-modal-overlay hidden" id="cart-overlay"></div>
-<div class="cart-modal hidden" id="cart-modal">
-  <div class="modal-header">
-    <h2>ตะกร้าสินค้า</h2>
-    <button class="modal-close-btn" id="cart-close-btn">×</button>
+  <!-- 1. ปุ่มลอยสำหรับมือถือ (Floating Action Button) -->
+  <div class="cart-fab hidden" id="cart-fab">
+    <span class="cart-icon-display">🛒</span>
+    <span class="cart-badge" id="cart-badge">0</span>
   </div>
-  <div class="modal-body" id="cart-items"></div>
-  <div class="modal-footer">
-    <p><strong>รวม:</strong> <span id="cart-total">0.00</span> บาท</p>
-    <button class="checkout-btn" id="open-checkout-btn">สั่งซื้อ</button>
-  </div>
-</div>
 
-<!-- ================= CHECKOUT MODAL ================= -->
-<div class="cart-modal-overlay hidden" id="checkout-overlay"></div>
-<div class="cart-modal hidden" id="checkout-modal">
-  <div class="modal-header">
-    <h2>ข้อมูลการจัดส่ง</h2>
-    <button class="modal-close-btn" id="checkout-close-btn">×</button>
-  </div>
-  <form id="checkout-form">
-    <div class="modal-body">
-      <input type="text" placeholder="ชื่อ-นามสกุล" required>
-      <input type="tel" placeholder="เบอร์โทรศัพท์" required>
-      <textarea placeholder="ที่อยู่จัดส่ง" required></textarea>
+  <!-- 2. หน้าต่าง Pop-up ของตะกร้า (Modal) -->
+  <div class="cart-modal-overlay hidden" id="cart-modal-overlay"></div>
+  <div class="cart-modal hidden" id="cart-modal">
+    <div class="modal-header">
+      <h2>ตะกร้าสินค้า</h2>
+      <button class="modal-close-btn" id="modal-close-btn">×</button>
+    </div>
+    <div class="modal-body" id="modal-cart-items">
+      <!-- รายการสินค้าจะถูกเติมที่นี่ -->
     </div>
     <div class="modal-footer">
-      <button type="submit" class="checkout-btn">ยืนยันคำสั่งซื้อ</button>
+      <div class="cart-summary">
+        <strong>ราคารวม:</strong> <span id="modal-cart-total">0.00</span> บาท
+      </div>
+      <button class="checkout-btn">สั่งซื้อและชำระเงิน</button>
     </div>
-  </form>
-</div>
+  </div>
 
-<!-- ================= PAYMENT MODAL ================= -->
-<div class="cart-modal-overlay hidden" id="payment-overlay"></div>
+ <!-- 3. หน้าต่าง Checkout (Modal) -->
+  <div class="cart-modal-overlay hidden" id="checkout-modal-overlay"></div>
+  <div class="cart-modal hidden" id="checkout-modal">
+    <div class="modal-header">
+      <h2>ข้อมูลการจัดส่ง</h2>
+      <button class="modal-close-btn" id="checkout-close-btn">×</button>
+    </div>
+    <form id="checkout-form">
+      <div class="modal-body">
+          <div class="form-group">
+            <label for="customer_name">ชื่อ-นามสกุล</label>
+            <input type="text" id="customer_name" name="customer_name" required>
+          </div>
+          <div class="form-group">
+            <label for="customer_phone">เบอร์โทรศัพท์</label>
+            <input type="tel" id="customer_phone" name="customer_phone" required>
+          </div>
+          <div class="form-group">
+            <label for="customer_address">ที่อยู่สำหรับจัดส่ง</label>
+            <textarea id="customer_address" name="customer_address" rows="3" required></textarea>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="checkout-btn" id="confirm-order-btn">ยืนยันคำสั่งซื้อ</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- 4. หน้าต่าง Payment (Modal) -->
+<div class="cart-modal-overlay hidden" id="payment-modal-overlay"></div>
 <div class="cart-modal hidden" id="payment-modal">
   <div class="modal-header">
     <h2>ชำระเงิน</h2>
-    <button class="modal-close-btn" id="payment-close-btn">×</button>
+    <button class="modal-close-btn" id="payment-modal-close-btn">×</button>
   </div>
-  <div class="modal-body">
-    <p>ยอดชำระ: ฿<span id="payment-total">0.00</span></p>
-    <img src="your-qr-code.png" alt="QR Code" style="max-width: 250px;">
-    <input type="file" required>
-    <button class="checkout-btn">ยืนยันการชำระเงิน</button>
+  <div class="modal-body" style="text-align: center;">
+      <p>กรุณาสแกน QR Code ด้านล่างเพื่อชำระเงิน</p>
+      <!-- สำคัญ: เปลี่ยน src ให้เป็นรูป QR Code ของคุณ -->
+      <img src="your-qr-code.png" alt="QR Code Payment" style="max-width: 250px; margin: 15px 0; border: 1px solid #eee;">
+      <p><strong>ยอดชำระ: ฿<span id="payment-total">0.00</span></strong></p>
+      <hr style="margin: 20px 0;">
+      <p>หลังจากชำระเงินแล้ว กรุณาแนบสลิปเพื่อยืนยัน</p>
+      <form id="slip-upload-form">
+          <input type="file" id="slip-file-input" required style="margin: 10px 0;">
+          <button type="submit" class="checkout-btn" id="confirm-payment-btn">ยืนยันการชำระเงิน</button>
+      </form>
   </div>
 </div>
 
-<script src="scripts.js" defer></script>
+  <!-- Script -->
+  <script src="scripts.js" defer></script>
 
 </body>
 </html>
