@@ -357,21 +357,31 @@ nav {
     fill: #000 !important;
 }
 
-/* ===== DEFAULT: ปิดเมนู ===== */
+/* ===== slide menu (default: ปิด) ===== */
 .slide-menu {
   position: fixed;
   top: 0;
-  right: -100%;        /* ซ่อนนอกจอ */
+  right: -100%;          /* จุดชี้ขาด */
   width: 75%;
   height: 100%;
   background: #000;
   transition: right 0.3s ease;
   z-index: 1001;
+
+  /* ห้ามใช้ display:none / flex ที่นี่ */
 }
 
 /* ===== เปิดเมนู ===== */
 .slide-menu.open {
   right: 0;
+}
+
+/* ===== UL ค่อยใช้ flex ได้ ===== */
+.slide-menu ul {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  gap: 1.5rem;
 }
 
 /* ===== Overlay ===== */
