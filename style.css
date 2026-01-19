@@ -1,358 +1,317 @@
-/* ==================================
-   ไฟล์ style.css ฉบับสมบูรณ์ (UI ใหม่)
-   ================================== */
+/* =====================================================
+   KITSU CLOUD KITCHEN – REFACTORED CSS
+   Mobile-first | Modal-safe | Payment-ready
+   ===================================================== */
 
-/* --- 1. General & Base Styles --- */
+/* =====================
+   1. RESET & BASE
+   ===================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 html {
   scroll-behavior: smooth;
 }
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+
 body {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(to bottom, #fff9f4, #fff);
+  background: linear-gradient(to bottom, #fff9f4, #ffffff);
   color: #333;
   line-height: 1.6;
   overflow-x: hidden;
 }
 
-/* --- 2. Header & Navigation --- */
+.hidden {
+  display: none !important;
+}
+
+/* =====================
+   2. HEADER & NAV
+   ===================== */
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   background: #333;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 10%;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.header .logo img {
-  width: 50px;
-  vertical-align: middle;
-}
-.header h1 {
-  display: inline-block;
-  margin-left: 10px;
-  font-family: 'Playfair Display', serif;
-  font-size: 1.6em;
-  color: #f5a623;
-  vertical-align: middle;
-}
-nav {
-  display: flex;
-  align-items: center;
-  gap: 30px;
-}
-.menu-toggle {
-  display: none; /* ซ่อนไว้ก่อนสำหรับ Desktop */
-  font-size: 28px;
-  cursor: pointer;
-  color: #fff;
 }
 
-/* --- Desktop Navigation Links (เพิ่มเข้ามาใหม่) --- */
+.logo a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo img {
+  width: 48px;
+}
+
+.logo h1 {
+  margin-left: 10px;
+  font-family: 'Playfair Display', serif;
+  color: #f5a623;
+  font-size: 1.4rem;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
 .nav-links-desktop {
   list-style: none;
   display: flex;
   gap: 25px;
 }
-.nav-links-desktop li a {
-  text-decoration: none;
+
+.nav-links-desktop a {
   color: #fff;
+  text-decoration: none;
   font-weight: 500;
-  transition: color 0.3s ease;
 }
-.nav-links-desktop li a:hover {
+
+.nav-links-desktop a:hover {
   color: #f5a623;
 }
-/* --- (โค้ด Slide Menu เดิมยังใช้ได้ แต่จะถูกควบคุมโดย Responsive) --- */
-.slide-menu { position: fixed; top: -100%; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; transition: top 0.4s ease-in-out; z-index: 10000; }
-.slide-menu.active { top: 0; }
-.slide-menu ul { list-style: none; padding: 0; text-align: center; display: flex; flex-direction: column; gap: 25px; }
-.slide-menu ul li a { color: #fff; font-size: 2em; text-decoration: none; transition: color 0.3s ease; }
-.slide-menu ul li a:hover { color: #f5a623; }
 
-/* --- 3. Hero Section --- */
+.nav-cart {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+  position: relative;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: crimson;
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
+
+/* Hamburger */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+/* =====================
+   3. SLIDE MENU (MOBILE)
+   ===================== */
+.slide-menu {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translateY(-100%);
+  transition: transform 0.3s ease;
+  z-index: 2000;
+}
+
+.slide-menu.open {
+  transform: translateY(0);
+}
+
+.slide-menu ul {
+  list-style: none;
+  text-align: center;
+}
+
+.slide-menu li {
+  margin: 20px 0;
+}
+
+.slide-menu a {
+  color: #fff;
+  font-size: 1.8rem;
+  text-decoration: none;
+}
+
+.slide-menu a:hover {
+  color: #f5a623;
+}
+
+/* =====================
+   4. HERO
+   ===================== */
 .hero {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 40px;
+  padding: 50px 10%;
+  align-items: center;
   background: #b7e4c7;
-  padding: 40px 10%;
-}
-.hero-text {
-  flex: 1;
-}
-.hero-image {
-  flex: 1;
-  text-align: center;
-}
-.hero img {
-  max-width: 100%;
-  height: auto;
-  max-height: 350px;
-  object-fit: contain;
-  border-radius: 15px;
-}
-.hero-text h2 {
-  font-size: 2.8em;
-  font-family: 'Playfair Display', serif;
-  margin-bottom: 15px;
-  color: #333;
-}
-.hero-text p {
-  font-size: 1.2em;
-  margin-bottom: 25px;
-}
-.btn-order {
-  background: linear-gradient(45deg, #f5a623, #f0932b);
-  color: #fff;
-  padding: 12px 25px;
-  border-radius: 30px;
-  text-decoration: none;
-  font-weight: 500;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  transition: transform 0.2s ease;
-  display: inline-block;
-}
-.btn-order:hover {
-  transform: scale(1.05);
 }
 
-/* --- 4. Menu Section --- */
-.special-menus {
-    padding: 60px 10%;
+.hero-text h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
 }
-.special-menus h2 {
-    text-align: center;
-    font-size: 2.5em;
-    font-family: 'Playfair Display', serif;
-    margin-bottom: 40px;
+
+.hero-text p {
+  margin: 15px 0 25px;
 }
-.menu-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
-}
-.menu-card {
-  background: #fff;
+
+.hero img {
+  max-width: 100%;
   border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-  text-align: center;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  z-index: 1;
 }
-.menu-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.12);
-}
-.menu-card img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-}
-.menu-card h3 {
-  margin: 15px 10px 5px 10px;
-  font-size: 1.4em;
-  color: #333;
-  flex-grow: 1;
-}
-.menu-card .price {
-    font-size: 1.2em;
-    font-weight: 500;
-    color: #f5a623;
-    margin-bottom: 15px;
-}
-.add-to-cart-btn {
+
+/* =====================
+   5. BUTTONS
+   ===================== */
+.btn-order,
+.add-to-cart-btn,
+.checkout-btn {
   background: linear-gradient(45deg, #f5a623, #f0932b);
   color: #fff;
   border: none;
-  padding: 10px 15px;
-  border-radius: 20px;
+  border-radius: 30px;
+  padding: 10px 22px;
   cursor: pointer;
-  font-family: 'Poppins', sans-serif;
   font-weight: 500;
-  margin: 0px 20px 20px 20px;
-  transition: all 0.2s ease;
-  z-index: 2;
 }
-.add-to-cart-btn:hover {
+
+.btn-order:hover,
+.add-to-cart-btn:hover,
+.checkout-btn:hover {
   transform: scale(1.05);
 }
 
-/* --- 5. New Shopping Cart UI --- */
-/* (โค้ดส่วนนี้เหมือนเดิมทุกประการ) */
-.nav-cart { position: relative; cursor: pointer; }
-.cart-icon-display { font-size: 1.8em; }
-.cart-badge { position: absolute; top: -5px; right: -10px; background-color: #e74c3c; color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; justify-content: center; align-items: center; font-size: 0.8em; font-weight: bold; border: 2px solid #333; }
-.cart-fab { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: linear-gradient(45deg, #f5a623, #f0932b); border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; z-index: 100; transition: transform 0.2s ease; }
-.cart-fab:hover { transform: scale(1.1); }
-.cart-fab .cart-badge { top: 0; right: 0; border-color: #fff; }
-.cart-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 1001; }
-.cart-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 450px; background-color: #fff; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 1002; display: flex; flex-direction: column; }
-.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #eee; }
-.modal-header h2 { font-family: 'Playfair Display', serif; }
-.modal-close-btn { background: none; border: none; font-size: 2em; cursor: pointer; color: #888; }
-.modal-body { padding: 10px 20px; max-height: 50vh; overflow-y: auto; }
-.modal-footer { padding: 20px; border-top: 1px solid #eee; text-align: center; }
-.cart-summary { font-size: 1.2em; font-weight: bold; margin-bottom: 20px; text-align: right; }
-.checkout-btn { background: #27ae60; color: white; border: none; padding: 12px 25px; border-radius: 30px; font-size: 1.1em; cursor: pointer; transition: background 0.3s ease; }
-.checkout-btn:hover { background: #2ecc71; }
-.cart-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
-.cart-item-details { display: flex; flex-direction: column; }
-.cart-item-price { font-size: 0.9em; color: #888; }
-.remove-from-cart-btn { background: none; border: none; color: #e74c3c; font-size: 1.5em; font-weight: bold; cursor: pointer; padding: 5px; line-height: 1; transition: transform 0.2s ease; }
-.remove-from-cart-btn:hover { transform: scale(1.2); }
-.hidden { display: none !important; }
+/* =====================
+   6. MENU GRID
+   ===================== */
+.special-menus {
+  padding: 60px 10%;
+}
 
-/* --- 6. FOOTER STYLES (เพิ่มเข้ามาใหม่) --- */
+.menu-grid {
+  display: grid;
+  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.menu-card {
+  background: #fff;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.menu-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.menu-card h3 {
+  margin: 15px;
+}
+
+/* =====================
+   7. CART FAB
+   ===================== */
+.cart-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #f5a623;
+  color: #fff;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  z-index: 3000;
+}
+
+/* =====================
+   8. MODALS
+   ===================== */
+.cart-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 4000;
+}
+
+.cart-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  width: 90%;
+  max-width: 450px;
+  border-radius: 15px;
+  z-index: 5000;
+}
+
+.modal-header,
+.modal-footer {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-footer {
+  border-top: 1px solid #eee;
+  border-bottom: none;
+}
+
+.modal-body {
+  padding: 15px;
+}
+
+/* =====================
+   9. FOOTER
+   ===================== */
 .footer {
   background: #2c2c2c;
   color: #ccc;
-  padding: 50px 10% 20px 10%;
-  margin-top: 50px;
-}
-.footer-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 30px;
-  margin-bottom: 30px;
-}
-.footer-column .logo {
-  margin-bottom: 15px;
-}
-.footer-column .logo h1 { /* เจาะจง h1 ใน footer */
-    color: #fff;
-}
-.footer-column h4 {
-  font-family: 'Playfair Display', serif;
-  color: #fff;
-  font-size: 1.2em;
-  margin-bottom: 15px;
-}
-.footer-column p {
-  font-size: 0.9em;
-  line-height: 1.8;
-}
-.footer-column ul {
-  list-style: none;
-  padding: 0;
-}
-.footer-column ul li {
-  margin-bottom: 10px;
-  font-size: 0.9em;
-}
-.footer-column ul li a {
-  color: #ccc;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-.footer-column ul li a:hover {
-  color: #f5a623;
-}
-.footer-bottom {
+  padding: 40px 10%;
   text-align: center;
-  border-top: 1px solid #444;
-  padding-top: 20px;
-  font-size: 0.9em;
 }
 
-/* --- 7. Responsive Design --- */
-/* --- จอแท็บเล็ตและใหญ่กว่า --- */
-@media (min-width: 769px) {
-  .menu-toggle, .slide-menu, .cart-fab {
-    display: none !important; /* ซ่อนเมนูสไลด์และปุ่มลอยบนจอใหญ่ */
-  }
-  .nav-links-desktop, .nav-cart {
-    display: flex !important; /* แสดงเมนู Desktop และไอคอนตะกร้า */
-  }
-}
-
-/* --- จอแท็บเล็ตและเล็กกว่า --- */
-@media (max-width: 1024px) {
-  .header, .hero, .special-menus, .footer {
-    padding-left: 5%;
-    padding-right: 5%;
-  }
-  .hero {
-    flex-direction: column-reverse;
-    gap: 20px;
-    text-align: center;
-  }
-  .hero img { max-height: 250px; }
-  .hero-text h2 { font-size: 2.2em; }
-}
-
-/* --- จอมือถือ --- */
+/* =====================
+   10. RESPONSIVE
+   ===================== */
 @media (max-width: 768px) {
-  .nav-links-desktop, .nav-cart {
-    display: none !important; /* ซ่อนเมนู Desktop และไอคอนตะกร้า */
+  .nav-links-desktop {
+    display: none;
   }
+
   .hamburger-btn {
-    display: block !important; /* แสดงปุ่ม Hamburger */
-    color:white
+    display: block;
   }
-  .cart-fab {
-      display: flex !important; /* แสดงปุ่มลอย */
-  }
-  .menu-grid {
-    grid-template-columns: 1fr;
-  }
-  .special-menus {
-      padding: 40px 5%;
-  }
-  .footer-container {
-    grid-template-columns: 1fr;
+
+  .hero {
+    flex-direction: column;
     text-align: center;
   }
-  .footer-column .logo {
-    justify-content: center;
+
+  .cart-fab {
+    display: flex;
   }
-}
-
-/* --- Checkout Form Styles --- */
-.form-group {
-  margin-bottom: 15px;
-  text-align: left;
-}
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
-}
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 1em;
-}
-#confirm-order-btn {
-    width: 100%;
-}
-
-.mobile-menu {
-    display: none;
-}
-
-.mobile-menu.active {
-    display: block;
-}
-
-#cart-fab,
-#cart-fab i,
-#cart-fab svg {
-    color: #000000 !important;
-    fill: #000 !important;
 }
