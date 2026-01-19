@@ -18,40 +18,30 @@
       <h1>Kitsu Cloud Kitchen</h1>
     </a>
   </div>
-  <nav>
-    <!-- เมนูสำหรับ Desktop (เพิ่มเข้ามาใหม่) -->
-    <ul class="nav-links-desktop">
-      <li><a href="#home">Home</a></li>
-      <li><a href="#menu">Menu</a></li>
-      <li><a href="#story">Story</a></li>
-      <li><a href="#locations">Locations</a></li>
-      <li><a href="#contact">Contact</a></li>
-      <li><a href="order-status.html">Track Order</a></li>
+ <nav>
+  <ul class="nav-links-desktop">
+    ...
+  </ul>
+
+  <!-- Hamburger -->
+  <button class="hamburger-btn" id="hamburger-btn">☰</button>
+
+  <!-- Overlay (อยู่นอก slide-menu) -->
+  <div id="slide-menu-overlay" class="hidden"></div>
+
+  <!-- Slide Menu -->
+  <div class="slide-menu" id="slide-menu">
+    <ul>
+      ...
     </ul>
+  </div>
 
-    <!-- ปุ่ม Hamburger (สำหรับ Mobile) -->
-    <div class="hamburger-btn" id="hamburger-btn">☰</div>
+  <div class="nav-cart" id="cart-icon">
+    <span class="cart-icon-display">🛒</span>
+    <span class="cart-badge hidden" id="cart-badge">0</span>
+  </div>
+</nav>
 
-    <!-- เมนูสไลด์ (สำหรับ Mobile) -->
-    <div class="slide-menu" id="slide-menu">
-    <div id="slide-menu-overlay" class="hidden"></div>
-      <ul>
-        <li><a href="#home">Home</a></li>
-        <li><a href="#menu">Menu</a></li>
-        <li><a href="#cart">Cart</a></li>
-        <li><a href="#story">Story</a></li>
-        <li><a href="#locations">Locations</a></li>
-        <li><a href="#contact">Contact</a></li>
-        <li><a href="order-status.html">Track Order</a></li>
-      </ul>
-    </div>
-
-    <!-- ไอคอนตะกร้าสินค้า (สำหรับ Desktop) -->
-    <div class="nav-cart" id="cart-icon">
-      <span class="cart-icon-display">🛒</span>
-      <span class="cart-badge hidden" id="cart-badge">0</span>
-    </div>
-  </nav>
 </header>
 
   <!-- Hero Section -->
