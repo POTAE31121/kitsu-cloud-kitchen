@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kitsu Cloud Kitchen</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
 </head>
 
@@ -20,7 +20,7 @@
     </a>
   </div>
 
-  <nav class="nav">
+  <nav>
     <!-- Desktop Menu -->
     <ul class="nav-links-desktop">
       <li><a href="#home">Home</a></li>
@@ -32,37 +32,36 @@
     </ul>
 
     <!-- Desktop Cart -->
-    <button class="nav-cart" id="cart-icon" aria-label="Cart">
-      🛒 <span class="cart-badge hidden">0</span>
-    </button>
+    <div class="nav-cart" id="cart-icon">
+      <span class="cart-icon-display">🛒</span>
+      <span class="cart-badge hidden" id="cart-badge-desktop">0</span>
+    </div>
 
     <!-- Hamburger (Mobile) -->
-    <button class="hamburger-btn" id="hamburger-btn" aria-label="Open menu">
-      ☰
-    </button>
+    <button class="hamburger-btn" id="hamburger-btn" aria-label="Open menu">☰</button>
   </nav>
 </header>
 
 <!-- ================= MOBILE SLIDE MENU ================= -->
-<aside class="slide-menu" id="slide-menu">
+<div class="slide-menu" id="slide-menu">
   <ul>
-    <li><a href="#home">Home</a></li>
-    <li><a href="#menu">Menu</a></li>
-    <li><a href="#story">Story</a></li>
-    <li><a href="#locations">Locations</a></li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="#home" class="mobile-link">Home</a></li>
+    <li><a href="#menu" class="mobile-link">Menu</a></li>
+    <li><a href="#story" class="mobile-link">Story</a></li>
+    <li><a href="#locations" class="mobile-link">Locations</a></li>
+    <li><a href="#contact" class="mobile-link">Contact</a></li>
     <li><a href="order-status.html">Track Order</a></li>
   </ul>
-</aside>
+</div>
 
 <!-- ================= MAIN ================= -->
 <main>
 
-  <!-- HERO -->
+  <!-- Hero -->
   <section class="hero" id="home">
     <div class="hero-text">
       <h2>A New Culinary Experience is Coming Soon</h2>
-      <p>ความอร่อยที่ปรุงด้วยใจ กำลังจะมาถึงมือของคุณ</p>
+      <p>ความอร่อยที่ปรุงด้วยใจ กำลังจะมาถึงมือของคุณ เร็วๆนี้</p>
       <a href="#contact" class="btn-order">ติดตามข่าวสาร</a>
     </div>
     <div class="hero-image">
@@ -70,28 +69,30 @@
     </div>
   </section>
 
-  <!-- MENU -->
+  <!-- Menu -->
   <section class="special-menus" id="menu">
     <h2>Menus</h2>
-    <div class="menu-grid"></div>
+    <div class="menu-grid">
+      <p class="loading-message">กำลังโหลดเมนูสักครู่นะครับ...</p>
+    </div>
   </section>
 
-  <!-- STORY -->
+  <!-- Story -->
   <section id="story" class="content-section">
     <h2>Our Story</h2>
     <p>
-      เราเชื่อว่าอาหารที่ดี เริ่มจากวัตถุดิบที่สดใหม่
-      และความใส่ใจในทุกขั้นตอน
+      ที่ Kitsu Cloud Kitchen เราเชื่อว่าอาหารที่ดีเริ่มต้นจากวัตถุดิบที่สดใหม่
+      และความใส่ใจในทุกขั้นตอนการปรุง
     </p>
   </section>
 
-  <!-- LOCATIONS -->
+  <!-- Locations -->
   <section id="locations" class="content-section alt">
     <h2>Delivery Locations</h2>
     <p>จัดส่งในเขตจังหวัดสมุทรปราการ</p>
   </section>
 
-  <!-- CONTACT -->
+  <!-- Contact -->
   <section id="contact" class="content-section">
     <h2>Contact Us</h2>
     <p>Email: kitsucloudkitchen@gmail.com</p>
@@ -101,54 +102,64 @@
 
 <!-- ================= FOOTER ================= -->
 <footer class="footer">
-  <p>© 2025 Kitsu Cloud Kitchen</p>
+  <p>© 2025 Kitsu Cloud Kitchen. All rights reserved.</p>
   <p><a href="login.html">Admin</a></p>
 </footer>
 
-<!-- ================= CART FAB (MOBILE) ================= -->
-<button class="cart-fab hidden" id="cart-fab" aria-label="Cart">
-  🛒 <span class="cart-badge">0</span>
-</button>
+<!-- ================= CART (MOBILE FAB) ================= -->
+<div class="cart-fab hidden" id="cart-fab">
+  🛒 <span class="cart-badge" id="cart-badge-mobile">0</span>
+</div>
 
 <!-- ================= CART MODAL ================= -->
-<div class="cart-modal-overlay hidden" id="cart-modal-overlay"></div>
+<div class="cart-modal-overlay hidden" id="cart-overlay"></div>
 <div class="cart-modal hidden" id="cart-modal">
   <div class="modal-header">
     <h2>ตะกร้าสินค้า</h2>
-    <button class="modal-close-btn" id="modal-close-btn">×</button>
+    <button class="modal-close-btn" id="cart-close-btn">×</button>
   </div>
-
-  <div class="modal-body" id="modal-cart-items"></div>
-
+  <div class="modal-body" id="cart-items"></div>
   <div class="modal-footer">
-    <p>รวม: <strong>฿<span id="modal-cart-total">0.00</span></strong></p>
-    <button class="checkout-btn">สั่งซื้อ</button>
+    <p><strong>รวม:</strong> <span id="cart-total">0.00</span> บาท</p>
+    <button class="checkout-btn" id="open-checkout-btn">สั่งซื้อ</button>
   </div>
 </div>
 
 <!-- ================= CHECKOUT MODAL ================= -->
-<div class="cart-modal-overlay hidden" id="checkout-modal-overlay"></div>
+<div class="cart-modal-overlay hidden" id="checkout-overlay"></div>
 <div class="cart-modal hidden" id="checkout-modal">
   <div class="modal-header">
     <h2>ข้อมูลการจัดส่ง</h2>
     <button class="modal-close-btn" id="checkout-close-btn">×</button>
   </div>
-
   <form id="checkout-form">
     <div class="modal-body">
-      <input id="customer_name" type="text" placeholder="ชื่อ-นามสกุล" required>
-      <input id="customer_phone" type="tel" placeholder="เบอร์โทรศัพท์" required>
-      <textarea id="customer_address" placeholder="ที่อยู่จัดส่ง" required></textarea>
+      <input type="text" placeholder="ชื่อ-นามสกุล" required>
+      <input type="tel" placeholder="เบอร์โทรศัพท์" required>
+      <textarea placeholder="ที่อยู่จัดส่ง" required></textarea>
     </div>
-
     <div class="modal-footer">
-      <button type="submit" class="checkout-btn">
-        ยืนยันคำสั่งซื้อ
-      </button>
+      <button type="submit" class="checkout-btn">ยืนยันคำสั่งซื้อ</button>
     </div>
   </form>
 </div>
 
+<!-- ================= PAYMENT MODAL ================= -->
+<div class="cart-modal-overlay hidden" id="payment-overlay"></div>
+<div class="cart-modal hidden" id="payment-modal">
+  <div class="modal-header">
+    <h2>ชำระเงิน</h2>
+    <button class="modal-close-btn" id="payment-close-btn">×</button>
+  </div>
+  <div class="modal-body">
+    <p>ยอดชำระ: ฿<span id="payment-total">0.00</span></p>
+    <img src="your-qr-code.png" alt="QR Code" style="max-width: 250px;">
+    <input type="file" required>
+    <button class="checkout-btn">ยืนยันการชำระเงิน</button>
+  </div>
+</div>
+
 <script src="scripts.js" defer></script>
+
 </body>
 </html>
