@@ -12,8 +12,6 @@ let allMenuItems = [];
 document.addEventListener('DOMContentLoaded', () => {
     initializeSharedComponents();
     
-    initializeMobileMenu();
-
     if (document.querySelector('.menu-grid')) {
         displayMenuItems();
     }
@@ -274,24 +272,5 @@ function initializeGlobalEventListeners() {
         if (remove) {
             removeFromCart(remove.dataset.id);
         }
-    });
-}
-
-// ===============================================
-//           Initialize Mobile Menu
-// ===============================================
-function initializeMobileMenu() {
-    const hamburger = document.getElementById('hamburger-btn');
-    const menu = document.getElementById('slide-menu');
-    const overlay = document.getElementById('slide-menu-overlay');
-
-    hamburger.addEventListener('click', () => {
-    menu.classList.toggle('open');
-    overlay.classList.toggle('hidden');
-    });
-
-    overlay.addEventListener('click', () => {
-    menu.classList.remove('open');
-    overlay.classList.add('hidden');
     });
 }
