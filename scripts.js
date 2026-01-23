@@ -274,3 +274,18 @@ function initializeGlobalEventListeners() {
         }
     });
 }
+
+// ===============================================
+//           MOBILE MENU
+// ===============================================
+document.addEventListener('DOMContentLoaded', () => {
+  const hamburger = document.querySelector('.hamburger-menu');
+  const menu = document.querySelector('.menu-grid');
+
+  if (!hamburger || !menu) return;
+
+  hamburger.addEventListener('click', () => {
+    menu.classList.toggle('active');
+  });
+});
+// ===============================================
