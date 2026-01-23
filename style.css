@@ -392,3 +392,11 @@ nav {
   border: none;
   font-size: 24px;
 }
+
+.hamburger-menu span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #fff;
+  margin: 5px 0;
+}
