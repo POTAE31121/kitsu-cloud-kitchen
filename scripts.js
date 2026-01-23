@@ -281,6 +281,7 @@ function initializeGlobalEventListeners() {
 document.addEventListener('DOMContentLoaded', () => {
   const hamburger = document.querySelector('.hamburger-menu');
   const menu = document.querySelector('.slide-menu');
+  const body = document.body;
 
   if (!hamburger || !menu) return;
 

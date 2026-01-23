@@ -393,3 +393,9 @@ nav {
   background: #fff;
   margin: 5px 0;
 }
+
+body.menu-open {
+  overflow: hidden;
+}
+
+/* --- End of style.css --- */
