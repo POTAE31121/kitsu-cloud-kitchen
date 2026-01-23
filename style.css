@@ -71,11 +71,40 @@ nav {
   color: #f5a623;
 }
 /* --- (โค้ด Slide Menu เดิมยังใช้ได้ แต่จะถูกควบคุมโดย Responsive) --- */
-.slide-menu { position: fixed; top: -100%; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; transition: top 0.4s ease-in-out; z-index: 10000; }
-.slide-menu.active { top: 0; }
-.slide-menu ul { list-style: none; padding: 0; text-align: center; display: flex; flex-direction: column; gap: 25px; }
-.slide-menu ul li a { color: #fff; font-size: 2em; text-decoration: none; transition: color 0.3s ease; }
-.slide-menu ul li a:hover { color: #f5a623; }
+.slide-menu {
+  position: fixed;          /* ✅ ต้องเป็น fixed */
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.95);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: top 0.4s ease-in-out;
+  z-index: 10000;
+}
+.slide-menu.active {
+  top: 0;
+}
+.slide-menu ul {
+  list-style: none;
+  padding: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+.slide-menu ul li a {
+  color: #fff;
+  font-size: 2em;
+  text-decoration: none;
+}
+.slide-menu ul li a:hover{
+  color: #f5a623;
+}
 
 /* --- 3. Hero Section --- */
 .hero {
@@ -356,46 +385,6 @@ nav {
     color: #000000 !important;
     fill: #000 !important;
 }
-
-/* ===== slide menu (default: ปิด) ===== */
-.slide-menu {
-  position: fixed;
-  top: 0;
-  right: -100%;          /* จุดชี้ขาด */
-  width: 75%;
-  height: 100%;
-  background: #000;
-  transition: right 0.3s ease;
-  z-index: 1001;
-
-  /* ห้ามใช้ display:none / flex ที่นี่ */
-}
-
-/* ===== เปิดเมนู ===== */
-.slide-menu.open {
-  right: 0;
-}
-
-/* ===== UL ค่อยใช้ flex ได้ ===== */
-.slide-menu ul {
-  display: flex;
-  flex-direction: column;
-  padding: 2rem;
-  gap: 1.5rem;
-}
-
-/* ===== Overlay ===== */
-#slide-menu-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 1000;
-}
-
-.hidden {
-  display: none;
-}
-
 
 .hamburger-btn {
   z-index: 1002;
