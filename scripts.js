@@ -280,7 +280,7 @@ function initializeGlobalEventListeners() {
 // ===============================================
 document.addEventListener('DOMContentLoaded', () => {
   const hamburger = document.querySelector('.hamburger-menu');
-  const menu = document.querySelector('.menu-grid');
+  const menu = document.querySelector('.slide-menu');
 
   if (!hamburger || !menu) return;
 
