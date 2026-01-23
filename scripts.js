@@ -286,6 +286,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   hamburger.addEventListener('click', () => {
     menu.classList.toggle('active');
+
+    // ปรับไอคอน Hamburger เป็นปุ่มปิด (X) เมื่อเมนูเปิดอยู่
+    if (menu.classList.contains('active')) {
+      hamburger.innerHTML = '&times;'; // ใช้สัญลักษณ์ X
+    } else {
+      hamburger.innerHTML = '&#9776;'; // ใช้สัญลักษณ์ Hamburger
+    }
+  });
+
+    menu.addEventListener('click', (e) => {
+    if (e.target === menu) {
+      menu.classList.remove('active');
+    }
+
+    menu.querySelector('ul').addEventListener('click', () => {
+        menu.classList.remove('active');
+        hamburger.innerHTML = '&#9776;'; // กลับเป็นไอคอน Hamburger
+    });
   });
 });
 // ===============================================
