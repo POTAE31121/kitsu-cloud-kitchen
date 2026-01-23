@@ -41,7 +41,7 @@ async function displayMenuItems() {
     data.forEach(item => {
         container.insertAdjacentHTML('beforeend', `
             <div class="menu-card">
-                <img src="${imageSrc}" alt="${item.name}">
+                <img src="${item.image_url}>">
                 <h3>${item.name}</h3>
                 <p>฿${item.price}</p>
                 <button class="add-to-cart-btn" data-id="${item.id}">
