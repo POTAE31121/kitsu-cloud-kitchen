@@ -298,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
     menu.addEventListener('click', (e) => {
     if (e.target === menu) {
       menu.classList.remove('active');
+      hamburger.innerHTML = '&#9776;'; // กลับเป็นไอคอน Hamburger
     }
 
     menu.querySelector('ul').addEventListener('click', () => {
