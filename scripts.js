@@ -35,9 +35,13 @@ async function displayMenuItems() {
 
     container.innerHTML = '';
     data.forEach(item => {
+        const imageSrc = item.image_url
+            ? item.image_url
+            : 'images/placeholder.png';
+
         container.insertAdjacentHTML('beforeend', `
             <div class="menu-card">
-                <img src="${item.image_url}">
+                <img src="${imageSrc}" alt="${item.name}">
                 <h3>${item.name}</h3>
                 <p>฿${item.price}</p>
                 <button class="add-to-cart-btn" data-id="${item.id}">
