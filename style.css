@@ -297,7 +297,7 @@ nav {
   .nav-links-desktop, .nav-cart {
     display: none !important; /* ซ่อนเมนู Desktop และไอคอนตะกร้า */
   }
-  .hamburger-btn {
+  .hamburger-menu {
     display: block !important; /* แสดงปุ่ม Hamburger */
     color:white
   }
