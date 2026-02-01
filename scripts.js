@@ -27,37 +27,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function displayMenuItems() {
     const container = document.querySelector('.menu-grid');
-    container.innerHTML = 'กำลังโหลด...';
+    container.innerHTML = '<p class="loading-message">กำลังโหลด...</p>';
 
     const res = await fetch(`${API_BASE_URL}/api/items/`);
-    if (!res.ok) {
-        throw new Error(`API error: ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
 
     const data = await res.json();
     allMenuItems = data;
 
     container.innerHTML = '';
+
     data.forEach(item => {
         const imageSrc = item.image_url
-        ? item.image_url 
-        : 'https://via.placeholder.com/150?text=No+Image';
-        container.insertAdjacentHTML('beforeend', `
-            <div class="cart-item">
-                <span class="item-name">${item.name}</span>
+            ? item.image_url
+            : 'https://via.placeholder.com/150?text=No+Image';
 
-                <div class="cart-controls">
-                    <button data-action="decrease" data-id="${item.id}">−</button>
-                    <span class="item-qty">${item.quantity}</span>
-                    <button data-action="increase" data-id="${item.id}">+</button>
-                    <button data-action="remove" data-id="${item.id}">×</button>
-                    </div>
-                </div>
+        container.insertAdjacentHTML('beforeend', `
+            <div class="menu-card">
+                <img src="${imageSrc}" alt="${item.name}">
+                <h3>${item.name}</h3>
+                <p>${item.price} บาท</p>
+                <button onclick="addToCart(${item.id})">
+                    เพิ่มลงตะกร้า
+                </button>
             </div>
         `);
     });
 }
-
 // ===============================================
 //           SHARED
 // ===============================================
@@ -110,10 +106,17 @@ function renderCart() {
     let total = 0;
     let qty = 0;
 
-    if (cart.length === 0) {
+if (cart.length === 0) {
     container.innerHTML = `<p class="empty-cart">ยังไม่มีสินค้าในตะกร้า</p>`;
     totalEl.textContent = '0.00';
+
+    // ซ่อน badge + FAB
+    badges.forEach(badge => badge.classList.add('hidden'));
+    fab?.classList.add('hidden');
+
+    return; // ✅ สำคัญมาก
 }
+
 
 
     cart.forEach(item => {
