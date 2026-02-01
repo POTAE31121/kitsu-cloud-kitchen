@@ -42,7 +42,7 @@ async function loadMenu() {
           <img src="${item.image_url || 'https://via.placeholder.com/150'}">
           <h3>${item.name}</h3>
           <p>${item.price} บาท</p>
-          <button class="add-to-cart-btn" data-id="${item.id}">
+          <button class="add-to-cart-btn" data-id="3">
             เพิ่มลงตะกร้า
           </button>
         </div>
@@ -74,6 +74,11 @@ function saveCart(cart) {
 // CART – ACTIONS
 // ===============================================
 function addToCart(id) {
+    if (!id) {
+    console.error('addToCart called without id');
+    return;
+    }
+
   const product = allMenuItems.find(p => String(p.id) === String(id));
   if (!product) {
     console.error('Product not found:', id);
