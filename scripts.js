@@ -43,13 +43,16 @@ async function displayMenuItems() {
         ? item.image_url 
         : 'https://via.placeholder.com/150?text=No+Image';
         container.insertAdjacentHTML('beforeend', `
-            <div class="menu-card">
-                <img src="${imageSrc}" alt="${item.name}">
-                <h3>${item.name}</h3>
-                <p>฿${item.price}</p>
-                <button class="add-to-cart-btn" data-id="${item.id}">
-                    เพิ่มลงตะกร้า
-                </button>
+            <div class="cart-item">
+                <span class="item-name">${item.name}</span>
+
+                <div class="cart-controls">
+                    <button data-action="decrease" data-id="${item.id}">−</button>
+                    <span class="item-qty">${item.quantity}</span>
+                    <button data-action="increase" data-id="${item.id}">+</button>
+                    <button data-action="remove" data-id="${item.id}">×</button>
+                    </div>
+                </div>
             </div>
         `);
     });
@@ -107,6 +110,12 @@ function renderCart() {
     let total = 0;
     let qty = 0;
 
+    if (cart.length === 0) {
+    container.innerHTML = `<p class="empty-cart">ยังไม่มีสินค้าในตะกร้า</p>`;
+    totalEl.textContent = '0.00';
+}
+
+
     cart.forEach(item => {
         total += item.price * item.quantity;
         qty += item.quantity;
@@ -130,6 +139,23 @@ function renderCart() {
     // ✅ FAB
     fab?.classList.toggle('hidden', qty === 0);
 }
+
+function decreaseQuantity(id) {
+    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+
+    const item = cart.find(i => i.id == id);
+    if (!item) return;
+
+    item.quantity--;
+
+    if (item.quantity <= 0) {
+        cart = cart.filter(i => i.id != id);
+    }
+
+    localStorage.setItem('kitsuCart', JSON.stringify(cart));
+    renderCart();
+}
+
 
 // ===============================================
 //           MODALS
@@ -316,3 +342,22 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 // ===============================================
+
+// ===============================================
+//           Event Delegation for Menu Page
+// ===============================================
+document
+  .getElementById('modal-cart-items')
+  ?.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+
+    const { action, id } = btn.dataset;
+    if (!action || !id) return;
+
+    if (action === 'increase') addToCart(id);
+    if (action === 'decrease') decreaseQuantity(id);
+    if (action === 'remove') removeFromCart(id);
+});
+// ===============================================
+
