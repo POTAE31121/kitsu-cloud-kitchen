@@ -309,11 +309,6 @@ function initializeGlobalEventListeners() {
                 add.disabled = false;
             }, 800);
         }
-
-        const remove = e.target.closest('.remove-from-cart-btn');
-        if (remove) {
-            removeFromCart(remove.dataset.id);
-        }
     });
 }
 
