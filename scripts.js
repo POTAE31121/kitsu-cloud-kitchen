@@ -27,35 +27,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function displayMenuItems() {
     const container = document.querySelector('.menu-grid');
-    container.innerHTML = '<p class="loading-message">กำลังโหลด...</p>';
+    container.innerHTML = 'กำลังโหลด...';
 
     const res = await fetch(`${API_BASE_URL}/api/items/`);
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    if (!res.ok) {
+        throw new Error(`API error: ${res.status}`);
+    }
 
     const data = await res.json();
     allMenuItems = data;
 
     container.innerHTML = '';
-
     data.forEach(item => {
         const imageSrc = item.image_url
-            ? item.image_url
-            : 'https://via.placeholder.com/150?text=No+Image';
-
+        ? item.image_url 
+        : 'https://via.placeholder.com/150?text=No+Image';
         container.insertAdjacentHTML('beforeend', `
-            <div class="menu-card">
-                <img src="${imageSrc}" alt="${item.name}">
-                <h3>${item.name}</h3>
-                <p>${item.price} บาท</p>
-                <button
-                    class="checkout-btn add-to-cart-btn"
-                    onclick="addToCart(${item.id})">
-                    เพิ่มลงตะกร้า
-                </button>
+            <div class="cart-item">
+                <span class="item-name">${item.name}</span>
+
+                <div class="cart-controls">
+                    <button data-action="decrease" data-id="${item.id}">−</button>
+                    <span class="item-qty">${item.quantity}</span>
+                    <button data-action="increase" data-id="${item.id}">+</button>
+                    <button data-action="remove" data-id="${item.id}">×</button>
+                    </div>
+                </div>
             </div>
         `);
     });
 }
+
 // ===============================================
 //           SHARED
 // ===============================================
@@ -108,17 +110,10 @@ function renderCart() {
     let total = 0;
     let qty = 0;
 
-if (cart.length === 0) {
+    if (cart.length === 0) {
     container.innerHTML = `<p class="empty-cart">ยังไม่มีสินค้าในตะกร้า</p>`;
     totalEl.textContent = '0.00';
-
-    // ซ่อน badge + FAB
-    badges.forEach(badge => badge.classList.add('hidden'));
-    fab?.classList.add('hidden');
-
-    return; // ✅ สำคัญมาก
 }
-
 
 
     cart.forEach(item => {
@@ -127,14 +122,8 @@ if (cart.length === 0) {
 
         container.insertAdjacentHTML('beforeend', `
             <div class="cart-item">
-                <span class="item-name">${item.name}</span>
-
-                <div class="cart-controls">
-                    <button data-action="increase" data-id="${item.id}">+</button>
-                    <span class="item-qty">${item.quantity}</span>
-                    <button data-action="decrease" data-id="${item.id}">-</button>
-                    <button data-action="remove" data-id="${item.id}">x</button>
-                </div>
+                <span>${item.name} x${item.quantity}</span>
+                <button class="remove-from-cart-btn" data-id="${item.id}">×</button>
             </div>
         `);
     });
@@ -310,6 +299,11 @@ function initializeGlobalEventListeners() {
                 add.textContent = t;
                 add.disabled = false;
             }, 800);
+        }
+
+        const remove = e.target.closest('.remove-from-cart-btn');
+        if (remove) {
+            removeFromCart(remove.dataset.id);
         }
     });
 }
