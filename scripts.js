@@ -105,27 +105,6 @@ function renderCart() {
 
     container.innerHTML = '';
     
-    if (cart.length === 0) {
-        container.innerHTML = `
-          <p class="empty-cart">
-            ยังไม่มีสินค้าในตะกร้า<br>
-            <span class="hint">กรุณาเพิ่มสินค้าในตะกร้าก่อนทำการชำระเงิน</span>
-          </p>
-        `;
-        totalEl.textContent = '0.00';
-
-        checkoutBtn.disabled = true;
-        checkoutBtn.classList.add('disabled-btn');
-
-        badges.forEach(b => b.classList.add('hidden'));
-        fab?.classList.add('hidden');
-        return;
-    }
-
-    // มีสินค้า
-    checkoutBtn.disabled = false;
-    checkoutBtn.classList.remove('disabled-btn');
-
     let total = 0;
     let qty = 0;
 
@@ -139,8 +118,6 @@ if (cart.length === 0) {
 
     return; // ✅ สำคัญมาก
 }
-
-
 
     cart.forEach(item => {
         total += item.price * item.quantity;
