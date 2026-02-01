@@ -125,8 +125,14 @@ if (cart.length === 0) {
 
         container.insertAdjacentHTML('beforeend', `
             <div class="cart-item">
-                <span>${item.name} x${item.quantity}</span>
-                <button class="remove-from-cart-btn" data-id="${item.id}">×</button>
+                <span class="item-name">${item.name}</span>
+
+                <div class="cart-controls">
+                    <button data-action="decrease" data-id="${item.id}">−</button>
+                    <span class="item-qty">${item.quantity}</span>
+                    <button data-action="increase" data-id="${item.id}">+</button>
+                    <button data-action="remove" data-id="${item.id}">×</button>
+                </div>
             </div>
         `);
     });
