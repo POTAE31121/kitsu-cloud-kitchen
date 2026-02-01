@@ -104,18 +104,6 @@ function renderCart() {
     let total = 0;
     let qty = 0;
 
-    cart.forEach(item => {
-        total += item.price * item.quantity;
-        qty += item.quantity;
-
-        container.insertAdjacentHTML('beforeend', `
-            <div class="cart-item">
-                <span>${item.name} x${item.quantity}</span>
-                <button class="remove-from-cart-btn" data-id="${item.id}">×</button>
-            </div>
-        `);
-    });
-
     totalEl.textContent = total.toFixed(2);
 
     // ✅ อัปเดต badge ทุกตัว (desktop + mobile)
