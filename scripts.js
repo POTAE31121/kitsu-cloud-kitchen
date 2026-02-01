@@ -1,129 +1,369 @@
 // ===============================================
-// KITSU CLOUD KITCHEN - CLEAN STABLE VERSION
+//           MASTER SCRIPT FILE (STABLE VERSION)
 // ===============================================
 
 const API_BASE_URL = 'https://kitsu-django-backend.onrender.com';
 let allMenuItems = [];
 
 // ===============================================
-// INIT
+//           CORE INITIALIZER
 // ===============================================
+
 document.addEventListener('DOMContentLoaded', () => {
-  initCart();
-  if (document.querySelector('.menu-grid')) loadMenu();
+    initializeSharedComponents();
+    
+    if (document.querySelector('.menu-grid')) {
+        displayMenuItems();
+    }
+
+    if (document.getElementById('track-order-btn')) {
+        initializeOrderStatusPage();
+    }
 });
 
 // ===============================================
-// MENU
+//           MENU PAGE
 // ===============================================
-async function loadMenu() {
-  const grid = document.querySelector('.menu-grid');
-  grid.innerHTML = '<p>กำลังโหลดเมนู...</p>';
 
-  const res = await fetch(`${API_BASE_URL}/api/items/`);
-  const items = await res.json();
+async function displayMenuItems() {
+    const container = document.querySelector('.menu-grid');
+    container.innerHTML = '<p class="loading-message">กำลังโหลด...</p>';
 
-  allMenuItems = items;
-  grid.innerHTML = '';
+    const res = await fetch(`${API_BASE_URL}/api/items/`);
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
 
-  items.forEach(item => {
-    grid.insertAdjacentHTML('beforeend', `
-      <div class="menu-card">
-        <img src="${item.image_url || 'https://via.placeholder.com/150'}">
-        <h3>${item.name}</h3>
-        <p>${item.price} บาท</p>
-        <button class="add-to-cart-btn" data-id="${item.id}">
-          เพิ่มลงตะกร้า
-        </button>
-      </div>
-    `);
-  });
-}
+    const data = await res.json();
+    allMenuItems = data;
 
-// ===============================================
-// CART STORAGE
-// ===============================================
-function getCart() {
-  return JSON.parse(localStorage.getItem('kitsuCart')) || [];
-}
+    container.innerHTML = '';
 
-function saveCart(cart) {
-  localStorage.setItem('kitsuCart', JSON.stringify(cart));
-}
+    data.forEach(item => {
+        const imageSrc = item.image_url
+            ? item.image_url
+            : 'https://via.placeholder.com/150?text=No+Image';
 
-// ===============================================
-// CART LOGIC
-// ===============================================
-function addToCart(id) {
-  const product = allMenuItems.find(p => p.id == id);
-  if (!product) return;
-
-  const cart = getCart();
-  const found = cart.find(i => i.id == id);
-
-  if (found) {
-    found.quantity++;
-  } else {
-    cart.push({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      quantity: 1
+        container.insertAdjacentHTML('beforeend', `
+            <div class="menu-card">
+                <img src="${imageSrc}" alt="${item.name}">
+                <h3>${item.name}</h3>
+                <p>${item.price} บาท</p>
+                <button
+                    class="checkout-btn add-to-cart-btn"
+                    onclick="addToCart(${item.id})">
+                    เพิ่มลงตะกร้า
+                </button>
+            </div>
+        `);
     });
-  }
+}
+// ===============================================
+//           SHARED
+// ===============================================
 
-  saveCart(cart);
-  renderCart();
+function initializeSharedComponents() {
+    initializeCartModal();
+    initializeCheckoutModal();
+    renderCart();
+    initializeGlobalEventListeners();
+}
+
+// ===============================================
+//           CART
+// ===============================================
+
+function addToCart(id) {
+    const product = allMenuItems.find(p => p.id == id);
+    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+
+    const existing = cart.find(i => i.id == id);
+    if (existing) {
+        existing.quantity++;
+    } else {
+        cart.push({ id, name: product.name, price: product.price, quantity: 1 });
+    }
+
+    localStorage.setItem('kitsuCart', JSON.stringify(cart));
+    renderCart();
+}
+
+function removeFromCart(id) {
+    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+    cart = cart.filter(i => i.id != id);
+    localStorage.setItem('kitsuCart', JSON.stringify(cart));
+    renderCart();
 }
 
 function renderCart() {
-  const cart = getCart();
-  const list = document.getElementById('modal-cart-items');
-  const totalEl = document.getElementById('modal-cart-total');
+    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
 
-  if (!list || !totalEl) return;
+    const container = document.getElementById('modal-cart-items');
+    const totalEl = document.getElementById('modal-cart-total');
+    const fab = document.getElementById('cart-fab');
+    const badges = document.querySelectorAll('.cart-badge'); // ⭐ สำคัญ
 
-  list.innerHTML = '';
-  let total = 0;
+    if (!container || !totalEl) return;
 
-  if (cart.length === 0) {
-    list.innerHTML = '<p>ยังไม่มีสินค้าในตะกร้า</p>';
+    container.innerHTML = '';
+
+    let total = 0;
+    let qty = 0;
+
+if (cart.length === 0) {
+    container.innerHTML = `<p class="empty-cart">ยังไม่มีสินค้าในตะกร้า</p>`;
     totalEl.textContent = '0.00';
+
+    // ซ่อน badge + FAB
+    badges.forEach(badge => badge.classList.add('hidden'));
+    fab?.classList.add('hidden');
+
+    return; // ✅ สำคัญมาก
+}
+
+
+
+    cart.forEach(item => {
+        total += item.price * item.quantity;
+        qty += item.quantity;
+
+        container.insertAdjacentHTML('beforeend', `
+            <div class="cart-item">
+                <span class="item-name">${item.name}</span>
+
+                <div class="cart-controls">
+                    <button data-action="increase" data-id="${item.id}">+</button>
+                    <span class="item-qty">${item.quantity}</span>
+                    <button data-action="decrease" data-id="${item.id}">-</button>
+                    <button data-action="remove" data-id="${item.id}">x</button>
+                </div>
+            </div>
+        `);
+    });
+
+    totalEl.textContent = total.toFixed(2);
+
+    // ✅ อัปเดต badge ทุกตัว (desktop + mobile)
+    badges.forEach(badge => {
+        badge.textContent = qty;
+        badge.classList.toggle('hidden', qty === 0);
+    });
+
+    // ✅ FAB
+    fab?.classList.toggle('hidden', qty === 0);
+}
+
+function decreaseQuantity(id) {
+    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+
+    const item = cart.find(i => i.id == id);
+    if (!item) return;
+
+    item.quantity--;
+
+    if (item.quantity <= 0) {
+        cart = cart.filter(i => i.id != id);
+    }
+
+    localStorage.setItem('kitsuCart', JSON.stringify(cart));
+    renderCart();
+}
+
+
+// ===============================================
+//           MODALS
+// ===============================================
+
+function initializeCartModal() {
+    const icon = document.getElementById('cart-icon');
+    const fab = document.getElementById('cart-fab');
+    const modal = document.getElementById('cart-modal');
+    const overlay = document.getElementById('cart-modal-overlay');
+    const close = document.getElementById('modal-close-btn');
+
+    const open = () => {
+        modal.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+    };
+
+    const closeFn = () => {
+        modal.classList.add('hidden');
+        overlay.classList.add('hidden');
+    };
+
+    icon?.addEventListener('click', open);
+    fab?.addEventListener('click', open);
+    close?.addEventListener('click', closeFn);
+    overlay?.addEventListener('click', closeFn);
+}
+
+function initializeCheckoutModal() {
+    const checkoutBtn = document.querySelector('#cart-modal .checkout-btn');
+    const modal = document.getElementById('checkout-modal');
+    const overlay = document.getElementById('checkout-modal-overlay');
+    const close = document.getElementById('checkout-close-btn');
+    const form = document.getElementById('checkout-form');
+
+    const open = () => {
+        modal.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+    };
+
+    const closeFn = () => {
+        modal.classList.add('hidden');
+        overlay.classList.add('hidden');
+    };
+
+    checkoutBtn?.addEventListener('click', () => {
+        const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+        if (cart.length === 0) {
+            alert('ตะกร้าว่าง');
+            return;
+        }
+        open();
+    });
+
+    close?.addEventListener('click', closeFn);
+    overlay?.addEventListener('click', closeFn);
+    form?.addEventListener('submit', handleOrderSubmit);
+}
+
+// ===============================================
+//           CHECKOUT → PAYMENT SIMULATOR
+// ===============================================
+async function handleOrderSubmit(e) {
+  e.preventDefault();
+
+  const rawCart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+  if (rawCart.length === 0) {
+    alert('ตะกร้าว่าง');
     return;
   }
 
-  cart.forEach(item => {
-    total += item.price * item.quantity;
-    list.insertAdjacentHTML('beforeend', `
-      <div class="cart-item">
-        ${item.name} x ${item.quantity}
-      </div>
-    `);
-  });
+  // แปลงให้ backend รับได้
+  const items = rawCart.map(i => ({
+    id: Number(i.id),
+    quantity: Number(i.quantity)
+  }));
 
-  totalEl.textContent = total.toFixed(2);
+  try {
+    // STEP 1: สร้าง Order
+    const orderRes = await fetch(`${API_BASE_URL}/api/orders/submit-final/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        customer_name: document.getElementById('customer_name')?.value ?? '',
+        customer_phone: document.getElementById('customer_phone')?.value ?? '',
+        customer_address: document.getElementById('customer_address')?.value ?? '',
+        items: JSON.stringify(items) // backend บังคับ string
+      })
+    });
+
+    const raw = await orderRes.text();
+    if (!orderRes.ok) {
+      console.error('BACKEND RESPONSE:', raw);
+      throw new Error('Create order failed');
+    }
+
+    // ✅ รับข้อมูลให้ครบ
+    const orderData = JSON.parse(raw);
+    const { order_id, total_price } = orderData;
+
+    // STEP 2: สร้าง Payment Intent
+    const payRes = await fetch(`${API_BASE_URL}/api/payment/create-intent/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        order_id,
+        amount: total_price
+      })
+    });
+
+    if (!payRes.ok) throw new Error('Payment failed');
+
+    const payData = await payRes.json();
+
+    // STEP 3: Redirect
+    window.location.href = payData.simulator_url;
+
+  } catch (err) {
+    console.error(err);
+    alert('เกิดข้อผิดพลาด');
+  }
+}
+
+
+// ===============================================
+//           GLOBAL EVENTS
+// ===============================================
+
+function initializeGlobalEventListeners() {
+    document.addEventListener('click', e => {
+
+        const add = e.target.closest('.add-to-cart-btn');
+        if (add) {
+            addToCart(add.dataset.id);
+
+            const t = add.textContent;
+            add.textContent = 'เพิ่มแล้ว ✓';
+            add.disabled = true;
+
+            setTimeout(() => {
+                add.textContent = t;
+                add.disabled = false;
+            }, 800);
+        }
+    });
 }
 
 // ===============================================
-// EVENTS (ONE PLACE ONLY)
+//           MOBILE MENU
 // ===============================================
-function initCart() {
-  document.addEventListener('click', e => {
-    const btn = e.target.closest('.add-to-cart-btn');
+document.addEventListener('DOMContentLoaded', () => {
+  const hamburger = document.querySelector('.hamburger-menu');
+  const menu = document.querySelector('.slide-menu');
+  const body = document.body;
+
+  if (!hamburger || !menu) return;
+
+  hamburger.addEventListener('click', () => {
+    menu.classList.toggle('active');
+
+    // ปรับไอคอน Hamburger เป็นปุ่มปิด (X) เมื่อเมนูเปิดอยู่
+    if (menu.classList.contains('active')) {
+      hamburger.innerHTML = '&times;'; // ใช้สัญลักษณ์ X
+    } else {
+      hamburger.innerHTML = '&#9776;'; // ใช้สัญลักษณ์ Hamburger
+    }
+  });
+
+    menu.addEventListener('click', (e) => {
+    if (e.target === menu) {
+      menu.classList.remove('active');
+      hamburger.innerHTML = '&#9776;'; // กลับเป็นไอคอน Hamburger
+    }
+
+    menu.querySelector('ul').addEventListener('click', () => {
+        menu.classList.remove('active');
+        hamburger.innerHTML = '&#9776;'; // กลับเป็นไอคอน Hamburger
+    });
+  });
+});
+// ===============================================
+
+// ===============================================
+//           Event Delegation for Menu Page
+// ===============================================
+document
+  .getElementById('modal-cart-items')
+  ?.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
     if (!btn) return;
 
-    const id = btn.dataset.id;
-    if (!id) return;
+    const { action, id } = btn.dataset;
+    if (!action || !id) return;
 
-    addToCart(id);
+    if (action === 'increase') addToCart(id);
+    if (action === 'decrease') decreaseQuantity(id);
+    if (action === 'remove') removeFromCart(id);
+});
+// ===============================================
 
-    btn.textContent = 'เพิ่มแล้ว ✓';
-    btn.disabled = true;
-    setTimeout(() => {
-      btn.textContent = 'เพิ่มลงตะกร้า';
-      btn.disabled = false;
-    }, 600);
-  });
-
-  renderCart();
-}
