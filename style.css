@@ -448,4 +448,29 @@ body.menu-open {
   color: #fff;
 }
 
+.cart-modal-header {
+  background: #111827;        /* ดำ */
+  color: #f5c16c;             /* ทอง */
+  padding: 16px 20px;
+  font-weight: 600;
+  font-size: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.cart-modal-header button {
+  background: transparent;
+  border: none;
+  color: #f5c16c;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.cart-modal-header button:hover {
+  color: #fff;
+}
+
 /* --- End of style.css --- */
