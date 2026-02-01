@@ -49,7 +49,7 @@ async function displayMenuItems() {
                 <p>${item.price} บาท</p>
                 <button
                     class="checkout-btn add-to-cart-btn"
-                    onclick="addToCart(${item.id})">
+                    data-id="${item.id}">
                     เพิ่มลงตะกร้า
                 </button>
             </div>
