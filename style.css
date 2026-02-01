@@ -487,4 +487,27 @@ body.menu-open {
   color: #f20707;
 }
 
+.checkout-btn {
+    padding: 12px 26px;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+/* ENABLED */
+.checkout-btn.is-active {
+    background: #27ae60;
+    color: #fff;
+    cursor: pointer;
+}
+
+/* DISABLED */
+.checkout-btn.is-disabled {
+    background: #d1d5db;
+    color: #6b7280;
+    cursor: not-allowed;
+}
+
 /* --- End of style.css --- */
