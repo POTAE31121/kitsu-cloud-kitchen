@@ -49,7 +49,7 @@ async function displayMenuItems() {
                 <p>${item.price} บาท</p>
                 <button
                     class="checkout-btn add-to-cart-btn"
-                    data-id="${item.id}">
+                    onclick="addToCart(${item.id})">
                     เพิ่มลงตะกร้า
                 </button>
             </div>
@@ -72,14 +72,7 @@ function initializeSharedComponents() {
 // ===============================================
 
 function addToCart(id) {
-    if (!id) return;
-
-    const product = allMenuItems.find(p => String(p.id) === String(id));
-    if (!product) {
-        console.error('Product not found:', id, allMenuItems);
-        return;
-    }
-
+    const product = allMenuItems.find(p => p.id == id);
     let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
 
     const existing = cart.find(i => i.id == id);
@@ -111,7 +104,7 @@ function renderCart() {
     if (!container || !totalEl) return;
 
     container.innerHTML = '';
-    
+
     let total = 0;
     let qty = 0;
 
@@ -126,8 +119,9 @@ if (cart.length === 0) {
     return; // ✅ สำคัญมาก
 }
 
+
+
     cart.forEach(item => {
-        if (!item || typeof item.price !== 'number') return;
         total += item.price * item.quantity;
         qty += item.quantity;
 
@@ -302,17 +296,21 @@ async function handleOrderSubmit(e) {
 // ===============================================
 
 function initializeGlobalEventListeners() {
-    document.addEventListener('click', (e) => {
+    document.addEventListener('click', e => {
+
         const add = e.target.closest('.add-to-cart-btn');
-        if (!add) return;
+        if (add) {
+            addToCart(add.dataset.id);
 
-        const id = add.dataset.id;
-        if (!id) {
-            console.error('Missing data-id on add-to-cart button', add);
-            return;
+            const t = add.textContent;
+            add.textContent = 'เพิ่มแล้ว ✓';
+            add.disabled = true;
+
+            setTimeout(() => {
+                add.textContent = t;
+                add.disabled = false;
+            }, 800);
         }
-
-        addToCart(id);
     });
 }
 
@@ -349,6 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+// ===============================================
 
 // ===============================================
 //           Event Delegation for Menu Page
