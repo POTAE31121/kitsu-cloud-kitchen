@@ -30,15 +30,15 @@ async function displayMenuItems() {
     container.innerHTML = 'กำลังโหลด...';
 
     const res = await fetch(`${API_BASE_URL}/api/items/`);
+    if (!res.ok) {
+        throw new Error(`API error: ${res.status}`);
+    }
+
     const data = await res.json();
     allMenuItems = data;
 
     container.innerHTML = '';
     data.forEach(item => {
-        const imageSrc = item.image_url
-            ? item.image_url
-            : 'images/placeholder.png';
-
         container.insertAdjacentHTML('beforeend', `
             <div class="menu-card">
                 <img src="${imageSrc}" alt="${item.name}">
