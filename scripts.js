@@ -72,6 +72,8 @@ function initializeSharedComponents() {
 // ===============================================
 
 function addToCart(id) {
+    if (!id) return;
+
     const product = allMenuItems.find(p => p.id == id);
     let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
 
@@ -120,6 +122,7 @@ if (cart.length === 0) {
 }
 
     cart.forEach(item => {
+        if (!item || typeof item.price !== 'number') return;
         total += item.price * item.quantity;
         qty += item.quantity;
 
