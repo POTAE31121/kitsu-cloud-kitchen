@@ -1,149 +1,315 @@
 // ===============================================
-// KITSU CLOUD KITCHEN - CLEAN & STABLE
+//           MASTER SCRIPT FILE (STABLE VERSION)
 // ===============================================
 
 const API_BASE_URL = 'https://kitsu-django-backend.onrender.com';
 let allMenuItems = [];
 
 // ===============================================
-// INIT
+//           CORE INITIALIZER
 // ===============================================
+
 document.addEventListener('DOMContentLoaded', () => {
-  initMenu();
-  initCartEvents();
-  renderCart();
+    initializeSharedComponents();
+    
+    if (document.querySelector('.menu-grid')) {
+        displayMenuItems();
+    }
+
+    if (document.getElementById('track-order-btn')) {
+        initializeOrderStatusPage();
+    }
 });
 
 // ===============================================
-// MENU
+//           MENU PAGE
 // ===============================================
-async function initMenu() {
-  const grid = document.querySelector('.menu-grid');
-  if (!grid) return;
 
-  grid.innerHTML = '<p>กำลังโหลดเมนู...</p>';
+async function displayMenuItems() {
+    const container = document.querySelector('.menu-grid');
+    container.innerHTML = 'กำลังโหลด...';
 
-  try {
     const res = await fetch(`${API_BASE_URL}/api/items/`);
-    const items = await res.json();
+    const data = await res.json();
+    allMenuItems = data;
 
-    allMenuItems = items;
-    grid.innerHTML = '';
+    container.innerHTML = '';
+    data.forEach(item => {
+        const imageSrc = item.image_url
+            ? item.image_url
+            : 'images/placeholder.png';
 
-    items.forEach(item => {
-      grid.insertAdjacentHTML('beforeend', `
-        <div class="menu-card">
-          <img src="${item.image_url || 'https://via.placeholder.com/150'}">
-          <h3>${item.name}</h3>
-          <p>${item.price} บาท</p>
-          <button class="add-to-cart-btn" data-id="${item.id}">
-            เพิ่มลงตะกร้า
-          </button>
-        </div>
-      `);
+        container.insertAdjacentHTML('beforeend', `
+            <div class="menu-card">
+                <img src="${imageSrc}" alt="${item.name}">
+                <h3>${item.name}</h3>
+                <p>฿${item.price}</p>
+                <button class="add-to-cart-btn" data-id="${item.id}">
+                    เพิ่มลงตะกร้า
+                </button>
+            </div>
+        `);
     });
-  } catch (err) {
-    console.error(err);
-    grid.innerHTML = '<p>โหลดเมนูไม่สำเร็จ</p>';
-  }
 }
 
 // ===============================================
-// CART STORAGE
+//           SHARED
 // ===============================================
-function getCart() {
-  return JSON.parse(localStorage.getItem('kitsuCart')) || [];
+
+function initializeSharedComponents() {
+    initializeCartModal();
+    initializeCheckoutModal();
+    renderCart();
+    initializeGlobalEventListeners();
 }
 
-function saveCart(cart) {
-  localStorage.setItem('kitsuCart', JSON.stringify(cart));
-}
+// ===============================================
+//           CART
+// ===============================================
 
-// ===============================================
-// CART LOGIC
-// ===============================================
 function addToCart(id) {
-  if (!id) return;
+    const product = allMenuItems.find(p => p.id == id);
+    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
 
-  const product = allMenuItems.find(p => String(p.id) === String(id));
-  if (!product) return;
+    const existing = cart.find(i => i.id == id);
+    if (existing) {
+        existing.quantity++;
+    } else {
+        cart.push({ id, name: product.name, price: product.price, quantity: 1 });
+    }
 
-  const cart = getCart();
-  const found = cart.find(i => i.id === product.id);
+    localStorage.setItem('kitsuCart', JSON.stringify(cart));
+    renderCart();
+}
 
-  if (found) {
-    found.quantity += 1;
-  } else {
-    cart.push({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      quantity: 1
-    });
-  }
-
-  saveCart(cart);
-  renderCart();
+function removeFromCart(id) {
+    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+    cart = cart.filter(i => i.id != id);
+    localStorage.setItem('kitsuCart', JSON.stringify(cart));
+    renderCart();
 }
 
 function renderCart() {
-  const cart = getCart();
-  const list = document.getElementById('modal-cart-items');
-  const totalEl = document.getElementById('modal-cart-total');
-  const badges = document.querySelectorAll('.cart-badge');
-  const fab = document.getElementById('cart-fab');
+    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
 
-  if (!list || !totalEl) return;
+    const container = document.getElementById('modal-cart-items');
+    const totalEl = document.getElementById('modal-cart-total');
+    const fab = document.getElementById('cart-fab');
+    const badges = document.querySelectorAll('.cart-badge'); // ⭐ สำคัญ
 
-  list.innerHTML = '';
-  let total = 0;
-  let qty = 0;
+    if (!container || !totalEl) return;
 
-  if (cart.length === 0) {
-    list.innerHTML = '<p>ยังไม่มีสินค้าในตะกร้า</p>';
-    totalEl.textContent = '0.00';
-    badges.forEach(b => b.classList.add('hidden'));
-    fab?.classList.add('hidden');
+    container.innerHTML = '';
+
+    let total = 0;
+    let qty = 0;
+
+    cart.forEach(item => {
+        total += item.price * item.quantity;
+        qty += item.quantity;
+
+        container.insertAdjacentHTML('beforeend', `
+            <div class="cart-item">
+                <span>${item.name} x${item.quantity}</span>
+                <button class="remove-from-cart-btn" data-id="${item.id}">×</button>
+            </div>
+        `);
+    });
+
+    totalEl.textContent = total.toFixed(2);
+
+    // ✅ อัปเดต badge ทุกตัว (desktop + mobile)
+    badges.forEach(badge => {
+        badge.textContent = qty;
+        badge.classList.toggle('hidden', qty === 0);
+    });
+
+    // ✅ FAB
+    fab?.classList.toggle('hidden', qty === 0);
+}
+
+// ===============================================
+//           MODALS
+// ===============================================
+
+function initializeCartModal() {
+    const icon = document.getElementById('cart-icon');
+    const fab = document.getElementById('cart-fab');
+    const modal = document.getElementById('cart-modal');
+    const overlay = document.getElementById('cart-modal-overlay');
+    const close = document.getElementById('modal-close-btn');
+
+    const open = () => {
+        modal.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+    };
+
+    const closeFn = () => {
+        modal.classList.add('hidden');
+        overlay.classList.add('hidden');
+    };
+
+    icon?.addEventListener('click', open);
+    fab?.addEventListener('click', open);
+    close?.addEventListener('click', closeFn);
+    overlay?.addEventListener('click', closeFn);
+}
+
+function initializeCheckoutModal() {
+    const checkoutBtn = document.querySelector('#cart-modal .checkout-btn');
+    const modal = document.getElementById('checkout-modal');
+    const overlay = document.getElementById('checkout-modal-overlay');
+    const close = document.getElementById('checkout-close-btn');
+    const form = document.getElementById('checkout-form');
+
+    const open = () => {
+        modal.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+    };
+
+    const closeFn = () => {
+        modal.classList.add('hidden');
+        overlay.classList.add('hidden');
+    };
+
+    checkoutBtn?.addEventListener('click', () => {
+        const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+        if (cart.length === 0) {
+            alert('ตะกร้าว่าง');
+            return;
+        }
+        open();
+    });
+
+    close?.addEventListener('click', closeFn);
+    overlay?.addEventListener('click', closeFn);
+    form?.addEventListener('submit', handleOrderSubmit);
+}
+
+// ===============================================
+//           CHECKOUT → PAYMENT SIMULATOR
+// ===============================================
+async function handleOrderSubmit(e) {
+  e.preventDefault();
+
+  const rawCart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+  if (rawCart.length === 0) {
+    alert('ตะกร้าว่าง');
     return;
   }
 
-  cart.forEach(item => {
-    if (!item || !item.price) return;
+  // แปลงให้ backend รับได้
+  const items = rawCart.map(i => ({
+    id: Number(i.id),
+    quantity: Number(i.quantity)
+  }));
 
-    total += item.price * item.quantity;
-    qty += item.quantity;
+  try {
+    // STEP 1: สร้าง Order
+    const orderRes = await fetch(`${API_BASE_URL}/api/orders/submit-final/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        customer_name: document.getElementById('customer_name')?.value ?? '',
+        customer_phone: document.getElementById('customer_phone')?.value ?? '',
+        customer_address: document.getElementById('customer_address')?.value ?? '',
+        items: JSON.stringify(items) // backend บังคับ string
+      })
+    });
 
-    list.insertAdjacentHTML('beforeend', `
-      <div class="cart-item">
-        ${item.name} × ${item.quantity}
-      </div>
-    `);
-  });
+    const raw = await orderRes.text();
+    if (!orderRes.ok) {
+      console.error('BACKEND RESPONSE:', raw);
+      throw new Error('Create order failed');
+    }
 
-  totalEl.textContent = total.toFixed(2);
-  badges.forEach(b => {
-    b.textContent = qty;
-    b.classList.remove('hidden');
-  });
-  fab?.classList.remove('hidden');
+    // ✅ รับข้อมูลให้ครบ
+    const orderData = JSON.parse(raw);
+    const { order_id, total_price } = orderData;
+
+    // STEP 2: สร้าง Payment Intent
+    const payRes = await fetch(`${API_BASE_URL}/api/payment/create-intent/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        order_id,
+        amount: total_price
+      })
+    });
+
+    if (!payRes.ok) throw new Error('Payment failed');
+
+    const payData = await payRes.json();
+
+    // STEP 3: Redirect
+    window.location.href = payData.simulator_url;
+
+  } catch (err) {
+    console.error(err);
+    alert('เกิดข้อผิดพลาด');
+  }
+}
+
+
+// ===============================================
+//           GLOBAL EVENTS
+// ===============================================
+
+function initializeGlobalEventListeners() {
+    document.addEventListener('click', e => {
+
+        const add = e.target.closest('.add-to-cart-btn');
+        if (add) {
+            addToCart(add.dataset.id);
+
+            const t = add.textContent;
+            add.textContent = 'เพิ่มแล้ว ✓';
+            add.disabled = true;
+
+            setTimeout(() => {
+                add.textContent = t;
+                add.disabled = false;
+            }, 800);
+        }
+
+        const remove = e.target.closest('.remove-from-cart-btn');
+        if (remove) {
+            removeFromCart(remove.dataset.id);
+        }
+    });
 }
 
 // ===============================================
-// EVENTS (ONE SOURCE OF TRUTH)
+//           MOBILE MENU
 // ===============================================
-function initCartEvents() {
-  document.addEventListener('click', e => {
-    const btn = e.target.closest('.add-to-cart-btn');
-    if (!btn) return;
+document.addEventListener('DOMContentLoaded', () => {
+  const hamburger = document.querySelector('.hamburger-menu');
+  const menu = document.querySelector('.slide-menu');
+  const body = document.body;
 
-    const id = btn.dataset.id;
-    addToCart(id);
+  if (!hamburger || !menu) return;
 
-    btn.textContent = 'เพิ่มแล้ว ✓';
-    btn.disabled = true;
-    setTimeout(() => {
-      btn.textContent = 'เพิ่มลงตะกร้า';
-      btn.disabled = false;
-    }, 600);
+  hamburger.addEventListener('click', () => {
+    menu.classList.toggle('active');
+
+    // ปรับไอคอน Hamburger เป็นปุ่มปิด (X) เมื่อเมนูเปิดอยู่
+    if (menu.classList.contains('active')) {
+      hamburger.innerHTML = '&times;'; // ใช้สัญลักษณ์ X
+    } else {
+      hamburger.innerHTML = '&#9776;'; // ใช้สัญลักษณ์ Hamburger
+    }
   });
-}
+
+    menu.addEventListener('click', (e) => {
+    if (e.target === menu) {
+      menu.classList.remove('active');
+      hamburger.innerHTML = '&#9776;'; // กลับเป็นไอคอน Hamburger
+    }
+
+    menu.querySelector('ul').addEventListener('click', () => {
+        menu.classList.remove('active');
+        hamburger.innerHTML = '&#9776;'; // กลับเป็นไอคอน Hamburger
+    });
+  });
+});
+// ===============================================
