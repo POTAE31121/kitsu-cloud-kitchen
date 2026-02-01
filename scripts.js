@@ -37,21 +37,6 @@ async function displayMenuItems() {
     const data = await res.json();
     allMenuItems = data;
 
-    container.innerHTML = '';
-    data.forEach(item => {
-        container.insertAdjacentHTML('beforeend', `
-            <div class="menu-card">
-                <img src="${imageSrc}" alt="${item.name}">
-                <h3>${item.name}</h3>
-                <p>฿${item.price}</p>
-                <button class="add-to-cart-btn" data-id="${item.id}">
-                    เพิ่มลงตะกร้า
-                </button>
-            </div>
-        `);
-    });
-}
-
 // ===============================================
 //           SHARED
 // ===============================================
