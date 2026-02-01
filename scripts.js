@@ -16,9 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
         displayMenuItems();
     }
 
-    if (document.getElementById('track-order-btn')) {
-        initializeOrderStatusPage();
-    }
+//    if (document.getElementById('track-order-btn')) {
+//        initializeOrderStatusPage();
+//    }
 });
 
 // ===============================================
@@ -49,7 +49,7 @@ async function displayMenuItems() {
                 <p>${item.price} บาท</p>
                 <button
                     class="checkout-btn add-to-cart-btn"
-                    onclick="addToCart(${item.id})">
+                    data-id="addToCart(${item.id})">
                     เพิ่มลงตะกร้า
                 </button>
             </div>
