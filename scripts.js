@@ -74,7 +74,12 @@ function initializeSharedComponents() {
 function addToCart(id) {
     if (!id) return;
 
-    const product = allMenuItems.find(p => p.id == id);
+    const product = allMenuItems.find(p => String(p.id) === String(id));
+    if (!product) {
+        console.error('Product not found:', id, allMenuItems);
+        return;
+    }
+
     let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
 
     const existing = cart.find(i => i.id == id);
@@ -297,21 +302,17 @@ async function handleOrderSubmit(e) {
 // ===============================================
 
 function initializeGlobalEventListeners() {
-    document.addEventListener('click', e => {
-
+    document.addEventListener('click', (e) => {
         const add = e.target.closest('.add-to-cart-btn');
-        if (add) {
-            addToCart(add.dataset.id);
+        if (!add) return;
 
-            const t = add.textContent;
-            add.textContent = 'เพิ่มแล้ว ✓';
-            add.disabled = true;
-
-            setTimeout(() => {
-                add.textContent = t;
-                add.disabled = false;
-            }, 800);
+        const id = add.dataset.id;
+        if (!id) {
+            console.error('Missing data-id on add-to-cart button', add);
+            return;
         }
+
+        addToCart(id);
     });
 }
 
