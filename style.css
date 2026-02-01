@@ -398,4 +398,54 @@ body.menu-open {
   overflow: hidden;
 }
 
+.cart-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cart-controls button {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #2a2a2a;
+  background: #111827;
+  color: #f5c16c; /* ทอง */
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+/* + / - */
+.cart-controls button[data-action="increase"],
+.cart-controls button[data-action="decrease"] {
+  background: #111827;
+}
+
+.cart-controls button[data-action="increase"]:hover,
+.cart-controls button[data-action="decrease"]:hover {
+  background: #1f2937;
+  transform: scale(1.05);
+}
+
+/* qty */
+.cart-qty {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 600;
+  color: #f5c16c;
+}
+
+/* remove (x) */
+.cart-controls button[data-action="remove"] {
+  background: #2a0000;
+  border-color: #7f1d1d;
+  color: #f87171;
+}
+
+.cart-controls button[data-action="remove"]:hover {
+  background: #7f1d1d;
+  color: #fff;
+}
+
 /* --- End of style.css --- */

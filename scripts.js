@@ -130,10 +130,10 @@ if (cart.length === 0) {
                 <span class="item-name">${item.name}</span>
 
                 <div class="cart-controls">
-                    <button data-action="decrease" data-id="${item.id}">−</button>
+                    <button data-action="decrease" data-id="${item.id}">-</button>
                     <span class="item-qty">${item.quantity}</span>
                     <button data-action="increase" data-id="${item.id}">+</button>
-                    <button data-action="remove" data-id="${item.id}">×</button>
+                    <button data-action="remove" data-id="${item.id}">x</button>
                 </div>
             </div>
         `);
