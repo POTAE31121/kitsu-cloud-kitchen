@@ -473,4 +473,18 @@ body.menu-open {
   color: #fff;
 }
 
+.empty-cart {
+  text-align: center;
+  color: #555;
+  padding: 20px 0;
+  font-size: 1rem;
+}
+
+.empty-cart .hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: #c9a24d; /* โทนทอง */
+}
+
 /* --- End of style.css --- */
