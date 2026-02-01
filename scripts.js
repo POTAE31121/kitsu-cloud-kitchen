@@ -2,110 +2,42 @@
 // CONFIG
 // ===============================================
 const API_BASE_URL = 'https://kitsu-django-backend.onrender.com';
+const CART_KEY = 'kitsuCart';
+
+let allMenuItems = [];
 
 // ===============================================
-// STATE
+// BOOTSTRAP
 // ===============================================
-const AppState = {
-  menuItems: [],
-  cart: []
-};
+document.addEventListener('DOMContentLoaded', async () => {
+  initializeStaticComponents();
+  initializeGlobalEventListeners();
 
-// ===============================================
-// UTILS
-// ===============================================
-const Storage = {
-  loadCart() {
-    try {
-      return JSON.parse(localStorage.getItem('kitsuCart')) || [];
-    } catch {
-      return [];
-    }
-  },
-  saveCart(cart) {
-    localStorage.setItem('kitsuCart', JSON.stringify(cart));
+  if (document.querySelector('.menu-grid')) {
+    await loadMenu(); // ✅ ต้องโหลดเมนูก่อน
   }
-};
+
+  renderCart(); // ✅ ค่อย render cart ทีหลัง
+});
 
 // ===============================================
-// MENU SERVICE
+// MENU
 // ===============================================
-const MenuService = {
-  async load() {
+async function loadMenu() {
+  const container = document.querySelector('.menu-grid');
+  if (!container) return;
+
+  container.innerHTML = `<p class="loading-message">กำลังโหลดเมนู...</p>`;
+
+  try {
     const res = await fetch(`${API_BASE_URL}/api/items/`);
-    if (!res.ok) throw new Error('Menu API failed');
+    if (!res.ok) throw new Error(res.status);
 
-    AppState.menuItems = await res.json();
-  },
+    allMenuItems = await res.json();
+    container.innerHTML = '';
 
-  getById(id) {
-    return AppState.menuItems.find(i => String(i.id) === String(id));
-  }
-};
-
-// ===============================================
-// CART SERVICE
-// ===============================================
-const CartService = {
-  init() {
-    AppState.cart = Storage.loadCart();
-  },
-
-  add(id) {
-    const product = MenuService.getById(id);
-    if (!product) {
-      console.error('Invalid product id:', id);
-      return;
-    }
-
-    const item = AppState.cart.find(i => i.id === product.id);
-    if (item) {
-      item.quantity++;
-    } else {
-      AppState.cart.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: 1
-      });
-    }
-
-    Storage.saveCart(AppState.cart);
-    CartUI.render();
-  },
-
-  decrease(id) {
-    const item = AppState.cart.find(i => i.id == id);
-    if (!item) return;
-
-    item.quantity--;
-    if (item.quantity <= 0) {
-      AppState.cart = AppState.cart.filter(i => i.id != id);
-    }
-
-    Storage.saveCart(AppState.cart);
-    CartUI.render();
-  },
-
-  remove(id) {
-    AppState.cart = AppState.cart.filter(i => i.id != id);
-    Storage.saveCart(AppState.cart);
-    CartUI.render();
-  }
-};
-
-// ===============================================
-// UI - MENU
-// ===============================================
-const MenuUI = {
-  render() {
-    const grid = document.querySelector('.menu-grid');
-    if (!grid) return;
-
-    grid.innerHTML = '';
-
-    AppState.menuItems.forEach(item => {
-      grid.insertAdjacentHTML('beforeend', `
+    allMenuItems.forEach(item => {
+      container.insertAdjacentHTML('beforeend', `
         <div class="menu-card">
           <img src="${item.image_url || 'https://via.placeholder.com/150'}">
           <h3>${item.name}</h3>
@@ -116,100 +48,188 @@ const MenuUI = {
         </div>
       `);
     });
+
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = `<p class="error">โหลดเมนูไม่สำเร็จ</p>`;
   }
-};
+}
 
 // ===============================================
-// UI - CART
+// CART – STATE
 // ===============================================
-const CartUI = {
-  render() {
-    const container = document.getElementById('modal-cart-items');
-    const totalEl = document.getElementById('modal-cart-total');
-    const badges = document.querySelectorAll('.cart-badge');
-    const fab = document.getElementById('cart-fab');
+function getCart() {
+  try {
+    return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
 
-    if (!container || !totalEl) return;
+function saveCart(cart) {
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+}
 
-    container.innerHTML = '';
+// ===============================================
+// CART – ACTIONS
+// ===============================================
+function addToCart(id) {
+  const product = allMenuItems.find(p => String(p.id) === String(id));
+  if (!product) {
+    console.error('Product not found:', id);
+    return;
+  }
 
-    if (AppState.cart.length === 0) {
-      container.innerHTML = `<p class="empty-cart">ยังไม่มีสินค้า</p>`;
-      totalEl.textContent = '0.00';
-      badges.forEach(b => b.classList.add('hidden'));
-      fab?.classList.add('hidden');
-      return;
-    }
+  const cart = getCart();
+  const item = cart.find(i => i.id == id);
 
-    let total = 0;
-    let qty = 0;
+  if (item) {
+    item.quantity++;
+  } else {
+    cart.push({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1
+    });
+  }
 
-    AppState.cart.forEach(item => {
-      total += item.price * item.quantity;
-      qty += item.quantity;
+  saveCart(cart);
+  renderCart();
+}
 
-      container.insertAdjacentHTML('beforeend', `
-        <div class="cart-item">
-          <span>${item.name}</span>
-          <div class="cart-controls">
-            <button data-action="increase" data-id="${item.id}">+</button>
-            <span>${item.quantity}</span>
-            <button data-action="decrease" data-id="${item.id}">-</button>
-            <button data-action="remove" data-id="${item.id}">x</button>
-          </div>
+function decreaseItem(id) {
+  let cart = getCart();
+  const item = cart.find(i => i.id == id);
+  if (!item) return;
+
+  item.quantity--;
+  if (item.quantity <= 0) {
+    cart = cart.filter(i => i.id != id);
+  }
+
+  saveCart(cart);
+  renderCart();
+}
+
+function removeItem(id) {
+  const cart = getCart().filter(i => i.id != id);
+  saveCart(cart);
+  renderCart();
+}
+
+// ===============================================
+// CART – RENDER
+// ===============================================
+function renderCart() {
+  const cart = getCart();
+  const list = document.getElementById('modal-cart-items');
+  const totalEl = document.getElementById('modal-cart-total');
+  const badges = document.querySelectorAll('.cart-badge');
+  const fab = document.getElementById('cart-fab');
+
+  if (!list || !totalEl) return;
+
+  list.innerHTML = '';
+
+  if (cart.length === 0) {
+    list.innerHTML = `<p class="empty-cart">ยังไม่มีสินค้าในตะกร้า</p>`;
+    totalEl.textContent = '0.00';
+    badges.forEach(b => b.classList.add('hidden'));
+    fab?.classList.add('hidden');
+    return;
+  }
+
+  let total = 0;
+  let qty = 0;
+
+  cart.forEach(item => {
+    total += item.price * item.quantity;
+    qty += item.quantity;
+
+    list.insertAdjacentHTML('beforeend', `
+      <div class="cart-item">
+        <span>${item.name}</span>
+        <div class="cart-controls">
+          <button data-action="increase" data-id="${item.id}">+</button>
+          <span>${item.quantity}</span>
+          <button data-action="decrease" data-id="${item.id}">-</button>
+          <button data-action="remove" data-id="${item.id}">×</button>
         </div>
-      `);
-    });
+      </div>
+    `);
+  });
 
-    totalEl.textContent = total.toFixed(2);
-    badges.forEach(b => {
-      b.textContent = qty;
-      b.classList.toggle('hidden', qty === 0);
-    });
-    fab?.classList.toggle('hidden', qty === 0);
-  }
-};
+  totalEl.textContent = total.toFixed(2);
+  badges.forEach(b => {
+    b.textContent = qty;
+    b.classList.toggle('hidden', qty === 0);
+  });
+  fab?.classList.remove('hidden');
+}
 
 // ===============================================
-// EVENTS
+// EVENT DELEGATION (SINGLE SOURCE OF TRUTH)
 // ===============================================
-function bindEvents() {
+function initializeGlobalEventListeners() {
   document.addEventListener('click', e => {
 
-    // ADD TO CART
+    // ADD TO CART (MENU)
     const addBtn = e.target.closest('.add-to-cart-btn');
     if (addBtn) {
-      CartService.add(addBtn.dataset.id);
+      addToCart(addBtn.dataset.id);
       return;
     }
 
     // CART CONTROLS
-    const ctrl = e.target.closest('[data-action]');
-    if (!ctrl) return;
+    const cartBtn = e.target.closest('[data-action]');
+    if (!cartBtn) return;
 
-    const { action, id } = ctrl.dataset;
-    if (action === 'increase') CartService.add(id);
-    if (action === 'decrease') CartService.decrease(id);
-    if (action === 'remove') CartService.remove(id);
+    const { action, id } = cartBtn.dataset;
+    if (!id) return;
+
+    if (action === 'increase') addToCart(id);
+    if (action === 'decrease') decreaseItem(id);
+    if (action === 'remove') removeItem(id);
   });
 }
 
 // ===============================================
-// BOOTSTRAP
+// MODALS / STATIC
 // ===============================================
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    CartService.init();
-    CartUI.render();
+function initializeStaticComponents() {
+  initializeCartModal();
+  initializeCheckoutModal();
+}
 
-    if (document.querySelector('.menu-grid')) {
-      await MenuService.load();   // ✅ เมนูต้องโหลดก่อน
-      MenuUI.render();
-    }
+function initializeCartModal() {
+  const modal = document.getElementById('cart-modal');
+  const overlay = document.getElementById('cart-modal-overlay');
 
-    bindEvents();
-  } catch (err) {
-    console.error(err);
-    alert('ระบบโหลดไม่สำเร็จ');
+  document.getElementById('cart-icon')?.addEventListener('click', open);
+  document.getElementById('cart-fab')?.addEventListener('click', open);
+  document.getElementById('modal-close-btn')?.addEventListener('click', close);
+  overlay?.addEventListener('click', close);
+
+  function open() {
+    modal?.classList.remove('hidden');
+    overlay?.classList.remove('hidden');
   }
-});
+  function close() {
+    modal?.classList.add('hidden');
+    overlay?.classList.add('hidden');
+  }
+}
+
+function initializeCheckoutModal() {
+  document
+    .querySelector('#cart-modal .checkout-btn')
+    ?.addEventListener('click', () => {
+      if (getCart().length === 0) {
+        alert('ตะกร้าว่าง');
+        return;
+      }
+      document.getElementById('checkout-modal')?.classList.remove('hidden');
+      document.getElementById('checkout-modal-overlay')?.classList.remove('hidden');
+    });
+}
