@@ -165,7 +165,6 @@ function renderCart() {
 // ===============================================
 //           MODALS
 // ===============================================
-
 function initializeCartModal() {
     const icon = document.getElementById('cart-icon');
     const fab = document.getElementById('cart-fab');
@@ -173,22 +172,46 @@ function initializeCartModal() {
     const overlay = document.getElementById('cart-modal-overlay');
     const close = document.getElementById('modal-close-btn');
 
+    const checkoutBtn = modal?.querySelector('.checkout-btn');
+
+    const checkoutModal = document.getElementById('checkout-modal');
+    const checkoutOverlay = document.getElementById('checkout-modal-overlay');
+    const checkoutClose = document.getElementById('checkout-close-btn');
+
     if (!modal || !overlay) return;
 
-    const open = () => {
+    const openCart = () => {
         modal.classList.remove('hidden');
         overlay.classList.remove('hidden');
     };
 
-    const closeFn = () => {
+    const closeCart = () => {
         modal.classList.add('hidden');
         overlay.classList.add('hidden');
     };
 
-    icon?.addEventListener('click', open);
-    fab?.addEventListener('click', open);
-    close?.addEventListener('click', closeFn);
-    overlay?.addEventListener('click', closeFn);
+    const openCheckout = () => {
+        checkoutModal.classList.remove('hidden');
+        checkoutOverlay.classList.remove('hidden');
+    };
+
+    const closeCheckout = () => {
+        checkoutModal.classList.add('hidden');
+        checkoutOverlay.classList.add('hidden');
+    };
+
+    icon?.addEventListener('click', openCart);
+    fab?.addEventListener('click', openCart);
+    close?.addEventListener('click', closeCart);
+    overlay?.addEventListener('click', closeCart);
+
+    checkoutBtn?.addEventListener('click', () => {
+        closeCart();
+        openCheckout();
+    });
+
+    checkoutClose?.addEventListener('click', closeCheckout);
+    checkoutOverlay?.addEventListener('click', closeCheckout);
 }
 
 // ===============================================
