@@ -211,7 +211,7 @@ function initializeCartModal() {
     const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
 
     if (cart.length === 0) {
-        console.log('ตะกร้าว่าง');
+        alert('ตะกร้าว่าง');
         return;
     }
         closeCart();
