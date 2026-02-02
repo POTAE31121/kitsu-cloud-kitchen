@@ -206,9 +206,21 @@ function initializeCartModal() {
     overlay?.addEventListener('click', closeCart);
 
     checkoutBtn?.addEventListener('click', () => {
-        closeCart();
-        openCheckout();
-    });
+    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+
+    if (cart.length === 0) {
+        console.log('ตะกร้าว่าง');
+        return;
+    }
+
+    // ปิด cart modal
+    modal.classList.add('hidden');
+    overlay.classList.add('hidden');
+
+    // เปิด checkout modal
+    document.getElementById('checkout-modal')?.classList.remove('hidden');
+    document.getElementById('checkout-modal-overlay')?.classList.remove('hidden');
+});
 
     checkoutClose?.addEventListener('click', closeCheckout);
     checkoutOverlay?.addEventListener('click', closeCheckout);
