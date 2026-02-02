@@ -238,12 +238,12 @@ function initializeGlobalEventListeners() {
     // ✅ เพิ่มตรงนี้
         const incBtn = e.target.closest('.increase-btn');
         if (incBtn) {
-            addToCart(incBtn.dataset.id);
+            addToCart(Number(incBtn.dataset.id));
         }
 
         const decBtn = e.target.closest('.decrease-btn');
         if (decBtn) {
-            decreaseQuantity(decBtn.dataset.id);
+            decreaseQuantity(Number(decBtn.dataset.id));
         }
     });
 }
