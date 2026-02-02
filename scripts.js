@@ -172,8 +172,6 @@ function initializeCartModal() {
     const overlay = document.getElementById('cart-modal-overlay');
     const close = document.getElementById('modal-close-btn');
 
-    const checkoutBtn = modal?.querySelector('.checkout-btn');
-
     const checkoutModal = document.getElementById('checkout-modal');
     const checkoutOverlay = document.getElementById('checkout-modal-overlay');
     const checkoutClose = document.getElementById('checkout-close-btn');
@@ -183,6 +181,10 @@ function initializeCartModal() {
     const openCart = () => {
         modal.classList.remove('hidden');
         overlay.classList.remove('hidden');
+
+        // ✅ bind checkoutBtn ตอนเปิด modal เท่านั้น
+        const checkoutBtn = modal.querySelector('.checkout-btn');
+        checkoutBtn?.addEventListener('click', onCheckoutClick);
     };
 
     const closeCart = () => {
@@ -191,13 +193,25 @@ function initializeCartModal() {
     };
 
     const openCheckout = () => {
-        checkoutModal.classList.remove('hidden');
-        checkoutOverlay.classList.remove('hidden');
+        checkoutModal?.classList.remove('hidden');
+        checkoutOverlay?.classList.remove('hidden');
     };
 
     const closeCheckout = () => {
-        checkoutModal.classList.add('hidden');
-        checkoutOverlay.classList.add('hidden');
+        checkoutModal?.classList.add('hidden');
+        checkoutOverlay?.classList.add('hidden');
+    };
+
+    const onCheckoutClick = () => {
+        const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+
+        if (cart.length === 0) {
+            console.log('ตะกร้าว่าง');
+            return;
+        }
+
+        closeCart();
+        openCheckout();
     };
 
     icon?.addEventListener('click', openCart);
@@ -205,27 +219,9 @@ function initializeCartModal() {
     close?.addEventListener('click', closeCart);
     overlay?.addEventListener('click', closeCart);
 
-    checkoutBtn?.addEventListener('click', () => {
-    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
-
-    if (cart.length === 0) {
-        console.log('ตะกร้าว่าง');
-        return;
-    }
-
-    // ปิด cart modal
-    modal.classList.add('hidden');
-    overlay.classList.add('hidden');
-
-    // เปิด checkout modal
-    document.getElementById('checkout-modal')?.classList.remove('hidden');
-    document.getElementById('checkout-modal-overlay')?.classList.remove('hidden');
-});
-
     checkoutClose?.addEventListener('click', closeCheckout);
     checkoutOverlay?.addEventListener('click', closeCheckout);
 }
-
 // ===============================================
 //           MOBILE MENU
 // ===============================================
