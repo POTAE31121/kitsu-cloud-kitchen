@@ -251,15 +251,10 @@ function initializeMobileMenu() {
 function initializeGlobalEventListeners() {
     document.addEventListener('click', function (e) {
 
-        const addBtn = e.target.closest('.add-to-cart-btn');
         const incBtn = e.target.closest('.increase-btn');
         const decBtn = e.target.closest('.decrease-btn');
         const removeBtn = e.target.closest('.remove-from-cart-btn');
-
-        if (addBtn) {
-            addToCart(addBtn.dataset.id);
-            return;
-        }
+        const checkoutBtn = e.target.closest('#cart-modal .checkout-btn');
 
         if (incBtn) {
             addToCart(incBtn.dataset.id);
@@ -274,6 +269,24 @@ function initializeGlobalEventListeners() {
         if (removeBtn) {
             removeFromCart(removeBtn.dataset.id);
             return;
+        }
+
+        // ✅ จุดที่คุณต้องการ
+        if (checkoutBtn) {
+            const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+
+            if (cart.length === 0) {
+                console.log('ตะกร้าว่าง');
+                return;
+            }
+
+            // ปิด cart modal
+            document.getElementById('cart-modal')?.classList.add('hidden');
+            document.getElementById('cart-modal-overlay')?.classList.add('hidden');
+
+            // เปิด checkout modal
+            document.getElementById('checkout-modal')?.classList.remove('hidden');
+            document.getElementById('checkout-modal-overlay')?.classList.remove('hidden');
         }
     });
 }
