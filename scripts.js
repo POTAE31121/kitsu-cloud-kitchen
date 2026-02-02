@@ -241,26 +241,32 @@ function initializeMobileMenu() {
 // ===============================================  
 //           GLOBAL EVENTS (DELEGATION)  
 // ===============================================  
-function initializeGlobalEventListeners() {  
-    document.addEventListener('click', function (e) {  
-  
-        const incBtn = e.target.closest('.increase-btn');  
-        const decBtn = e.target.closest('.decrease-btn');  
-        const removeBtn = e.target.closest('.remove-from-cart-btn');  
-  
-        if (incBtn) {  
-            addToCart(incBtn.dataset.id);  
-            return;  
-        }  
-  
-        if (decBtn) {  
-            decreaseQuantity(decBtn.dataset.id);  
-            return;  
-        }  
-  
-        if (removeBtn) {  
-            removeFromCart(removeBtn.dataset.id);  
-            return;  
-        }  
-    });  
+function initializeGlobalEventListeners() {
+    document.addEventListener('click', function (e) {
+
+        const addBtn = e.target.closest('.add-to-cart-btn');
+        const incBtn = e.target.closest('.increase-btn');
+        const decBtn = e.target.closest('.decrease-btn');
+        const removeBtn = e.target.closest('.remove-from-cart-btn');
+
+        if (addBtn) {
+            addToCart(addBtn.dataset.id);
+            return;
+        }
+
+        if (incBtn) {
+            addToCart(incBtn.dataset.id);
+            return;
+        }
+
+        if (decBtn) {
+            decreaseQuantity(decBtn.dataset.id);
+            return;
+        }
+
+        if (removeBtn) {
+            removeFromCart(removeBtn.dataset.id);
+            return;
+        }
+    });
 }
