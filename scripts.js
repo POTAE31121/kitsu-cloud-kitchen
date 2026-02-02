@@ -1,176 +1,179 @@
-// ===============================================
-//           MASTER SCRIPT FILE (STABLE)
-// ===============================================
-
-const API_BASE_URL = 'https://kitsu-django-backend.onrender.com';
-let allMenuItems = [];
-
-// ===============================================
-//           CORE INITIALIZER
-// ===============================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    initializeSharedComponents();
-
-    if (document.querySelector('.menu-grid')) {
-        displayMenuItems();
-    }
-});
-
-// ===============================================
-//           MENU PAGE
-// ===============================================
-
-async function displayMenuItems() {
-    const container = document.querySelector('.menu-grid');
-    if (!container) return;
-
-    container.innerHTML = 'กำลังโหลด...';
-
-    const res = await fetch(`${API_BASE_URL}/api/items/`);
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
-
-    const data = await res.json();
-    allMenuItems = data;
-
-    container.innerHTML = '';
-
-    data.forEach(item => {
-        const imageSrc = item.image_url
-            ? item.image_url
-            : 'https://via.placeholder.com/300x200?text=No+Image';
-
-        container.insertAdjacentHTML('beforeend', `
-            <div class="menu-card">
-                <img src="${imageSrc}" alt="${item.name}">
-                <h3>${item.name}</h3>
-                <p>${item.price} บาท</p>
-                <button class="add-to-cart-btn" data-id="${item.id}">
-                    เพิ่มลงตะกร้า
-                </button>
-            </div>
-        `);
-    });
-}
-
-// ===============================================
-//           SHARED
-// ===============================================
-
-function initializeSharedComponents() {
-    initializeCartModal();
-    initializeMobileMenu();
-    renderCart();
-    initializeGlobalEventListeners();
-}
-
-// ===============================================
-//           CART
-// ===============================================
-
-function addToCart(id) {
-    const product = allMenuItems.find(p => p.id == id);
-    if (!product) return;
-
-    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
-    const existing = cart.find(i => i.id == id);
-
-    if (existing) {
-        existing.quantity++;
-    } else {
-        cart.push({
-            id,
-            name: product.name,
-            price: product.price,
-            quantity: 1
-        });
-    }
-
-    localStorage.setItem('kitsuCart', JSON.stringify(cart));
-    renderCart();
-}
-
-function removeFromCart(id) {
-    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
-    cart = cart.filter(i => i.id != id);
-    localStorage.setItem('kitsuCart', JSON.stringify(cart));
-    renderCart();
-}
-
-function decreaseQuantity(id) {
-    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
-    const item = cart.find(i => i.id == id);
-    if (!item) return;
-
-    item.quantity--;
-
-    if (item.quantity <= 0) {
-        cart = cart.filter(i => i.id != id);
-    }
-
-    localStorage.setItem('kitsuCart', JSON.stringify(cart));
-    renderCart();
-}
-
-function renderCart() {
-    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
-    const container = document.getElementById('modal-cart-items');
-    const totalEl = document.getElementById('modal-cart-total');
-    const badges = document.querySelectorAll('.cart-badge');
-
-    let totalQty = 0;
-
-    if (!container || !totalEl) return;
-
-    container.innerHTML = '';
-    let total = 0;
-
-    if (cart.length === 0) {
-        container.innerHTML = `<p>ยังไม่มีสินค้าในตะกร้า</p>`;
-        totalEl.textContent = '0.00';
-
-        badges.forEach(b => {
-            b.textContent = '0';
-            b.classList.add('hidden');
-        });
-
-        return;
-    }
-
-    cart.forEach(item => {
-        total += item.price * item.quantity;
-        totalQty += item.quantity;
-
-        container.insertAdjacentHTML('beforeend', `
-            <div class="cart-item">
-                <span class="item-name">${item.name}</span>
-                <div class="cart-controls">
-                    <button class="qty-btn increase-btn" data-id="${item.id}">+</button>
-                    <span class="item-qty">${item.quantity}</span>
-                    <button class="qty-btn decrease-btn" data-id="${item.id}">-</button>
-                    <button class="remove-from-cart-btn" data-id="${item.id}">×</button>
-                </div>
-            </div>
-        `);
-    });
-
-    totalEl.textContent = total.toFixed(2);
-
-    badges.forEach(b => {
-        b.textContent = totalQty;
-        b.classList.remove('hidden');
-    });
-}
-
-// ===============================================
-//           MODALS
-// ===============================================
+// ===============================================  
+//           MASTER SCRIPT FILE (STABLE)  
+// ===============================================  
+  
+const API_BASE_URL = 'https://kitsu-django-backend.onrender.com';  
+let allMenuItems = [];  
+  
+// ===============================================  
+//           CORE INITIALIZER  
+// ===============================================  
+  
+document.addEventListener('DOMContentLoaded', () => {  
+    initializeSharedComponents();  
+  
+    if (document.querySelector('.menu-grid')) {  
+        displayMenuItems();  
+    }  
+});  
+  
+// ===============================================  
+//           MENU PAGE  
+// ===============================================  
+  
+async function displayMenuItems() {  
+    const container = document.querySelector('.menu-grid');  
+    if (!container) return;  
+  
+    container.innerHTML = 'กำลังโหลด...';  
+  
+    const res = await fetch(`${API_BASE_URL}/api/items/`);  
+    if (!res.ok) throw new Error(`API error: ${res.status}`);  
+  
+    const data = await res.json();  
+    allMenuItems = data;  
+  
+    container.innerHTML = '';  
+  
+    data.forEach(item => {  
+        const imageSrc = item.image_url  
+            ? item.image_url  
+            : 'https://via.placeholder.com/300x200?text=No+Image';  
+  
+        container.insertAdjacentHTML('beforeend', `  
+            <div class="menu-card">  
+                <img src="${imageSrc}" alt="${item.name}">  
+                <h3>${item.name}</h3>  
+                <p>${item.price} บาท</p>  
+                <button class="add-to-cart-btn" data-id="${item.id}">  
+                    เพิ่มลงตะกร้า  
+                </button>  
+            </div>  
+        `);  
+    });  
+}  
+  
+// ===============================================  
+//           SHARED  
+// ===============================================  
+  
+function initializeSharedComponents() {  
+    initializeCartModal();  
+    initializeMobileMenu();  
+    renderCart();  
+    initializeGlobalEventListeners();  
+}  
+  
+// ===============================================  
+//           CART  
+// ===============================================  
+  
+function addToCart(id) {  
+    const product = allMenuItems.find(p => p.id == id);  
+    if (!product) return;  
+  
+    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];  
+    const existing = cart.find(i => i.id == id);  
+  
+    if (existing) {  
+        existing.quantity++;  
+    } else {  
+        cart.push({  
+            id,  
+            name: product.name,  
+            price: product.price,  
+            quantity: 1  
+        });  
+    }  
+  
+    localStorage.setItem('kitsuCart', JSON.stringify(cart));  
+    renderCart();  
+}  
+  
+function removeFromCart(id) {  
+    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];  
+    cart = cart.filter(i => i.id != id);  
+    localStorage.setItem('kitsuCart', JSON.stringify(cart));  
+    renderCart();  
+}  
+  
+function decreaseQuantity(id) {  
+    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];  
+    const item = cart.find(i => i.id == id);  
+    if (!item) return;  
+  
+    item.quantity--;  
+  
+    if (item.quantity <= 0) {  
+        cart = cart.filter(i => i.id != id);  
+    }  
+  
+    localStorage.setItem('kitsuCart', JSON.stringify(cart));  
+    renderCart();  
+}  
+  
+function renderCart() {  
+    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];  
+    const container = document.getElementById('modal-cart-items');  
+    const totalEl = document.getElementById('modal-cart-total');  
+    const badges = document.querySelectorAll('.cart-badge');  
+  
+    let totalQty = 0;  
+  
+    if (!container || !totalEl) return;  
+  
+    container.innerHTML = '';  
+    let total = 0;  
+  
+    if (cart.length === 0) {  
+        container.innerHTML = `<p>ยังไม่มีสินค้าในตะกร้า</p>`;  
+        totalEl.textContent = '0.00';  
+  
+        badges.forEach(b => {  
+            b.textContent = '0';  
+            b.classList.add('hidden');  
+        });  
+  
+        return;  
+    }  
+  
+    cart.forEach(item => {  
+        total += item.price * item.quantity;  
+        totalQty += item.quantity;  
+  
+        container.insertAdjacentHTML('beforeend', `  
+            <div class="cart-item">  
+                <span class="item-name">${item.name}</span>  
+                <div class="cart-controls">  
+                    <button class="qty-btn increase-btn" data-id="${item.id}">+</button>  
+                    <span class="item-qty">${item.quantity}</span>  
+                    <button class="qty-btn decrease-btn" data-id="${item.id}">-</button>  
+                    <button class="remove-from-cart-btn" data-id="${item.id}">×</button>  
+                </div>  
+            </div>  
+        `);  
+    });  
+  
+    totalEl.textContent = total.toFixed(2);  
+  
+    badges.forEach(b => {  
+        b.textContent = totalQty;  
+        b.classList.remove('hidden');  
+    });  
+}  
+  
+// ===============================================  
+//           MODALS  
+// ===============================================  
+  
 function initializeCartModal() {
     const icon = document.getElementById('cart-icon');
     const fab = document.getElementById('cart-fab');
     const modal = document.getElementById('cart-modal');
     const overlay = document.getElementById('cart-modal-overlay');
     const close = document.getElementById('modal-close-btn');
+
+    const checkoutBtn = modal?.querySelector('.checkout-btn');
 
     const checkoutModal = document.getElementById('checkout-modal');
     const checkoutOverlay = document.getElementById('checkout-modal-overlay');
@@ -181,10 +184,6 @@ function initializeCartModal() {
     const openCart = () => {
         modal.classList.remove('hidden');
         overlay.classList.remove('hidden');
-
-        // ✅ bind checkoutBtn ตอนเปิด modal เท่านั้น
-        const checkoutBtn = modal.querySelector('.checkout-btn');
-        checkoutBtn?.addEventListener('click', onCheckoutClick);
     };
 
     const closeCart = () => {
@@ -193,25 +192,13 @@ function initializeCartModal() {
     };
 
     const openCheckout = () => {
-        checkoutModal?.classList.remove('hidden');
-        checkoutOverlay?.classList.remove('hidden');
+        checkoutModal.classList.remove('hidden');
+        checkoutOverlay.classList.remove('hidden');
     };
 
     const closeCheckout = () => {
-        checkoutModal?.classList.add('hidden');
-        checkoutOverlay?.classList.add('hidden');
-    };
-
-    const onCheckoutClick = () => {
-        const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
-
-        if (cart.length === 0) {
-            console.log('ตะกร้าว่าง');
-            return;
-        }
-
-        closeCart();
-        openCheckout();
+        checkoutModal.classList.add('hidden');
+        checkoutOverlay.classList.add('hidden');
     };
 
     icon?.addEventListener('click', openCart);
@@ -219,74 +206,61 @@ function initializeCartModal() {
     close?.addEventListener('click', closeCart);
     overlay?.addEventListener('click', closeCart);
 
+    checkoutBtn?.addEventListener('click', () => {
+        closeCart();
+        openCheckout();
+    });
+
     checkoutClose?.addEventListener('click', closeCheckout);
     checkoutOverlay?.addEventListener('click', closeCheckout);
 }
-// ===============================================
-//           MOBILE MENU
-// ===============================================
-
-function initializeMobileMenu() {
-    const hamburger = document.querySelector('.hamburger-menu');
-    const menu = document.querySelector('.slide-menu');
-
-    if (!hamburger || !menu) return;
-
-    hamburger.addEventListener('click', () => {
-        menu.classList.toggle('active');
-        hamburger.innerHTML = menu.classList.contains('active')
-            ? '&times;'
-            : '&#9776;';
-    });
-
-    menu.querySelector('ul')?.addEventListener('click', () => {
-        menu.classList.remove('active');
-        hamburger.innerHTML = '&#9776;';
-    });
-}
-
-// ===============================================
-//           GLOBAL EVENTS (DELEGATION)
-// ===============================================
-function initializeGlobalEventListeners() {
-    document.addEventListener('click', function (e) {
-
-        const incBtn = e.target.closest('.increase-btn');
-        const decBtn = e.target.closest('.decrease-btn');
-        const removeBtn = e.target.closest('.remove-from-cart-btn');
-        const checkoutBtn = e.target.closest('#cart-modal .checkout-btn');
-
-        if (incBtn) {
-            addToCart(incBtn.dataset.id);
-            return;
-        }
-
-        if (decBtn) {
-            decreaseQuantity(decBtn.dataset.id);
-            return;
-        }
-
-        if (removeBtn) {
-            removeFromCart(removeBtn.dataset.id);
-            return;
-        }
-
-        // ✅ จุดที่คุณต้องการ
-        if (checkoutBtn) {
-            const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
-
-            if (cart.length === 0) {
-                console.log('ตะกร้าว่าง');
-                return;
-            }
-
-            // ปิด cart modal
-            document.getElementById('cart-modal')?.classList.add('hidden');
-            document.getElementById('cart-modal-overlay')?.classList.add('hidden');
-
-            // เปิด checkout modal
-            document.getElementById('checkout-modal')?.classList.remove('hidden');
-            document.getElementById('checkout-modal-overlay')?.classList.remove('hidden');
-        }
-    });
+  
+// ===============================================  
+//           MOBILE MENU  
+// ===============================================  
+  
+function initializeMobileMenu() {  
+    const hamburger = document.querySelector('.hamburger-menu');  
+    const menu = document.querySelector('.slide-menu');  
+  
+    if (!hamburger || !menu) return;  
+  
+    hamburger.addEventListener('click', () => {  
+        menu.classList.toggle('active');  
+        hamburger.innerHTML = menu.classList.contains('active')  
+            ? '&times;'  
+            : '&#9776;';  
+    });  
+  
+    menu.querySelector('ul')?.addEventListener('click', () => {  
+        menu.classList.remove('active');  
+        hamburger.innerHTML = '&#9776;';  
+    });  
+}  
+  
+// ===============================================  
+//           GLOBAL EVENTS (DELEGATION)  
+// ===============================================  
+function initializeGlobalEventListeners() {  
+    document.addEventListener('click', function (e) {  
+  
+        const incBtn = e.target.closest('.increase-btn');  
+        const decBtn = e.target.closest('.decrease-btn');  
+        const removeBtn = e.target.closest('.remove-from-cart-btn');  
+  
+        if (incBtn) {  
+            addToCart(incBtn.dataset.id);  
+            return;  
+        }  
+  
+        if (decBtn) {  
+            decreaseQuantity(decBtn.dataset.id);  
+            return;  
+        }  
+  
+        if (removeBtn) {  
+            removeFromCart(removeBtn.dataset.id);  
+            return;  
+        }  
+    });  
 }
