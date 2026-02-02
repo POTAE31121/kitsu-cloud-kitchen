@@ -129,12 +129,33 @@ function renderCart() {
         totalQty += item.quantity; // 🔹 นับจำนวนสินค้า
 
         container.insertAdjacentHTML('beforeend', `
-            <div class="cart-item">
-                <span>${item.name} x ${item.quantity}</span>
+        <div class="cart-item">
+            <span class="item-name">${item.name}</span>
+
+            <div class="cart-controls">
+                <button class="qty-btn increase-btn" data-id="${item.id}">+</button>
+                <span class="item-qty">${item.quantity}</span>
+                <button class="qty-btn decrease-btn" data-id="${item.id}">-</button>
                 <button class="remove-from-cart-btn" data-id="${item.id}">×</button>
             </div>
+        </div>
         `);
     });
+
+    function decreaseQuantity(id) {
+    let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+    const item = cart.find(i => i.id == id);
+    if (!item) return;
+
+    item.quantity--;
+
+    if (item.quantity <= 0) {
+        cart = cart.filter(i => i.id != id);
+    }
+
+    localStorage.setItem('kitsuCart', JSON.stringify(cart));
+    renderCart();
+}
 
     totalEl.textContent = total.toFixed(2);
     // 🔹 อัปเดต badge ทุกจุด (desktop + mobile)
@@ -212,6 +233,17 @@ function initializeGlobalEventListeners() {
         const removeBtn = e.target.closest('.remove-from-cart-btn');
         if (removeBtn) {
             removeFromCart(removeBtn.dataset.id);
+        }
+
+    // ✅ เพิ่มตรงนี้
+        const incBtn = e.target.closest('.increase-btn');
+        if (incBtn) {
+            addToCart(incBtn.dataset.id);
+        }
+
+        const decBtn = e.target.closest('.decrease-btn');
+        if (decBtn) {
+            decreaseQuantity(decBtn.dataset.id);
         }
     });
 }
