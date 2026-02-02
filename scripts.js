@@ -102,6 +102,10 @@ function renderCart() {
     const container = document.getElementById('modal-cart-items');
     const totalEl = document.getElementById('modal-cart-total');
 
+    // 🔹 เพิ่ม 2 บรรทัดนี้
+    const badges = document.querySelectorAll('.cart-badge');
+    let totalQty = 0;
+
     if (!container || !totalEl) return;
 
     container.innerHTML = '';
@@ -109,12 +113,20 @@ function renderCart() {
 
     if (cart.length === 0) {
         container.innerHTML = `<p>ยังไม่มีสินค้าในตะกร้า</p>`;
-        totalEl.textContent = '0.00';
+        totalEl.textContent = '0.00'
+
+        // 🔹 ซ่อน badge เมื่อไม่มีสินค้า
+        badges.forEach(b => {
+            b.textContent = '0';
+            b.classList.add('hidden');
+        });
+
         return;
     }
 
     cart.forEach(item => {
         total += item.price * item.quantity;
+        totalQty += item.quantity; // 🔹 นับจำนวนสินค้า
 
         container.insertAdjacentHTML('beforeend', `
             <div class="cart-item">
@@ -125,7 +137,14 @@ function renderCart() {
     });
 
     totalEl.textContent = total.toFixed(2);
+    // 🔹 อัปเดต badge ทุกจุด (desktop + mobile)
+    badges.forEach(b => {
+        b.textContent = totalQty;
+        b.classList.remove('hidden');
+    });
 }
+
+
 
 // ===============================================
 //           MODALS
