@@ -97,7 +97,6 @@ function removeFromCart(id) {
     renderCart();
 }
 
-// ✅ ย้ายออกมาเป็น GLOBAL — แก้เฉพาะจุดนี้
 function decreaseQuantity(id) {
     let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
     const item = cart.find(i => i.id == id);
@@ -218,13 +217,12 @@ function initializeMobileMenu() {
 // ===============================================
 //           GLOBAL EVENTS (DELEGATION)
 // ===============================================
-
 function initializeGlobalEventListeners() {
     document.addEventListener('click', function (e) {
 
         const incBtn = e.target.closest('.increase-btn');
         const decBtn = e.target.closest('.decrease-btn');
-        const removeBtn = e.target.closest('.remove-from-cart-btn'); // ✅ แก้ class ให้ตรง
+        const removeBtn = e.target.closest('.remove-from-cart-btn');
 
         if (incBtn) {
             addToCart(incBtn.dataset.id);
@@ -232,18 +230,7 @@ function initializeGlobalEventListeners() {
         }
 
         if (decBtn) {
-            // 🔹 ใช้ logic เดิมที่มีอยู่แล้ว
-            let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
-            const item = cart.find(i => i.id == decBtn.dataset.id);
-            if (!item) return;
-
-            item.quantity--;
-            if (item.quantity <= 0) {
-                cart = cart.filter(i => i.id != decBtn.dataset.id);
-            }
-
-            localStorage.setItem('kitsuCart', JSON.stringify(cart));
-            renderCart();
+            decreaseQuantity(decBtn.dataset.id);
             return;
         }
 
