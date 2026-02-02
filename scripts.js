@@ -59,7 +59,7 @@ async function displayMenuItems() {
 
 function initializeSharedComponents() {
     initializeCartModal();
-    initializeMobileMenu(); // ✅ เพิ่มเฉพาะนี้
+    initializeMobileMenu();
     renderCart();
     initializeGlobalEventListeners();
 }
@@ -97,52 +97,8 @@ function removeFromCart(id) {
     renderCart();
 }
 
-function renderCart() {
-    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
-    const container = document.getElementById('modal-cart-items');
-    const totalEl = document.getElementById('modal-cart-total');
-
-    // 🔹 เพิ่ม 2 บรรทัดนี้
-    const badges = document.querySelectorAll('.cart-badge');
-    let totalQty = 0;
-
-    if (!container || !totalEl) return;
-
-    container.innerHTML = '';
-    let total = 0;
-
-    if (cart.length === 0) {
-        container.innerHTML = `<p>ยังไม่มีสินค้าในตะกร้า</p>`;
-        totalEl.textContent = '0.00'
-
-        // 🔹 ซ่อน badge เมื่อไม่มีสินค้า
-        badges.forEach(b => {
-            b.textContent = '0';
-            b.classList.add('hidden');
-        });
-
-        return;
-    }
-
-    cart.forEach(item => {
-        total += item.price * item.quantity;
-        totalQty += item.quantity; // 🔹 นับจำนวนสินค้า
-
-        container.insertAdjacentHTML('beforeend', `
-        <div class="cart-item">
-            <span class="item-name">${item.name}</span>
-
-            <div class="cart-controls">
-                <button class="qty-btn increase-btn" data-id="${item.id}">+</button>
-                <span class="item-qty">${item.quantity}</span>
-                <button class="qty-btn decrease-btn" data-id="${item.id}">-</button>
-                <button class="remove-from-cart-btn" data-id="${item.id}">×</button>
-            </div>
-        </div>
-        `);
-    });
-
-    function decreaseQuantity(id) {
+// ✅ ย้ายออกมาเป็น GLOBAL — แก้เฉพาะจุดนี้
+function decreaseQuantity(id) {
     let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
     const item = cart.find(i => i.id == id);
     if (!item) return;
@@ -157,15 +113,55 @@ function renderCart() {
     renderCart();
 }
 
+function renderCart() {
+    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+    const container = document.getElementById('modal-cart-items');
+    const totalEl = document.getElementById('modal-cart-total');
+    const badges = document.querySelectorAll('.cart-badge');
+
+    let totalQty = 0;
+
+    if (!container || !totalEl) return;
+
+    container.innerHTML = '';
+    let total = 0;
+
+    if (cart.length === 0) {
+        container.innerHTML = `<p>ยังไม่มีสินค้าในตะกร้า</p>`;
+        totalEl.textContent = '0.00';
+
+        badges.forEach(b => {
+            b.textContent = '0';
+            b.classList.add('hidden');
+        });
+
+        return;
+    }
+
+    cart.forEach(item => {
+        total += item.price * item.quantity;
+        totalQty += item.quantity;
+
+        container.insertAdjacentHTML('beforeend', `
+            <div class="cart-item">
+                <span class="item-name">${item.name}</span>
+                <div class="cart-controls">
+                    <button class="qty-btn increase-btn" data-id="${item.id}">+</button>
+                    <span class="item-qty">${item.quantity}</span>
+                    <button class="qty-btn decrease-btn" data-id="${item.id}">-</button>
+                    <button class="remove-from-cart-btn" data-id="${item.id}">×</button>
+                </div>
+            </div>
+        `);
+    });
+
     totalEl.textContent = total.toFixed(2);
-    // 🔹 อัปเดต badge ทุกจุด (desktop + mobile)
+
     badges.forEach(b => {
         b.textContent = totalQty;
         b.classList.remove('hidden');
     });
 }
-
-
 
 // ===============================================
 //           MODALS
@@ -173,7 +169,7 @@ function renderCart() {
 
 function initializeCartModal() {
     const icon = document.getElementById('cart-icon');
-    const fab = document.getElementById('cart-fab'); // ✅ เพิ่ม
+    const fab = document.getElementById('cart-fab');
     const modal = document.getElementById('cart-modal');
     const overlay = document.getElementById('cart-modal-overlay');
     const close = document.getElementById('modal-close-btn');
@@ -191,13 +187,13 @@ function initializeCartModal() {
     };
 
     icon?.addEventListener('click', open);
-    fab?.addEventListener('click', open);  // ✅ mobile
+    fab?.addEventListener('click', open);
     close?.addEventListener('click', closeFn);
     overlay?.addEventListener('click', closeFn);
 }
 
 // ===============================================
-//           MOBILE MENU (FIXED)
+//           MOBILE MENU
 // ===============================================
 
 function initializeMobileMenu() {
@@ -226,26 +222,23 @@ function initializeMobileMenu() {
 function initializeGlobalEventListeners() {
     document.addEventListener('click', function (e) {
 
-  const incBtn = e.target.closest('.increase-btn');
-  const decBtn = e.target.closest('.decrease-btn');
-  const removeBtn = e.target.closest('.remove-btn');
+        const incBtn = e.target.closest('.increase-btn');
+        const decBtn = e.target.closest('.decrease-btn');
+        const removeBtn = e.target.closest('.remove-btn');
 
-  if (incBtn) {
-    const id = incBtn.dataset.id;
-    addToCart(id);
-    return;
-  }
+        if (incBtn) {
+            addToCart(incBtn.dataset.id);
+            return;
+        }
 
-  if (decBtn) {
-    const id = decBtn.dataset.id;
-    decreaseQuantity(id);
-    return;
-  }
+        if (decBtn) {
+            decreaseQuantity(decBtn.dataset.id);
+            return;
+        }
 
-  if (removeBtn) {
-    const id = removeBtn.dataset.id;
-    removeFromCart(id);
-    return;
-  }
-
-});
+        if (removeBtn) {
+            removeFromCart(removeBtn.dataset.id);
+            return;
+        }
+    });
+}
