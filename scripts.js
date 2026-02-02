@@ -133,6 +133,7 @@ function renderCart() {
 
 function initializeCartModal() {
     const icon = document.getElementById('cart-icon');
+    const fab = document.getElementById('cart-fab'); // ✅ เพิ่ม
     const modal = document.getElementById('cart-modal');
     const overlay = document.getElementById('cart-modal-overlay');
     const close = document.getElementById('modal-close-btn');
@@ -150,6 +151,7 @@ function initializeCartModal() {
     };
 
     icon?.addEventListener('click', open);
+    fab?.addEventListener('click', open);  // ✅ mobile
     close?.addEventListener('click', closeFn);
     overlay?.addEventListener('click', closeFn);
 }
