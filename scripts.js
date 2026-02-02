@@ -224,26 +224,28 @@ function initializeMobileMenu() {
 // ===============================================
 
 function initializeGlobalEventListeners() {
-    document.addEventListener('click', e => {
-        const addBtn = e.target.closest('.add-to-cart-btn');
-        if (addBtn) {
-            addToCart(addBtn.dataset.id);
-        }
+    document.addEventListener('click', function (e) {
 
-        const removeBtn = e.target.closest('.remove-from-cart-btn');
-        if (removeBtn) {
-            removeFromCart(removeBtn.dataset.id);
-        }
+  const incBtn = e.target.closest('.increase-btn');
+  const decBtn = e.target.closest('.decrease-btn');
+  const removeBtn = e.target.closest('.remove-btn');
 
-    // ✅ เพิ่มตรงนี้
-        const incBtn = e.target.closest('.increase-btn');
-        if (incBtn) {
-            addToCart(Number(incBtn.dataset.id));
-        }
+  if (incBtn) {
+    const id = incBtn.dataset.id;
+    addToCart(id);
+    return;
+  }
 
-        const decBtn = e.target.closest('.decrease-btn');
-        if (decBtn) {
-            decreaseQuantity(Number(decBtn.dataset.id));
-        }
-    });
-}
+  if (decBtn) {
+    const id = decBtn.dataset.id;
+    decreaseQuantity(id);
+    return;
+  }
+
+  if (removeBtn) {
+    const id = removeBtn.dataset.id;
+    removeFromCart(id);
+    return;
+  }
+
+});
