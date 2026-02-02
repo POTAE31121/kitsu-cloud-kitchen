@@ -36,8 +36,13 @@ async function displayMenuItems() {
     container.innerHTML = '';
 
     data.forEach(item => {
+        const imageSrc = item.image_url
+            ? item.image_url
+            : 'https://via.placeholder.com/300x200?text=No+Image';
+
         container.insertAdjacentHTML('beforeend', `
             <div class="menu-card">
+                <img src="${imageSrc}" alt="${item.name}">
                 <h3>${item.name}</h3>
                 <p>${item.price} บาท</p>
                 <button class="add-to-cart-btn" data-id="${item.id}">
@@ -54,6 +59,7 @@ async function displayMenuItems() {
 
 function initializeSharedComponents() {
     initializeCartModal();
+    initializeMobileMenu(); // ✅ เพิ่มเฉพาะนี้
     renderCart();
     initializeGlobalEventListeners();
 }
@@ -146,6 +152,29 @@ function initializeCartModal() {
     icon?.addEventListener('click', open);
     close?.addEventListener('click', closeFn);
     overlay?.addEventListener('click', closeFn);
+}
+
+// ===============================================
+//           MOBILE MENU (FIXED)
+// ===============================================
+
+function initializeMobileMenu() {
+    const hamburger = document.querySelector('.hamburger-menu');
+    const menu = document.querySelector('.slide-menu');
+
+    if (!hamburger || !menu) return;
+
+    hamburger.addEventListener('click', () => {
+        menu.classList.toggle('active');
+        hamburger.innerHTML = menu.classList.contains('active')
+            ? '&times;'
+            : '&#9776;';
+    });
+
+    menu.querySelector('ul')?.addEventListener('click', () => {
+        menu.classList.remove('active');
+        hamburger.innerHTML = '&#9776;';
+    });
 }
 
 // ===============================================
