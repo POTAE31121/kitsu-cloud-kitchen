@@ -208,6 +208,12 @@ function initializeCartModal() {
     overlay?.addEventListener('click', closeCart);
 
     checkoutBtn?.addEventListener('click', () => {
+    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+
+    if (cart.length === 0) {
+        console.log('ตะกร้าว่าง');
+        return;
+    }
         closeCart();
         openCheckout();
     });
