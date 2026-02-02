@@ -224,7 +224,7 @@ function initializeGlobalEventListeners() {
 
         const incBtn = e.target.closest('.increase-btn');
         const decBtn = e.target.closest('.decrease-btn');
-        const removeBtn = e.target.closest('.remove-btn');
+        const removeBtn = e.target.closest('.remove-from-cart-btn'); // ✅ แก้ class ให้ตรง
 
         if (incBtn) {
             addToCart(incBtn.dataset.id);
@@ -232,7 +232,18 @@ function initializeGlobalEventListeners() {
         }
 
         if (decBtn) {
-            decreaseQuantity(decBtn.dataset.id);
+            // 🔹 ใช้ logic เดิมที่มีอยู่แล้ว
+            let cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+            const item = cart.find(i => i.id == decBtn.dataset.id);
+            if (!item) return;
+
+            item.quantity--;
+            if (item.quantity <= 0) {
+                cart = cart.filter(i => i.id != decBtn.dataset.id);
+            }
+
+            localStorage.setItem('kitsuCart', JSON.stringify(cart));
+            renderCart();
             return;
         }
 
