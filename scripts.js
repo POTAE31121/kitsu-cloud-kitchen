@@ -278,3 +278,61 @@ function initializeGlobalEventListeners() {
         }
     });
 }
+
+// ===============================================
+//   CHECKOUT → PAYMENT SIMULATOR (FRONTEND)
+// ===============================================
+
+document.getElementById('checkout-form')?.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+
+    // ❗ validate cart
+    if (cart.length === 0) {
+        alert('ตะกร้าว่าง');
+        console.log('ตะกร้าว่าง');
+        return;
+    }
+
+    // แปลง cart ให้ backend รับได้
+    const items = cart.map(i => ({
+        id: Number(i.id),
+        quantity: Number(i.quantity)
+    }));
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/orders/submit-final/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                customer_name: document.getElementById('customer_name')?.value ?? '',
+                customer_phone: document.getElementById('customer_phone')?.value ?? '',
+                customer_address: document.getElementById('customer_address')?.value ?? '',
+                items: JSON.stringify(items) // backend บังคับ string
+            })
+        });
+
+        const raw = await res.text();
+        if (!res.ok) {
+            console.error('BACKEND ERROR:', raw);
+            alert('สร้างคำสั่งซื้อไม่สำเร็จ');
+            return;
+        }
+
+        const data = JSON.parse(raw);
+
+        // 🔑 backend ของคุณต้องส่งค่านี้กลับมา
+        if (!data.simulator_url) {
+            alert('ไม่พบ payment simulator');
+            return;
+        }
+
+        // ✅ redirect ไป payment simulator
+        window.location.href = data.simulator_url;
+
+    } catch (err) {
+        console.error(err);
+        alert('เกิดข้อผิดพลาด');
+    }
+});
