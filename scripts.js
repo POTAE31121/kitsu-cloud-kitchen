@@ -321,43 +321,38 @@ function initializeGlobalEventListeners() {
 document.getElementById('checkout-form')?.addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
-
-    // ❗ validate cart
-    if (cart.length === 0) {
-        alert('ตะกร้าว่าง');
-        console.log('ตะกร้าว่าง');
-        return;
-    }
-
-    // แปลง cart ให้ backend รับได้
-    const items = cart.map(i => ({
-        id: Number(i.id),
-        quantity: Number(i.quantity)
-    }));
+    const submitBtn = document.getElementById('confirm-order-btn');
+    submitBtn?.setAttribute('disabled', 'true');
 
     try {
-        const data = await apiRequest('/api/orders/submit-final/', {
-        method: 'POST',
-        body: JSON.stringify({
-            customer_name: document.getElementById('customer_name')?.value ?? '',
-            customer_phone: document.getElementById('customer_phone')?.value ?? '',
-            customer_address: document.getElementById('customer_address')?.value ?? '',
-        items: JSON.stringify(items)
-    })
-});
+        const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
 
-        // 🔑 backend ของคุณต้องส่งค่านี้กลับมา
-        if (!data.simulator_url) {
-            alert('ไม่พบ payment simulator');
+        if (cart.length === 0) {
+            alert("Cart is empty");
             return;
         }
 
-        // ✅ redirect ไป payment simulator
+        const orderData = {
+            customer_name: document.getElementById('customer-name').value,
+            items: cart.map(item => ({
+                item_id: item.id,
+                quantity: item.quantity
+            }))
+        };
+
+        const data = await apiRequest('/api/orders/submit-final/', {
+            method: 'POST',
+            body: JSON.stringify(orderData)
+        });
+
+        // 🔥 clear cart ก่อน redirect
+        localStorage.removeItem('kitsuCart');
+
         window.location.href = data.simulator_url;
 
-    } catch (err) {
-        console.error(err);
-        alert('เกิดข้อผิดพลาด');
+    } catch (error) {
+        alert("Order failed: " + error.message);
+    } finally {
+        submitBtn?.removeAttribute('disabled');
     }
 });
