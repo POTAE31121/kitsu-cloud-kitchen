@@ -329,7 +329,7 @@ document.getElementById('checkout-form')?.addEventListener('submit', async funct
         }
 
         // ✅ redirect ไป payment simulator
-        window.location.href = data.simulator_url;
+        window.location.href = "payment-simulator.html";
 
     } catch (err) {
         console.error(err);
