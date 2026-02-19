@@ -337,25 +337,15 @@ document.getElementById('checkout-form')?.addEventListener('submit', async funct
     }));
 
     try {
-        const res = await fetch(`${API_BASE_URL}/api/orders/submit-final/`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                customer_name: document.getElementById('customer_name')?.value ?? '',
-                customer_phone: document.getElementById('customer_phone')?.value ?? '',
-                customer_address: document.getElementById('customer_address')?.value ?? '',
-                items: JSON.stringify(items) // backend บังคับ string
-            })
-        });
-
-        const raw = await res.text();
-        if (!res.ok) {
-            console.error('BACKEND ERROR:', raw);
-            alert('สร้างคำสั่งซื้อไม่สำเร็จ');
-            return;
-        }
-
-        const data = JSON.parse(raw);
+        const data = await apiRequest('/api/orders/submit-final/', {
+        method: 'POST',
+        body: JSON.stringify({
+            customer_name: document.getElementById('customer_name')?.value ?? '',
+            customer_phone: document.getElementById('customer_phone')?.value ?? '',
+            customer_address: document.getElementById('customer_address')?.value ?? '',
+        items: JSON.stringify(items)
+    })
+});
 
         // 🔑 backend ของคุณต้องส่งค่านี้กลับมา
         if (!data.simulator_url) {
