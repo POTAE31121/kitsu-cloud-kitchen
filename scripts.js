@@ -338,8 +338,8 @@ document.getElementById('checkout-form')?.addEventListener('submit', async funct
             customer_address: document.getElementById('customer_address').value,
             items: JSON.stringify(
                 cart.map(item => ({
-                    id: item.id,
-                    quantity: item.quantity
+                    item_id: Number(item.id),
+                    quantity: Number(item.quantity)
         }))
     )
 };
