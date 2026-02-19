@@ -321,13 +321,6 @@ document.getElementById('checkout-form')?.addEventListener('submit', async funct
         }
 
         const data = JSON.parse(raw);
-
-        // 🔑 backend ของคุณต้องส่งค่านี้กลับมา
-        if (!data.simulator_url) {
-            alert('ไม่พบ payment simulator');
-            return;
-        }
-
         // ✅ redirect ไป payment simulator
         window.location.href = "payment-simulator.html";
 
