@@ -3,6 +3,29 @@
 // ===============================================
 
 const API_BASE_URL = 'https://kitsu-django-backend.onrender.com';
+async function apiRequest(endpoint, options = {}) {
+    try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...(options.headers || {})
+            },
+            ...options
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`API ${response.status}: ${errorText}`);
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        console.error('API Request Failed:', error);
+        throw error;
+    }
+}
+
 let allMenuItems = [];
 
 // ===============================================
@@ -25,33 +48,45 @@ async function displayMenuItems() {
     const container = document.querySelector('.menu-grid');
     if (!container) return;
 
-    container.innerHTML = 'กำลังโหลด...';
+    container.innerHTML = '<p class="loading-message">กำลังโหลดเมนู...</p>';
 
-    const res = await fetch(`${API_BASE_URL}/api/items/`);
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    try {
+        const data = await apiRequest('/api/items/');
+        allMenuItems = data;
 
-    const data = await res.json();
-    allMenuItems = data;
+        container.innerHTML = '';
 
-    container.innerHTML = '';
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p>ยังไม่มีเมนูในขณะนี้</p>';
+            return;
+        }
 
-    data.forEach(item => {
-        const imageSrc = item.image_url
-            ? item.image_url
-            : 'https://via.placeholder.com/300x200?text=No+Image';
+        data.forEach(item => {
+            const imageSrc = item.image_url
+                ? item.image_url
+                : 'https://via.placeholder.com/300x200?text=No+Image';
 
-        container.insertAdjacentHTML('beforeend', `
-            <div class="menu-card">
-                <img src="${imageSrc}" alt="${item.name}">
-                <h3>${item.name}</h3>
-                <p>${item.price} บาท</p>
-                <button class="add-to-cart-btn" data-id="${item.id}">
-                    เพิ่มลงตะกร้า
-                </button>
-            </div>
-        `);
-    });
+            container.insertAdjacentHTML('beforeend', `
+                <div class="menu-card">
+                    <img src="${imageSrc}" alt="${item.name}">
+                    <h3>${item.name}</h3>
+                    <p>${item.price} บาท</p>
+                    <button class="add-to-cart-btn" data-id="${item.id}">
+                        เพิ่มลงตะกร้า
+                    </button>
+                </div>
+            `);
+        });
+
+    } catch (error) {
+        container.innerHTML = `
+            <p style="color:red;">
+                ไม่สามารถโหลดเมนูได้ กรุณาลองใหม่ภายหลัง
+            </p>
+        `;
+    }
 }
+
 
 // ===============================================
 //           SHARED
