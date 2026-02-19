@@ -322,7 +322,7 @@ document.getElementById('checkout-form')?.addEventListener('submit', async funct
         const orderData = JSON.parse(raw);
 
         // 🔥 เรียก Payment Intent API ต่อ
-        const paymentRes = await fetch(`${API_BASE_URL}/api/payment-intent/`, {
+        const paymentRes = await fetch(`${API_BASE_URL}/api/payment/create-intent/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
