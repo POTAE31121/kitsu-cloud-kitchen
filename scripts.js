@@ -146,10 +146,10 @@ function renderCart() {
             <div class="cart-item">
                 <span class="item-name">${item.name}</span>
                 <div class="cart-controls">
-                    <button class="qty-btn increase-btn" data-id="${item.id}">+</button>
-                    <span class="item-qty">${item.quantity}</span>
                     <button class="qty-btn decrease-btn" data-id="${item.id}">-</button>
-                    <button class="remove-from-cart-btn" data-id="${item.id}">×</button>
+                    <span class="item-qty">${item.quantity}</span>
+                    <button class="qty-btn increase-btn" data-id="${item.id}">+</button>
+                    <button class="remove-from-cart-btn" data-id="${item.id}">x</button>
                 </div>
             </div>
         `);
