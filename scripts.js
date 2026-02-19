@@ -315,14 +315,30 @@ document.getElementById('checkout-form')?.addEventListener('submit', async funct
 
         const raw = await res.text();
         if (!res.ok) {
-            console.error('BACKEND ERROR:', raw);
             alert('สร้างคำสั่งซื้อไม่สำเร็จ');
             return;
         }
 
-        const data = JSON.parse(raw);
-        // ✅ redirect ไป payment simulator
-        window.location.href = "payment-simulator.html";
+        const orderData = JSON.parse(raw);
+
+        // 🔥 เรียก Payment Intent API ต่อ
+        const paymentRes = await fetch(`${API_BASE_URL}/api/payment-intent/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                order_id: orderData.order_id
+            })
+        });
+
+        const paymentData = await paymentRes.json();
+
+        if (!paymentRes.ok) {
+            alert('สร้าง payment intent ไม่สำเร็จ');
+            return;
+        }
+
+        // ✅ redirect ไป URL ที่ backend ส่งมา
+        window.location.href = paymentData.simulator_url;
 
     } catch (err) {
         console.error(err);
