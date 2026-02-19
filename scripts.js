@@ -333,7 +333,9 @@ document.getElementById('checkout-form')?.addEventListener('submit', async funct
         }
 
         const orderData = {
-            customer_name: document.getElementById('customer-name').value,
+            customer_name: document.getElementById('customer_name').value,
+            customer_phone: document.getElementById('customer_phone').value,
+            customer_address: document.getElementById('customer_address').value,
             items: cart.map(item => ({
                 item_id: item.id,
                 quantity: item.quantity
