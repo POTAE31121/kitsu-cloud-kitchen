@@ -3,29 +3,6 @@
 // ===============================================
 
 const API_BASE_URL = 'https://kitsu-django-backend.onrender.com';
-async function apiRequest(endpoint, options = {}) {
-    try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                ...(options.headers || {})
-            },
-            ...options
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`API ${response.status}: ${errorText}`);
-        }
-
-        return await response.json();
-
-    } catch (error) {
-        console.error('API Request Failed:', error);
-        throw error;
-    }
-}
-
 let allMenuItems = [];
 
 // ===============================================
@@ -48,45 +25,33 @@ async function displayMenuItems() {
     const container = document.querySelector('.menu-grid');
     if (!container) return;
 
-    container.innerHTML = '<p class="loading-message">กำลังโหลดเมนู...</p>';
+    container.innerHTML = 'กำลังโหลด...';
 
-    try {
-        const data = await apiRequest('/api/items/');
-        allMenuItems = data;
+    const res = await fetch(`${API_BASE_URL}/api/items/`);
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
 
-        container.innerHTML = '';
+    const data = await res.json();
+    allMenuItems = data;
 
-        if (!data || data.length === 0) {
-            container.innerHTML = '<p>ยังไม่มีเมนูในขณะนี้</p>';
-            return;
-        }
+    container.innerHTML = '';
 
-        data.forEach(item => {
-            const imageSrc = item.image_url
-                ? item.image_url
-                : 'https://via.placeholder.com/300x200?text=No+Image';
+    data.forEach(item => {
+        const imageSrc = item.image_url
+            ? item.image_url
+            : 'https://via.placeholder.com/300x200?text=No+Image';
 
-            container.insertAdjacentHTML('beforeend', `
-                <div class="menu-card">
-                    <img src="${imageSrc}" alt="${item.name}">
-                    <h3>${item.name}</h3>
-                    <p>${item.price} บาท</p>
-                    <button class="add-to-cart-btn" data-id="${item.id}">
-                        เพิ่มลงตะกร้า
-                    </button>
-                </div>
-            `);
-        });
-
-    } catch (error) {
-        container.innerHTML = `
-            <p style="color:red;">
-                ไม่สามารถโหลดเมนูได้ กรุณาลองใหม่ภายหลัง
-            </p>
-        `;
-    }
+        container.insertAdjacentHTML('beforeend', `
+            <div class="menu-card">
+                <img src="${imageSrc}" alt="${item.name}">
+                <h3>${item.name}</h3>
+                <p>${item.price} บาท</p>
+                <button class="add-to-cart-btn" data-id="${item.id}">
+                    เพิ่มลงตะกร้า
+                </button>
+            </div>
+        `);
+    });
 }
-
 
 // ===============================================
 //           SHARED
@@ -321,42 +286,53 @@ function initializeGlobalEventListeners() {
 document.getElementById('checkout-form')?.addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const submitBtn = document.getElementById('confirm-order-btn');
-    submitBtn?.setAttribute('disabled', 'true');
+    const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+
+    // ❗ validate cart
+    if (cart.length === 0) {
+        alert('ตะกร้าว่าง');
+        console.log('ตะกร้าว่าง');
+        return;
+    }
+
+    // แปลง cart ให้ backend รับได้
+    const items = cart.map(i => ({
+        id: Number(i.id),
+        quantity: Number(i.quantity)
+    }));
 
     try {
-        const cart = JSON.parse(localStorage.getItem('kitsuCart')) || [];
+        const res = await fetch(`${API_BASE_URL}/api/orders/submit-final/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                customer_name: document.getElementById('customer_name')?.value ?? '',
+                customer_phone: document.getElementById('customer_phone')?.value ?? '',
+                customer_address: document.getElementById('customer_address')?.value ?? '',
+                items: JSON.stringify(items) // backend บังคับ string
+            })
+        });
 
-        if (cart.length === 0) {
-            alert("Cart is empty");
+        const raw = await res.text();
+        if (!res.ok) {
+            console.error('BACKEND ERROR:', raw);
+            alert('สร้างคำสั่งซื้อไม่สำเร็จ');
             return;
         }
 
-        const orderData = {
-            customer_name: document.getElementById('customer_name').value,
-            customer_phone: document.getElementById('customer_phone').value,
-            customer_address: document.getElementById('customer_address').value,
-            items: JSON.stringify(
-                cart.map(item => ({
-                    id: Number(item.item_id),
-                    quantity: Number(item.item_quantity)
-        }))
-    )
-};
+        const data = JSON.parse(raw);
 
-        const data = await apiRequest('/api/orders/submit-final/', {
-            method: 'POST',
-            body: JSON.stringify(orderData)
-        });
+        // 🔑 backend ของคุณต้องส่งค่านี้กลับมา
+        if (!data.simulator_url) {
+            alert('ไม่พบ payment simulator');
+            return;
+        }
 
-        // 🔥 clear cart ก่อน redirect
-        localStorage.removeItem('kitsuCart');
-
+        // ✅ redirect ไป payment simulator
         window.location.href = data.simulator_url;
 
-    } catch (error) {
-        alert("Order failed: " + error.message);
-    } finally {
-        submitBtn?.removeAttribute('disabled');
+    } catch (err) {
+        console.error(err);
+        alert('เกิดข้อผิดพลาด');
     }
 });
