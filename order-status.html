@@ -4,10 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kitsu Cloud Kitchen</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="icon" type="image/png" href="favicon.ico"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
-</head>
-  <title>Track Your Order - Kitsu Cloud Kitchen</title>
 </head>
 <body>
 <!-- ================================== -->
@@ -20,41 +19,34 @@
       <h1>Kitsu Cloud Kitchen</h1>
     </a>
   </div>
-  <nav>
-    <!-- เมนูสำหรับ Desktop (เพิ่มเข้ามาใหม่) -->
-    <ul class="nav-links-desktop">
-      <li><a href="index.html#home">Home</a></li>
-      <li><a href="index.html#menu">Menu</a></li>
-      <li><a href="index.html#story">Story</a></li>
-      <li><a href="index.html#locations">Locations</a></li>
-      <li><a href="index.html#contact">Contact</a></li>
-      <li><a href="order-status.html">Track Order</a></li>
-    </ul>
+ <nav>
+  <ul class="nav-links-desktop">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#story">Our Story</a></li>
+    <li><a href="#locations">Delivery</a></li>
+    <li><a href="#contact">Contact Us</a></li>
+  </ul>
 
-    <!-- ปุ่ม Hamburger (สำหรับ Mobile) -->
-    <div class="menu-toggle" id="menu-toggle">☰</div>
+<!-- Hamburger -->
+  <div class="hamburger-menu" id="hamburger-menu">☰</div>
+  <div class="slide-menu" id="slide-menu">
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#story">Story</a></li>
+          <li><a href="#menu">Menu</a></li>
+          <li><a href="#locations">Locations</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
 
-    <!-- เมนูสไลด์ (สำหรับ Mobile) -->
-    <div class="slide-menu" id="slide-menu">
-      <ul>
-        <li><a href="index.html#home">Home</a></li>
-        <li><a href="index.html#menu">Menu</a></li>
-        <li><a href="#cart">Cart</a></li>
-        <li><a href="index.html#story">Story</a></li>
-        <li><a href="index.html#locations">Locations</a></li>
-        <li><a href="index.html#contact">Contact</a></li>
-        <li><a href="order-status.html">Track Order</a></li>
-      </ul>
-    </div>
+  <div class="nav-cart" id="cart-icon">
+    <span class="cart-icon-display">🛒</span>
+    <span class="cart-badge hidden" id="cart-badge">0</span>
+  </div>
+</nav>
 
-    <!-- ไอคอนตะกร้าสินค้า (สำหรับ Desktop) -->
-    <div class="nav-cart" id="cart-icon">
-      <span class="cart-icon-display">🛒</span>
-      <span class="cart-badge hidden" id="cart-badge">0</span>
-    </div>
-  </nav>
 </header>
-
   <main style="padding: 50px 10%; min-height: 60vh;">
     <h2 style="text-align:center; font-family: 'Playfair Display', serif;">ติดตามสถานะออเดอร์</h2>
     
@@ -72,7 +64,7 @@
 
    <!-- Footer -->
   <footer class="footer">
-    <p>© 2025 Kitsu Cloud Kitchen. All rights reserved.</p>
+    <p>© 2025 Kitsu Cloud Kitchen. All rights reserved.</p> | <a href="index.html" style="color: #ccc;">กลับหน้าหลัก</a></p>
   </footer>
 
   <!-- 1. ปุ่มลอยสำหรับมือถือ (Floating Action Button) -->
