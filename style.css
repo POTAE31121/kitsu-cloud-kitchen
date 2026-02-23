@@ -540,4 +540,11 @@ body.menu-open {
   }
 }
 
+.menu-description {
+    font-size: 0.85em;
+    color: #666;
+    margin: 4px 0 8px 0;
+    line-height: 1.4;
+}
+
 /* --- End of style.css --- */

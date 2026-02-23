@@ -44,6 +44,7 @@ async function displayMenuItems() {
             <div class="menu-card">
                 <img src="${imageSrc}" alt="${item.name}">
                 <h3>${item.name}</h3>
+                ${item.description ? `<p class="menu-description">${item.description}</p>` : ''}
                 <p>${item.price} บาท</p>
                 <button class="add-to-cart-btn" data-id="${item.id}">
                     เพิ่มลงตะกร้า
