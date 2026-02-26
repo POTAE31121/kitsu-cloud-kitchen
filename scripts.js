@@ -346,3 +346,125 @@ document.getElementById('checkout-form')?.addEventListener('submit', async funct
         alert('เกิดข้อผิดพลาด');
     }
 });
+
+// ===============================================
+//           ORDER TRACKING
+// ===============================================
+
+// Map status จาก backend → step
+const STATUS_STEP_MAP = {
+    'AWAITING_PAYMENT': 1,
+    'PENDING':          1,
+    'PREPARING':        2,
+    'DELIVERING':       3,
+    'COMPLETED':        4,
+    'CANCELLED':        -1,
+};
+
+const STATUS_LABEL_MAP = {
+    'AWAITING_PAYMENT': 'รอชำระเงิน',
+    'PENDING':          'รอดำเนินการ',
+    'PREPARING':        'กำลังเตรียมอาหาร',
+    'DELIVERING':       'กำลังจัดส่ง',
+    'COMPLETED':        'จัดส่งสำเร็จ',
+    'CANCELLED':        'ยกเลิกแล้ว',
+};
+
+const STATUS_COLOR_MAP = {
+    'AWAITING_PAYMENT': '#e67e22',
+    'PENDING':          '#e67e22',
+    'PREPARING':        '#2980b9',
+    'DELIVERING':       '#8e44ad',
+    'COMPLETED':        '#27ae60',
+    'CANCELLED':        '#e74c3c',
+};
+
+function updateProgressBar(orderStatus) {
+    const steps = ['unpaid', 'preparing', 'delivering', 'completed'];
+    const lines = ['line-1', 'line-2', 'line-3'];
+    const currentStep = STATUS_STEP_MAP[orderStatus] ?? 1;
+
+    // Reset ทุก step ก่อน
+    steps.forEach(s => {
+        const el = document.getElementById(`step-${s}`);
+        el?.classList.remove('active', 'completed', 'cancelled');
+        const circle = el?.querySelector('.step-circle');
+        if (circle) circle.textContent = steps.indexOf(s) + 1;
+    });
+    lines.forEach(l => {
+        document.getElementById(l)?.classList.remove('completed');
+    });
+
+    if (orderStatus === 'CANCELLED') {
+        document.getElementById('step-unpaid')?.classList.add('cancelled');
+        return;
+    }
+
+    // ทำ step ที่ผ่านมาแล้วเป็น completed
+    steps.forEach((s, index) => {
+        const stepNum = index + 1;
+        const el = document.getElementById(`step-${s}`);
+        if (stepNum < currentStep) {
+            el?.classList.add('completed');
+            const circle = el?.querySelector('.step-circle');
+            if (circle) circle.textContent = '';
+        } else if (stepNum === currentStep) {
+            el?.classList.add('active');
+        }
+    });
+
+    // ทำ line ที่ผ่านมาแล้วเป็น completed
+    lines.forEach((l, index) => {
+        if (index + 1 < currentStep) {
+            document.getElementById(l)?.classList.add('completed');
+        }
+    });
+}
+
+document.getElementById('track-order-btn')?.addEventListener('click', async () => {
+    const orderId = document.getElementById('order-id-input')?.value.trim();
+
+    if (!orderId) {
+        alert('กรุณากรอก Order ID');
+        return;
+    }
+
+    const btn = document.getElementById('track-order-btn');
+    btn.textContent = 'กำลังค้นหา...';
+    btn.disabled = true;
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}/`);
+
+        if (!res.ok) {
+            alert('ไม่พบ Order นี้ กรุณาตรวจสอบ Order ID อีกครั้ง');
+            return;
+        }
+
+        const data = await res.json();
+
+        // แสดง container
+        const container = document.getElementById('status-display-container');
+        container.style.display = 'block';
+
+        // อัปเดต UI
+        document.getElementById('display-order-id').textContent = data.id;
+        document.getElementById('display-total-price').textContent = parseFloat(data.total_price).toFixed(2);
+
+        // Status badge
+        const statusEl = document.getElementById('order-status');
+        statusEl.textContent = STATUS_LABEL_MAP[data.status] ?? data.status;
+        statusEl.style.background = STATUS_COLOR_MAP[data.status] ?? '#999';
+        statusEl.style.color = 'white';
+
+        // Progress bar
+        updateProgressBar(data.status);
+
+    } catch (err) {
+        console.error(err);
+        alert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+    } finally {
+        btn.textContent = 'ติดตาม';
+        btn.disabled = false;
+    }
+});

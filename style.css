@@ -547,4 +547,84 @@ body.menu-open {
     line-height: 1.4;
 }
 
+/* ======= ORDER PROGRESS BAR ======= */
+.order-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ddd;
+    color: #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9em;
+    transition: all 0.4s ease;
+}
+
+.step-label {
+    font-size: 0.75em;
+    color: #999;
+    text-align: center;
+    margin: 0;
+    transition: all 0.4s ease;
+}
+
+.progress-line {
+    width: 50px;
+    height: 4px;
+    background: #ddd;
+    margin-bottom: 20px;
+    transition: background 0.4s ease;
+}
+
+/* Active step */
+.progress-step.active .step-circle {
+    background: #e67e22;
+    color: white;
+}
+
+.progress-step.active .step-label {
+    color: #e67e22;
+    font-weight: 600;
+}
+
+/* Completed step */
+.progress-step.completed .step-circle {
+    background: #27ae60;
+    color: white;
+}
+
+.progress-step.completed .step-circle::before {
+    content: '✓';
+}
+
+.progress-step.completed .step-label {
+    color: #27ae60;
+}
+
+.progress-line.completed {
+    background: #27ae60;
+}
+
+/* Cancelled */
+.progress-step.cancelled .step-circle {
+    background: #e74c3c;
+    color: white;
+}
+
 /* --- End of style.css --- */
