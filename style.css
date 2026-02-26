@@ -371,14 +371,6 @@ nav {
     width: 100%;
 }
 
-.mobile-menu {
-    display: none;
-}
-
-.mobile-menu.active {
-    display: block;
-}
-
 #cart-fab,
 #cart-fab i,
 #cart-fab svg {
