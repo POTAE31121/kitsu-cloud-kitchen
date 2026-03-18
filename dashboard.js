@@ -6,12 +6,14 @@ const API_BASE_URL = 'https://kitsu-django-backend.onrender.com';
 let realtimeInterval;
 
 const VALID_TRANSITIONS = {
-    'AWAITING_PAYMENT': ['PAID', 'CANCELLED'],
-    'PAID':             ['PREPARING', 'CANCELLED'],
-    'PREPARING':        ['DELIVERING', 'CANCELLED'],
-    'DELIVERING':       ['COMPLETED', 'CANCELLED'],
-    'COMPLETED':        [],
-    'CANCELLED':        [],
+        'AWAITING_PAYMENT': ['AWAITING_PAYMENT', 'CANCELED'],
+        'PAID': ['PAID', 'CANCELED'],
+        'AWAITING_PREPARATION': ['AWAITING_PREPARATION', 'CANCELED'],
+        'PREPARING': ['PREPARING', 'CANCELED'],
+        'READY_FOR_DELIVERY': ['READY_FOR_DELIVERY', 'CANCELED'],
+        'OUT_FOR_DELIVERY': ['OUT_FOR_DELIVERY', 'CANCELED'],
+        'COMPLETED': ['COMPLETED'],
+        'CANCELED': ['CANCELED'],
 };
 
 // ===============================================
