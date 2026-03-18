@@ -96,8 +96,8 @@ function initializeDashboardPage() {
     // ⭐️ Event Delegation ที่จัดการทั้ง 'change' และ 'click'
     const orderListBody = document.getElementById('order-list-body');
     if (orderListBody) {
-        orderListBody.addEventListener('change', handleStatusChange);
-        orderListBody.addEventListener('click', handleDashboardClick);
+        orderListBody.addEventListener('change', handleDropdownChange)  // เปลี่ยนจาก handleStatusChange
+        orderListBody.addEventListener('click', handleDashboardClick)
     }
 }
 
@@ -165,30 +165,61 @@ async function fetchAndRenderOrders() {
             return;
         }
 
-        orders.forEach(order => {
-            const row = document.createElement('tr');
-            let statusOptions = '';
-            ['PENDING', 'AWAITING_PAYMENT', 'PREPARING', 'DELIVERING', 'COMPLETED', 'CANCELLED'].forEach(status => {
-                const selected = order.status === status ? 'selected' : '';
-                statusOptions += `<option value="${status}" ${selected}>${status}</option>`;
-            });
+    orders.forEach(order => {
+        const row = document.createElement('tr')
 
-            // สร้างปุ่มดูสลิป
-            const slipCell = order.payment_slip_url
-                ? `<td><button class="view-slip-btn" data-slip-url="${order.payment_slip_url}">📎</button></td>`
-                : '<td>-</td>';
+        // สร้าง dropdown เฉพาะ status ที่ทำได้
+        const VALID_TRANSITIONS = {
+            'AWAITING_PAYMENT': ['PAID', 'CANCELLED'],
+            'PAID':             ['PREPARING', 'CANCELLED'],
+            'PREPARING':        ['DELIVERING', 'CANCELLED'],
+            'DELIVERING':       ['COMPLETED', 'CANCELLED'],
+            'COMPLETED':        ['COMPLETED'], // ไม่มี transition แต่ยังคงแสดง badge สีเขียว
+            'CANCELLED':        ['CANCELLED']  // ไม่มี transition แต่ยังคงแสดง badge สีแดง,
+        }
 
-            row.innerHTML = `
-                <td>#${order.id}</td>
-                <td>${order.customer_name}</td>
-                <td>${order.customer_phone}</td>
-                <td>฿${parseFloat(order.total_price).toFixed(2)}</td>
-                <td><select class="status-select" data-order-id="${order.id}">${statusOptions}</select></td>
-                <td>${new Date(order.created_at).toLocaleString('en-GB')}</td>
-                ${slipCell}
-            `;
-            orderListBody.appendChild(row);
-        });
+        const allowed = VALID_TRANSITIONS[order.status] || []
+
+        // ถ้าไม่มี transition แล้ว แสดง badge แทน dropdown
+        let statusCell = ''
+        if (allowed.length === 0) {
+            const color = order.status === 'COMPLETED' ? '#27ae60' : '#e74c3c'
+            statusCell = `<td><span style="padding: 4px 10px; border-radius: 12px; background: ${color}; color: white; font-size: 0.85em;">${order.status}</span></td>`
+        } else {
+            let options = `<option value="" disabled selected>${order.status}</option>`
+            allowed.forEach(s => {
+                options += `<option value="${s}">${s}</option>`
+            })
+            statusCell = `
+                <td style="display: flex; gap: 8px; align-items: center;">
+                    <select class="status-select" data-order-id="${order.id}">
+                        ${options}
+                    </select>
+                    <button 
+                        class="confirm-status-btn" 
+                        data-order-id="${order.id}"
+                        style="padding: 5px 10px; background: #f5a623; color: white; border: none; border-radius: 4px; cursor: pointer; opacity: 0.4; pointer-events: none;">
+                        Confirm
+                    </button>
+                </td>
+            `
+        }
+
+        const slipCell = order.payment_slip_url
+            ? `<td><button class="view-slip-btn" data-slip-url="${order.payment_slip_url}">📎</button></td>`
+            : '<td>-</td>'
+
+        row.innerHTML = `
+            <td>#${order.id}</td>
+            <td>${order.customer_name}</td>
+            <td>${order.customer_phone}</td>
+            <td>฿${parseFloat(order.total_price).toFixed(2)}</td>
+            ${statusCell}
+            <td>${new Date(order.created_at).toLocaleString('en-GB')}</td>
+            ${slipCell}
+        `
+        orderListBody.appendChild(row)
+        })
     } catch (error) {
         orderListBody.innerHTML = `<tr><td colspan="7" style="text-align: center;">Error loading orders.</td></tr>`;
         console.error(error);
@@ -232,38 +263,99 @@ function handleDashboardClick(event) {
 }
 
 // "เปลี่ยนสถานะ"
-async function handleStatusChange(event) {
-    if (!event.target.classList.contains('status-select')) return;
+// handle confirm status button
+    const confirmBtn = event.target.closest('.confirm-status-btn')
+        if (confirmBtn) {
+            const orderId = confirmBtn.dataset.orderId
+            const row = confirmBtn.closest('tr')
+            const select = row?.querySelector('.status-select')
+            const newStatus = select?.value
 
-    const token = localStorage.getItem('kitsuAdminToken');
-    const selectElement = event.target;
-    const orderId = selectElement.dataset.orderId;
-    const newStatus = selectElement.value;
+            if (!newStatus) {
+                alert('กรุณาเลือก status ก่อนครับ')
+                return
+            }
+
+            if (confirm(`ยืนยันการเปลี่ยน Order #${orderId} เป็น ${newStatus}?`)) {
+                handleConfirmStatus(orderId, newStatus, row)
+            }
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/admin/orders/${orderId}/update-status/`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${token}`
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+            if (!response.ok) throw new Error('Failed to update status');
+            
+            console.log(`Order #${orderId} status updated to ${newStatus}`);
+            selectElement.style.backgroundColor = '#2ecc71';
+            setTimeout(() => { selectElement.style.backgroundColor = ''; }, 1000);
+
+            // --- หัวใจของการอัปเดต ---
+            console.log("Status changed, forcing data refresh...");
+            await fetchAndRenderAllData(); 
+            // ------------------------
+
+        } catch (error) {
+            console.error('Update failed:', error);
+            alert('Could not update order status.');
+            fetchAndRenderOrders(); // Revert dropdown on failure
+        }
+
+// เปิด Confirm button เมื่อเลือก dropdown
+function handleDropdownChange(event) {
+    if (!event.target.classList.contains('status-select')) return
+
+    const select = event.target
+    const row = select.closest('tr')
+    const confirmBtn = row?.querySelector('.confirm-status-btn')
+
+    if (confirmBtn) {
+        if (select.value) {
+            confirmBtn.style.opacity = '1'
+            confirmBtn.style.pointerEvents = 'auto'
+        } else {
+            confirmBtn.style.opacity = '0.4'
+            confirmBtn.style.pointerEvents = 'none'
+        }
+    }
+}
+
+// กด Confirm แล้วส่ง API
+async function handleConfirmStatus(orderId, newStatus, row) {
+    const token = localStorage.getItem('kitsuAdminToken')
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/admin/orders/${orderId}/update-status/`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${token}`
-            },
-            body: JSON.stringify({ status: newStatus })
-        });
-        if (!response.ok) throw new Error('Failed to update status');
-        
-        console.log(`Order #${orderId} status updated to ${newStatus}`);
-        selectElement.style.backgroundColor = '#2ecc71';
-        setTimeout(() => { selectElement.style.backgroundColor = ''; }, 1000);
+        const response = await fetch(
+            `${API_BASE_URL}/api/admin/orders/${orderId}/update-status/`,
+            {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${token}`
+                },
+                body: JSON.stringify({ status: newStatus })
+            }
+        )
 
-        // --- หัวใจของการอัปเดต ---
-        console.log("Status changed, forcing data refresh...");
-        await fetchAndRenderAllData(); 
-        // ------------------------
+        const data = await response.json()
+
+        if (!response.ok) {
+            alert(`ไม่สามารถเปลี่ยน status ได้\n${data.error}`)
+            return
+        }
+
+        console.log(`Order #${orderId} updated to ${newStatus}`)
+        await fetchAndRenderAllData()
 
     } catch (error) {
-        console.error('Update failed:', error);
-        alert('Could not update order status.');
-        fetchAndRenderOrders(); // Revert dropdown on failure
+        console.error('Update failed:', error)
+        alert('เกิดข้อผิดพลาด กรุณาลองใหม่')
     }
 }
 
