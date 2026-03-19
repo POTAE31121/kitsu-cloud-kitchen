@@ -150,6 +150,16 @@
             <label for="customer_address">ที่อยู่สำหรับจัดส่ง</label>
             <textarea id="customer_address" name="customer_address" rows="3" required></textarea>
           </div>
+          <div class="form-group">
+            <label for="customer_telegram_chat_id">Telegram Chat ID
+            <span style="font-size:0.8em; color:#888;">(สำหรับรับแจ้งเตือน - ไม่บังคับ)</span>
+            </label>
+            <input type="text" id="customer_telegram_chat_id" name="customer_telegram_chat_id" placeholder="เช่น 6918640659">
+            <small style="color:#888; font-size:0.8em;">
+            วิธีดู Chat ID: Start Bot 
+            <a href="https://t.me/KitsuKitchen_bot" target="_blank">@ชื่อbot</a>แล้วพิมพ์ /start
+            </small>
+          </div>
       </div>
       <div class="modal-footer">
         <button type="submit" class="checkout-btn" id="confirm-order-btn">ยืนยันคำสั่งซื้อ</button>

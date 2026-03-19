@@ -310,6 +310,7 @@ document.getElementById('checkout-form')?.addEventListener('submit', async funct
                 customer_name: document.getElementById('customer_name')?.value ?? '',
                 customer_phone: document.getElementById('customer_phone')?.value ?? '',
                 customer_address: document.getElementById('customer_address')?.value ?? '',
+                customer_telegram_chat_id: document.getElementById('customer_telegram_chat_id')?.value ?? '',
                 items: JSON.stringify(items) // backend บังคับ string
             })
         });
