@@ -33,9 +33,45 @@ async function displayMenuItems() {
     const data = await res.json();
     allMenuItems = data;
 
+    const categories = ['all', ...new Set(
+        data
+            .filter(item => item.category_name)
+            .map(item => item.category_name)
+    )];
+
+    const filter = document.getElementById('category-filter');
+    if (filter) {
+        filter.innerHTML = '';
+        categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat;
+            option.textContent = cat === 'all' ? 'All Categories' : cat;
+            filter.appendChild(option);
+        });
+
+        filter.addEventListener('change', () => {
+            renderMenuItems(allMenuItems, filter.value);
+        });
+    }
+
+    renderMenuItems(data, 'all');
+}
+
+function renderMenuItems(items, category) {
+    const container = document.querySelector('.menu-grid');
+    if (!container) return;
+
+    const filtered = category === 'all'
+        ? items
+        : items.filter(item => item.category_name === category);
     container.innerHTML = '';
 
-    data.forEach(item => {
+    if (filtered.length === 0) {
+        container.innerHTML = `<p>ไม่มีเมนูในหมวดหมู่นี้</p>`;
+        return;
+    }
+
+    filtered.forEach(item => {
         const imageSrc = item.image_url
             ? item.image_url
             : 'https://via.placeholder.com/300x200?text=No+Image';

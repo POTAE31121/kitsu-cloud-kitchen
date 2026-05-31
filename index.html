@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kitsu Cloud Kitchen</title>
   <link rel="stylesheet" href="style.css"/>
-  <link rel="icon" type="image/png" href="favicon.ico"/>
+  <link rel="icon" type="image/x-icon" href="favicon.ico"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -62,17 +62,14 @@
 
   <!-- Special Menus -->
   <section class="special-menus" id="menu">
-    <!-- เปลี่ยนหัวข้อ -->
-    <!--h2>What's Cooking?</h2>
-    <div class="menu-grid">
-      <!-- เพิ่มข้อความอธิบายลงไปตรงนี้ -->
-      <!--p style="text-align: center; font-size: 1.1em; grid-column: 1 / -1;">
-      ทีมเชฟของเรากำลังคัดสรรวัตถุดิบและพัฒนาสูตรอาหารที่ดีที่สุด
-      เพื่อให้ทุกเมนูจาก Kitsu เป็นประสบการณ์ที่น่าจดจำสำหรับคุณ
-      <br><strong>อดใจรอชมเมนูฉบับเต็มเร็วๆ นี้!</strong>
-      </p>
-    </div-->
     <h2>Menus</h2>
+
+    <!-- หมวดหมู่เมนู -->
+    <div styles="text-align: center; margin-bottom: 30px;">
+      <select id="category-filter" style="padding: 10px 20px; border-radius: 20px; border: 1px solid #ddd; font-family: 'Poppins', sans-serif; font-size: 1em; cursor: pointer; outline: none;">
+        <option value="all">All Categories</option>
+        <!-- ตัวเลือกหมวดหมู่จะถูกเติมโดย JavaScript -->
+
     <div class="menu-grid">
       <p class="loading-message">กำลังโหลดเมนูสักครู่นะครับ...</p>
       <!-- ปล่อยให้ตรงนี้ว่างๆ เลยครับ เดี๋ยว JavaScript จะมาเติมให้เอง -->
